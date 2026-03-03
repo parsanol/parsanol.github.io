@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" fill="none" font-family="system-ui, -apple-system, sans-serif">
+  <!-- Background -->
+  <rect width="800" height="500" fill="#f8fafc"/>
+
+  <!-- Title -->
+  <text x="400" y="35" text-anchor="middle" font-size="20" font-weight="600" fill="#1e293b">Parsanol Performance Architecture</text>
+
+  <!-- Input -->
+  <rect x="50" y="70" width="120" height="60" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="110" y="100" text-anchor="middle" font-size="12" font-weight="500" fill="#1e40af">Input String</text>
+  <text x="110" y="118" text-anchor="middle" font-size="10" fill="#3b82f6">"hello world"</text>
+
+  <!-- Arrow to Parser -->
+  <path d="M170 100 L220 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Parser Box -->
+  <rect x="220" y="50" width="160" height="100" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+  <text x="300" y="75" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">PEG Parser</text>
+
+  <!-- Parser sub-components -->
+  <rect x="230" y="85" width="65" height="25" rx="4" fill="#bbf7d0"/>
+  <text x="262" y="102" text-anchor="middle" font-size="9" fill="#166534">Packrat</text>
+
+  <rect x="305" y="85" width="65" height="25" rx="4" fill="#bbf7d0"/>
+  <text x="337" y="102" text-anchor="middle" font-size="9" fill="#166534">Memoize</text>
+
+  <rect x="230" y="115" width="140" height="25" rx="4" fill="#dcfce7"/>
+  <text x="300" y="132" text-anchor="middle" font-size="9" fill="#166534">SIMD (memchr)</text>
+
+  <!-- Arrow to Arena -->
+  <path d="M380 100 L430 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Arena Allocator -->
+  <rect x="430" y="50" width="140" height="100" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="500" y="75" text-anchor="middle" font-size="12" font-weight="600" fill="#92400e">Arena Allocator</text>
+
+  <!-- Arena sub-components -->
+  <rect x="440" y="85" width="55" height="25" rx="4" fill="#fde68a"/>
+  <text x="467" y="102" text-anchor="middle" font-size="9" fill="#92400e">AST</text>
+
+  <rect x="505" y="85" width="55" height="25" rx="4" fill="#fde68a"/>
+  <text x="532" y="102" text-anchor="middle" font-size="9" fill="#92400e">Strings</text>
+
+  <rect x="440" y="115" width="120" height="25" rx="4" fill="#fef08a"/>
+  <text x="500" y="132" text-anchor="middle" font-size="9" fill="#92400e">Zero-Copy References</text>
+
+  <!-- Arrow to Output -->
+  <path d="M570 100 L620 100" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Output -->
+  <rect x="620" y="70" width="130" height="60" rx="8" fill="#f3e8ff" stroke="#a855f7" stroke-width="2"/>
+  <text x="685" y="100" text-anchor="middle" font-size="12" font-weight="500" fill="#7e22ce">Parse Tree</text>
+  <text x="685" y="118" text-anchor="middle" font-size="10" fill="#a855f7">(or JSON via FFI)</text>
+
+  <!-- Performance Features Section -->
+  <text x="50" y="190" font-size="14" font-weight="600" fill="#1e293b">Key Optimizations</text>
+
+  <!-- Packrat Memoization -->
+  <rect x="50" y="210" width="170" height="130" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1"/>
+  <text x="135" y="232" text-anchor="middle" font-size="11" font-weight="600" fill="#1e40af">Packrat Memoization</text>
+
+  <text x="60" y="255" font-size="9" fill="#475569">• Caches parse results by position</text>
+  <text x="60" y="272" font-size="9" fill="#475569">• O(n) → O(n²) worst case</text>
+  <text x="60" y="289" font-size="9" fill="#475569">• Dense bit-packed cache</text>
+  <text x="60" y="306" font-size="9" fill="#475569">• Memory-efficient storage</text>
+
+  <rect x="60" y="315" width="150" height="18" rx="4" fill="#bfdbfe"/>
+  <text x="135" y="328" text-anchor="middle" font-size="8" fill="#1e40af">Eliminates redundant parsing</text>
+
+  <!-- Arena Allocation -->
+  <rect x="235" y="210" width="170" height="130" rx="8" fill="#fefce8" stroke="#eab308" stroke-width="1"/>
+  <text x="320" y="232" text-anchor="middle" font-size="11" font-weight="600" fill="#a16207">Arena Allocation</text>
+
+  <text x="245" y="255" font-size="9" fill="#475569">• Single contiguous allocation</text>
+  <text x="245" y="272" font-size="9" fill="#475569">• No individual malloc calls</text>
+  <text x="245" y="289" font-size="9" fill="#475569">• Zero fragmentation</text>
+  <text x="245" y="306" font-size="9" fill="#475569">• Free entire AST at once</text>
+
+  <rect x="245" y="315" width="150" height="18" rx="4" fill="#fef08a"/>
+  <text x="320" y="328" text-anchor="middle" font-size="8" fill="#a16207">99.5% fewer allocations</text>
+
+  <!-- SIMD Optimization -->
+  <rect x="420" y="210" width="170" height="130" rx="8" fill="#ecfdf5" stroke="#10b981" stroke-width="1"/>
+  <text x="505" y="232" text-anchor="middle" font-size="11" font-weight="600" fill="#047857">SIMD Optimization</text>
+
+  <text x="430" y="255" font-size="9" fill="#475569">• memchr for fast scanning</text>
+  <text x="430" y="272" font-size="9" fill="#475569">• Vectorized byte search</text>
+  <text x="430" y="289" font-size="9" fill="#475569">• 10-50x faster than naive</text>
+  <text x="430" y="306" font-size="9" fill="#475569">• Delimiter detection</text>
+
+  <rect x="430" y="315" width="150" height="18" rx="4" fill="#a7f3d0"/>
+  <text x="505" y="328" text-anchor="middle" font-size="8" fill="#047857">CPU vector instructions</text>
+
+  <!-- SmallVec -->
+  <rect x="605" y="210" width="145" height="130" rx="8" fill="#fdf2f8" stroke="#ec4899" stroke-width="1"/>
+  <text x="677" y="232" text-anchor="middle" font-size="11" font-weight="600" fill="#9d174d">SmallVec</text>
+
+  <text x="615" y="255" font-size="9" fill="#475569">• Stack for small arrays</text>
+  <text x="615" y="272" font-size="9" fill="#475569">• Heap only when needed</text>
+  <text x="615" y="289" font-size="9" fill="#475569">• Cache-friendly access</text>
+  <text x="615" y="306" font-size="9" fill="#475569">• No pointer chasing</text>
+
+  <rect x="615" y="315" width="125" height="18" rx="4" fill="#fbcfe8"/>
+  <text x="677" y="328" text-anchor="middle" font-size="8" fill="#9d174d">Stack-allocated small arrays</text>
+
+  <!-- Benchmark Results -->
+  <text x="50" y="375" font-size="14" font-weight="600" fill="#1e293b">Benchmark Results vs Pure Ruby</text>
+
+  <!-- Chart background -->
+  <rect x="50" y="390" width="700" height="90" rx="8" fill="#f1f5f9"/>
+
+  <!-- Bar 1: 18-44x faster -->
+  <rect x="80" y="405" width="280" height="30" rx="4" fill="url(#gradient1)"/>
+  <text x="220" y="425" text-anchor="middle" font-size="11" font-weight="600" fill="white">18-44x Faster</text>
+  <text x="80" y="445" font-size="9" fill="#64748b">Speed Improvement</text>
+
+  <!-- Bar 2: 99.5% fewer allocations -->
+  <rect x="390" y="405" width="320" height="30" rx="4" fill="url(#gradient2)"/>
+  <text x="550" y="425" text-anchor="middle" font-size="11" font-weight="600" fill="white">99.5% Fewer Allocations</text>
+  <text x="390" y="445" font-size="9" fill="#64748b">Memory Efficiency</text>
+
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#64748b"/>
+    </marker>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#22c55e"/>
+      <stop offset="100%" style="stop-color:#16a34a"/>
+    </linearGradient>
+    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#2563eb"/>
+    </linearGradient>
+  </defs>
+</svg>
