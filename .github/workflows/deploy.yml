@@ -25,10 +25,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout parsanol-rs
+        uses: actions/checkout@v4
         with:
-          # Fetch sibling repos for examples
           repository: parsanol/parsanol-rs
-          path: ../parsanol-rs
+          path: parsanol-rs
           sparse-checkout: |
             examples
           sparse-checkout-cone-mode: false
@@ -37,15 +39,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: parsanol/parsanol-ruby
-          path: ../parsanol-ruby
+          path: parsanol-ruby
           sparse-checkout: |
             example
           sparse-checkout-cone-mode: false
 
       - name: Update paths in generate script
         run: |
-          sed -i "s|/Users/mulgogi/src/parsanol/parsanol-rs/examples|../parsanol-rs/examples|g" scripts/generate-examples.cjs
-          sed -i "s|/Users/mulgogi/src/parsanol/parsanol-ruby/example|../parsanol-ruby/example|g" scripts/generate-examples.cjs
+          sed -i "s|/Users/mulgogi/src/parsanol/parsanol-rs/examples|parsanol-rs/examples|g" scripts/generate-examples.cjs
+          sed -i "s|/Users/mulgogi/src/parsanol/parsanol-ruby/example|parsanol-ruby/example|g" scripts/generate-examples.cjs
 
       - name: Setup Node
         uses: actions/setup-node@v4
