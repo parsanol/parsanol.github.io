@@ -686,6 +686,129 @@ Standard PEG semantics: once
           </div>
         </section>
 
+        <!-- Performance Benchmarks -->
+        <section id="performance-benchmarks" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Performance Benchmarks</h2>
+
+          <div class="flex items-center gap-2 mb-4 text-sm text-gray-500 dark:text-gray-400">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Generated from actual benchmark runs • Version {{ benchmarkData.version }}</span>
+          </div>
+
+          <!-- Category Tabs -->
+          <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+            <button
+              v-for="cat in categories"
+              :key="cat.key"
+              @click="selectedCategory = cat.key"
+              :class="[
+                'px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-colors',
+                selectedCategory === cat.key
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+              ]"
+            >
+              {{ cat.label }}
+            </button>
+          </div>
+
+          <!-- Results for Selected Category -->
+          <div class="space-y-4">
+            <div
+              v-for="result in filteredResults"
+              :key="result.name"
+              class="card p-4"
+            >
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ result.name }}</h4>
+                  <code class="text-xs text-gray-500 dark:text-gray-400">{{ result.input }}</code>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span
+                    v-if="result.speedup.winner === 'bytecode'"
+                    class="px-2 py-1 text-xs font-medium rounded bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300"
+                  >
+                    Bytecode {{ result.speedup.factor }}x
+                  </span>
+                  <span
+                    v-else-if="result.speedup.winner === 'packrat'"
+                    class="px-2 py-1 text-xs font-medium rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
+                  >
+                    Packrat {{ result.speedup.factor }}x
+                  </span>
+                  <span
+                    v-else
+                    class="px-2 py-1 text-xs font-medium rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400"
+                  >
+                    Tie
+                  </span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-blue-600 dark:text-blue-400">Packrat</span>
+                    <span class="font-medium">{{ result.packrat.formatted }}</span>
+                  </div>
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div
+                      class="bg-blue-500 h-2 rounded-full transition-all"
+                      :style="{ width: packratWidth(result) }"
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs mb-1">
+                    <span class="text-green-600 dark:text-green-400">Bytecode</span>
+                    <span class="font-medium">{{ result.bytecode.formatted }}</span>
+                  </div>
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div
+                      class="bg-green-500 h-2 rounded-full transition-all"
+                      :style="{ width: bytecodeWidth(result) }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Category Summary -->
+          <div class="mt-8 card p-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Summary by Category</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div v-for="(summary, cat) in benchmarkData.categorySummaries" :key="cat" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="font-medium text-gray-900 dark:text-white capitalize">{{ cat }}</span>
+                  <span
+                    :class="[
+                      'px-2 py-1 text-xs font-medium rounded',
+                      summary.avgSpeedup.winner === 'bytecode'
+                        ? 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300'
+                        : summary.avgSpeedup.winner === 'packrat'
+                        ? 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
+                    ]"
+                  >
+                    {{ summary.avgSpeedup.winner === 'bytecode' ? 'Bytecode' : summary.avgSpeedup.winner === 'packrat' ? 'Packrat' : 'Tie' }}
+                    {{ summary.avgSpeedup.factor }}x
+                  </span>
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  Avg: {{ summary.avgPackrat }} vs {{ summary.avgBytecode }}
+                </div>
+                <div class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  {{ summary.count }} tests
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Benchmarks -->
         <section id="benchmarks" class="mb-16">
           <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Running Benchmarks</h2>
@@ -755,8 +878,38 @@ cargo bench --bench bytecode
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import CodeTabs from '../components/molecules/CodeTabs.vue'
 import DocsNav from '../components/organisms/DocsNav.vue'
+import benchmarkData from '../data/backend-benchmarks.json'
+
+const selectedCategory = ref('all')
+
+const categories = [
+  { key: 'all', label: 'All' },
+  { key: 'simple', label: 'Simple Tokens' },
+  { key: 'expression', label: 'Expressions' },
+  { key: 'nested', label: 'Nested' },
+  { key: 'linear', label: 'Linear' },
+  { key: 'data', label: 'Data' },
+]
+
+const filteredResults = computed(() => {
+  if (selectedCategory.value === 'all') {
+    return benchmarkData.results
+  }
+  return benchmarkData.results.filter((r: any) => r.category === selectedCategory.value)
+})
+
+function packratWidth(result: any) {
+  const max = Math.max(result.packrat.ns, result.bytecode.ns)
+  return `${(result.packrat.ns / max) * 100}%`
+}
+
+function bytecodeWidth(result: any) {
+  const max = Math.max(result.packrat.ns, result.bytecode.ns)
+  return `${(result.bytecode.ns / max) * 100}%`
+}
 
 const analysisRust = `use parsanol::portable::{
     parser_dsl::{str, re, GrammarBuilder},

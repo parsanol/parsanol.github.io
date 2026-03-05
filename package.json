@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vite",
     "generate": "node scripts/generate-examples.cjs",
-    "build": "npm run generate && vite build",
+    "generate:benchmarks": "node scripts/generate-backend-benchmarks.cjs",
+    "build": "npm run generate && npm run generate:benchmarks && vite build",
     "typecheck": "vue-tsc -b",
     "preview": "vite preview"
   },

@@ -215,13 +215,18 @@
         <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Ruby Bindings</h3>
         <ul class="space-y-1">
           <li>
-            <router-link to="/ruby#five-approaches" class="nav-link text-sm">
-              The 5 Approaches
+            <router-link to="/ruby#three-modes" class="nav-link text-sm">
+              The 3 Modes
             </router-link>
           </li>
           <li>
             <router-link to="/ruby#slice-feature" class="nav-link text-sm">
               Slice Support
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/ruby#zerocopy" class="nav-link text-sm">
+              ZeroCopy Interface
             </router-link>
           </li>
           <li>
@@ -360,8 +365,13 @@
         <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Architecture</h3>
         <ul class="space-y-1">
           <li>
-            <router-link to="/architecture#five-approaches" class="nav-link text-sm">
-              The 5 Approaches
+            <router-link to="/architecture#three-modes" class="nav-link text-sm">
+              The 3 Modes
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/architecture#zerocopy" class="nav-link text-sm">
+              ZeroCopy Interface
             </router-link>
           </li>
           <li>

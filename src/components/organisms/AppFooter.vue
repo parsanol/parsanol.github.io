@@ -75,6 +75,10 @@
           <p class="text-sm text-gray-500 dark:text-gray-400">
             &copy; {{ new Date().getFullYear() }} Ribose. MIT License.
           </p>
+          <span class="hidden md:inline text-gray-300 dark:text-gray-600">|</span>
+          <span class="text-sm text-gray-500 dark:text-gray-400">
+            Parsanol v{{ version.parsanolVersion }}
+          </span>
           <a
             href="https://www.ribose.com"
             target="_blank"
@@ -98,6 +102,7 @@
 
 <script setup lang="ts">
 import Badge from '../atoms/Badge.vue'
+import version from '../../data/version.json'
 </script>
 
 <style scoped>

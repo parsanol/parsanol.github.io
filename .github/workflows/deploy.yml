@@ -3,12 +3,23 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ['main']
-    # Trigger on changes to example files in parsanol-rs or parsanol-ruby
     paths:
       - 'src/**'
       - 'scripts/**'
       - 'package.json'
+      - '.github/workflows/deploy.yml'
+  # Trigger on changes to parsanol-rs (via repository_dispatch)
+  repository_dispatch:
+    types: [parsanol-rs-update]
+  # Weekly rebuild to keep docs fresh
+  schedule:
+    - cron: '0 6 * * 1'  # Every Monday at 6 AM UTC
   workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Reason for manual trigger'
+        required: false
+        default: 'Manual deployment'
 
 permissions:
   contents: read
@@ -23,7 +34,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout website
         uses: actions/checkout@v4
 
       - name: Checkout parsanol-rs
@@ -33,6 +44,9 @@ jobs:
           path: parsanol-rs
           sparse-checkout: |
             examples
+            Cargo.toml
+            benches
+            docs
           sparse-checkout-cone-mode: false
 
       - name: Checkout parsanol-ruby
@@ -43,6 +57,13 @@ jobs:
           sparse-checkout: |
             example
           sparse-checkout-cone-mode: false
+
+      - name: Extract parsanol-rs version
+        id: version
+        run: |
+          VERSION=$(grep -m1 'version\s*=' parsanol-rs/Cargo.toml | sed 's/.*version\s*=\s*"\([^"]*\)".*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Parsanol version: $VERSION"
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -61,6 +82,7 @@ jobs:
         env:
           PARSANOL_RS_DIR: ./parsanol-rs
           PARSANOL_RUBY_DIR: ./parsanol-ruby
+          PARSANOL_VERSION: ${{ steps.version.outputs.version }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

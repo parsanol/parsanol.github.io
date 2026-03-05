@@ -1,0 +1,498 @@
+{
+  "generatedAt": "2026-03-05T15:02:26.025Z",
+  "version": "0.2.0",
+  "results": [
+    {
+      "category": "simple",
+      "name": "json_true",
+      "input": "true",
+      "grammar": "json_simple",
+      "inputBytes": 4,
+      "packrat": {
+        "ns": 222,
+        "formatted": "222 ns"
+      },
+      "bytecode": {
+        "ns": 1127,
+        "formatted": "1.1 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "5.1"
+      }
+    },
+    {
+      "category": "simple",
+      "name": "json_false",
+      "input": "false",
+      "grammar": "json_simple",
+      "inputBytes": 5,
+      "packrat": {
+        "ns": 225,
+        "formatted": "225 ns"
+      },
+      "bytecode": {
+        "ns": 6102,
+        "formatted": "6.1 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "27.1"
+      }
+    },
+    {
+      "category": "simple",
+      "name": "json_null",
+      "input": "null",
+      "grammar": "json_simple",
+      "inputBytes": 4,
+      "packrat": {
+        "ns": 229,
+        "formatted": "229 ns"
+      },
+      "bytecode": {
+        "ns": 5981,
+        "formatted": "6.0 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "26.1"
+      }
+    },
+    {
+      "category": "simple",
+      "name": "json_number",
+      "input": "42",
+      "grammar": "json_simple",
+      "inputBytes": 2,
+      "packrat": {
+        "ns": 3742,
+        "formatted": "3.7 µs"
+      },
+      "bytecode": {
+        "ns": 7266,
+        "formatted": "7.3 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "1.9"
+      }
+    },
+    {
+      "category": "simple",
+      "name": "json_float",
+      "input": "-3.14",
+      "grammar": "json_simple",
+      "inputBytes": 5,
+      "packrat": {
+        "ns": 4750,
+        "formatted": "4.8 µs"
+      },
+      "bytecode": {
+        "ns": 8302,
+        "formatted": "8.3 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "1.7"
+      }
+    },
+    {
+      "category": "simple",
+      "name": "json_string",
+      "input": "\"hello world\"",
+      "grammar": "json_simple",
+      "inputBytes": 13,
+      "packrat": {
+        "ns": 6767,
+        "formatted": "6.8 µs"
+      },
+      "bytecode": {
+        "ns": 9921,
+        "formatted": "9.9 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "1.5"
+      }
+    },
+    {
+      "category": "expression",
+      "name": "calc_simple",
+      "input": "42",
+      "grammar": "calculator",
+      "inputBytes": 2,
+      "packrat": {
+        "ns": 3882,
+        "formatted": "3.9 µs"
+      },
+      "bytecode": {
+        "ns": 865,
+        "formatted": "865 ns"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "4.5"
+      }
+    },
+    {
+      "category": "expression",
+      "name": "calc_add",
+      "input": "1+2",
+      "grammar": "calculator",
+      "inputBytes": 3,
+      "packrat": {
+        "ns": 6234,
+        "formatted": "6.2 µs"
+      },
+      "bytecode": {
+        "ns": 945,
+        "formatted": "945 ns"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "6.6"
+      }
+    },
+    {
+      "category": "expression",
+      "name": "calc_precedence",
+      "input": "1+2*3",
+      "grammar": "calculator",
+      "inputBytes": 5,
+      "packrat": {
+        "ns": 10875,
+        "formatted": "10.9 µs"
+      },
+      "bytecode": {
+        "ns": 1032,
+        "formatted": "1.0 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "10.5"
+      }
+    },
+    {
+      "category": "expression",
+      "name": "calc_parens",
+      "input": "(1+2)*3",
+      "grammar": "calculator",
+      "inputBytes": 7,
+      "packrat": {
+        "ns": 15429,
+        "formatted": "15.4 µs"
+      },
+      "bytecode": {
+        "ns": 1090,
+        "formatted": "1.1 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "14.2"
+      }
+    },
+    {
+      "category": "expression",
+      "name": "calc_complex",
+      "input": "((1+2)*(3+4)+(5+6)*(7+8))*((9+10)*(11+12)+(13+14)*(15+16))",
+      "grammar": "calculator",
+      "inputBytes": 58,
+      "packrat": {
+        "ns": 54868,
+        "formatted": "54.9 µs"
+      },
+      "bytecode": {
+        "ns": 1727,
+        "formatted": "1.7 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "31.8"
+      }
+    },
+    {
+      "category": "linear",
+      "name": "url_simple",
+      "input": "https://example.com/",
+      "grammar": "url",
+      "inputBytes": 20,
+      "packrat": {
+        "ns": 5120,
+        "formatted": "5.1 µs"
+      },
+      "bytecode": {
+        "ns": 5268,
+        "formatted": "5.3 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "1.0"
+      }
+    },
+    {
+      "category": "linear",
+      "name": "url_path",
+      "input": "https://api.example.com/v1/users/123",
+      "grammar": "url",
+      "inputBytes": 36,
+      "packrat": {
+        "ns": 8662,
+        "formatted": "8.7 µs"
+      },
+      "bytecode": {
+        "ns": 7528,
+        "formatted": "7.5 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.2"
+      }
+    },
+    {
+      "category": "linear",
+      "name": "email_simple",
+      "input": "test@example.com",
+      "grammar": "email",
+      "inputBytes": 16,
+      "packrat": {
+        "ns": 5279,
+        "formatted": "5.3 µs"
+      },
+      "bytecode": {
+        "ns": 5664,
+        "formatted": "5.7 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "1.1"
+      }
+    },
+    {
+      "category": "linear",
+      "name": "email_complex",
+      "input": "user.name+tag@subdomain.example.co.uk",
+      "grammar": "email",
+      "inputBytes": 37,
+      "packrat": {
+        "ns": 9290,
+        "formatted": "9.3 µs"
+      },
+      "bytecode": {
+        "ns": 8559,
+        "formatted": "8.6 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.1"
+      }
+    },
+    {
+      "category": "nested",
+      "name": "sexp_simple",
+      "input": "(+ 1 2)",
+      "grammar": "sexp",
+      "inputBytes": 7,
+      "packrat": {
+        "ns": 4478,
+        "formatted": "4.5 µs"
+      },
+      "bytecode": {
+        "ns": 3737,
+        "formatted": "3.7 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.2"
+      }
+    },
+    {
+      "category": "nested",
+      "name": "sexp_nested",
+      "input": "(* (+ 1 2) (- 4 3))",
+      "grammar": "sexp",
+      "inputBytes": 19,
+      "packrat": {
+        "ns": 9035,
+        "formatted": "9.0 µs"
+      },
+      "bytecode": {
+        "ns": 5839,
+        "formatted": "5.8 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.5"
+      }
+    },
+    {
+      "category": "nested",
+      "name": "parens_simple",
+      "input": "(())",
+      "grammar": "balanced_parens",
+      "inputBytes": 4,
+      "packrat": {
+        "ns": 1117,
+        "formatted": "1.1 µs"
+      },
+      "bytecode": {
+        "ns": 1035,
+        "formatted": "1.0 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.1"
+      }
+    },
+    {
+      "category": "nested",
+      "name": "parens_nested",
+      "input": "(((())))",
+      "grammar": "balanced_parens",
+      "inputBytes": 8,
+      "packrat": {
+        "ns": 1175,
+        "formatted": "1.2 µs"
+      },
+      "bytecode": {
+        "ns": 896,
+        "formatted": "896 ns"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.3"
+      }
+    },
+    {
+      "category": "nested",
+      "name": "parens_complex",
+      "input": "(()(()())(()))",
+      "grammar": "balanced_parens",
+      "inputBytes": 14,
+      "packrat": {
+        "ns": 1456,
+        "formatted": "1.5 µs"
+      },
+      "bytecode": {
+        "ns": 873,
+        "formatted": "873 ns"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.7"
+      }
+    },
+    {
+      "category": "data",
+      "name": "date",
+      "input": "2024-01-15",
+      "grammar": "iso_date",
+      "inputBytes": 10,
+      "packrat": {
+        "ns": 4367,
+        "formatted": "4.4 µs"
+      },
+      "bytecode": {
+        "ns": 5124,
+        "formatted": "5.1 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "1.2"
+      }
+    },
+    {
+      "category": "data",
+      "name": "ip",
+      "input": "192.168.1.1",
+      "grammar": "ip_address",
+      "inputBytes": 11,
+      "packrat": {
+        "ns": 12858,
+        "formatted": "12.9 µs"
+      },
+      "bytecode": {
+        "ns": 13781,
+        "formatted": "13.8 µs"
+      },
+      "speedup": {
+        "winner": "packrat",
+        "factor": "1.1"
+      }
+    }
+  ],
+  "categorySummaries": {
+    "simple": {
+      "count": 6,
+      "avgPackrat": "2.7 µs",
+      "avgBytecode": "6.4 µs",
+      "avgSpeedup": {
+        "winner": "packrat",
+        "factor": "2.4"
+      }
+    },
+    "expression": {
+      "count": 5,
+      "avgPackrat": "18.3 µs",
+      "avgBytecode": "1.1 µs",
+      "avgSpeedup": {
+        "winner": "bytecode",
+        "factor": "16.1"
+      }
+    },
+    "linear": {
+      "count": 4,
+      "avgPackrat": "7.1 µs",
+      "avgBytecode": "6.8 µs",
+      "avgSpeedup": {
+        "winner": "bytecode",
+        "factor": "1.0"
+      }
+    },
+    "nested": {
+      "count": 5,
+      "avgPackrat": "3.5 µs",
+      "avgBytecode": "2.5 µs",
+      "avgSpeedup": {
+        "winner": "bytecode",
+        "factor": "1.4"
+      }
+    },
+    "data": {
+      "count": 2,
+      "avgPackrat": "8.6 µs",
+      "avgBytecode": "9.5 µs",
+      "avgSpeedup": {
+        "winner": "packrat",
+        "factor": "1.1"
+      }
+    }
+  },
+  "recommendations": {
+    "simple": {
+      "recommended": "packrat",
+      "reason": "Lower overhead for simple token matching",
+      "speedup": "2-27x"
+    },
+    "expression": {
+      "recommended": "bytecode",
+      "reason": "Dramatically faster for precedence-based parsing",
+      "speedup": "10-32x"
+    },
+    "nested": {
+      "recommended": "bytecode",
+      "reason": "Efficient stack-based recursion",
+      "speedup": "1.2-1.5x"
+    },
+    "linear": {
+      "recommended": "either",
+      "reason": "Comparable performance",
+      "speedup": "~1x"
+    },
+    "data": {
+      "recommended": "either",
+      "reason": "Similar performance for structured data",
+      "speedup": "~1x"
+    }
+  }
+}

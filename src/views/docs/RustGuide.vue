@@ -136,7 +136,13 @@ let parser = alpha1().then(digit1());</code></pre>
           <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
             <p class="text-blue-800 dark:text-blue-200 text-sm">
               <strong>Unique to Parsanol:</strong> Track exact byte offsets in the original input.
-              Essential for linters, IDEs, and tools that need to highlight or navigate source code.
+              for each parsed element.
+            </p>
+          </div>
+
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
+            <p class="text-yellow-800 dark:text-yellow-200 text-sm">
+              <strong>Note for Ruby users:</strong> In Ruby, position info is included by default (no <code>.with_slice()</code> needed).
             </p>
           </div>
 
@@ -155,6 +161,17 @@ let result = parser.with_slice().parse("hello world");
 
 // Access position info:
 println!("Found at byte {}..{}", result.start, result.end);</code></pre>
+          </div>
+
+          <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 mb-6">
+            <h4 class="font-medium text-purple-800 dark:text-purple-200 mb-2">Rust vs Ruby</h4>
+            <ul class="text-purple-700 dark:text-purple-300 text-sm space-y-1">
+              <li><strong>Rust:</strong> Use <code class="bg-purple-100 dark:bg-purple-900 px-1 rounded">.with_slice()</code> to opt-in to position tracking</li>
+              <li><strong>Ruby:</strong> Position info is <strong>always included by default</strong> - no special method needed</li>
+            </ul>
+            <p class="text-purple-600 dark:text-purple-400 text-sm mt-2">
+              See <router-link to="/ruby" class="underline">Ruby Bindings</router-link> for Ruby slice documentation.
+            </p>
           </div>
 
           <div class="grid md:grid-cols-3 gap-4 mb-6">
