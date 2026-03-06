@@ -501,8 +501,34 @@ bundle exec ruby benchmark/run_all.rb
                   <td class="py-3 px-4 text-center text-green-600 dark:text-green-400">✅</td>
                   <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Tree transformation</td>
                 </tr>
+                <tr>
+                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">.capture(:name)</td>
+                  <td class="py-3 px-4 text-center text-green-600 dark:text-green-400">✅</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Named capture extraction <span class="px-2 py-0.5 text-xs rounded bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 ml-2">NEW</span></td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">scope { ... }</td>
+                  <td class="py-3 px-4 text-center text-green-600 dark:text-green-400">✅</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Isolated capture context <span class="px-2 py-0.5 text-xs rounded bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 ml-2">NEW</span></td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">dynamic { |ctx| ... }</td>
+                  <td class="py-3 px-4 text-center text-green-600 dark:text-green-400">✅</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Runtime-determined parsing <span class="px-2 py-0.5 text-xs rounded bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 ml-2">NEW</span></td>
+                </tr>
               </tbody>
             </table>
+          </div>
+
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-6">
+            <p class="text-blue-800 dark:text-blue-200 text-sm">
+              <strong>New in 1.1.0:</strong> The <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">capture</code>,
+              <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">scope</code>, and
+              <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded">dynamic</code> atoms are now
+              available in Ruby with full FFI support. See the
+              <router-link to="/guides/captures" class="text-blue-600 dark:text-blue-400 hover:underline">Captures Guide</router-link>
+              for details.
+            </p>
           </div>
         </section>
 
