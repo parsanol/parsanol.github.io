@@ -32,21 +32,21 @@
         <section class="content-section">
           <h2>The Name "Parsanol"</h2>
           <p>
-            The name "Parsanol" is a creative combination that reflects our dual heritage:
+            The name "Parsanol" combines two elements:
           </p>
           <ul class="feature-list">
             <li>
-              <strong>"Parse"</strong> — the core purpose of the library
+              <strong>"Parse"</strong> — our core purpose
             </li>
             <li>
-              <strong>"-anol"</strong> — the IUPAC suffix for alcohols, representing the "life" or "essence" of the parsing
-            </li>
-            <li>
-              <strong>Wordplay on "Rust"</strong> — connecting to our Rust implementation
+              <strong>"-anol"</strong> — the chemical suffix for alcohols (ethanol, methanol, etc.)
             </li>
           </ul>
           <p>
-            Just as alcohol contains the essence of fermentation, Parsanol contains the essence of parsing — concentrated, powerful, and essential.
+            Why "-anol"? Because we built Parsanol in <strong>Rust</strong>. Rust is iron oxide—the product of oxidation. In organic chemistry, oxidation produces compounds with hydroxyl (-OH) groups, which characterize alcohols. So "-anol" is our chemistry-inspired nod to the language that powers Parsanol.
+          </p>
+          <p>
+            Like a well-crafted spirit, Parsanol distills the essence of parsing into something pure, powerful, and ready to use.
           </p>
         </section>
 

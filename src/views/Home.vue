@@ -17,8 +17,8 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <FeatureCard
-            title="Blazing Fast"
-            description="18-44x faster than pure Ruby parsers. Packrat memoization for O(n) parsing complexity."
+            title="O(n) Guaranteed"
+            description="Packrat memoization guarantees linear parsing complexity. No exponential backtracking, ever."
             icon="lightning"
           />
           <FeatureCard
@@ -117,22 +117,18 @@
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div class="card">
-            <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">18-44x</div>
-            <div class="text-gray-600 dark:text-gray-400">Faster than pure Ruby</div>
+            <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">O(n)</div>
+            <div class="text-gray-600 dark:text-gray-400">Guaranteed complexity</div>
           </div>
           <div class="card">
             <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">99.5%</div>
             <div class="text-gray-600 dark:text-gray-400">Fewer allocations</div>
           </div>
           <div class="card">
-            <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">O(n)</div>
-            <div class="text-gray-600 dark:text-gray-400">Packrat complexity</div>
-          </div>
-          <div class="card">
             <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">100MB</div>
-            <div class="text-gray-600 dark:text-gray-400">Max input size</div>
+            <div class="text-gray-600 dark:text-gray-400">Streaming support</div>
           </div>
         </div>
       </div>

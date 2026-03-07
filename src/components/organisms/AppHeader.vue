@@ -274,11 +274,13 @@ const rubyDropdownRef = ref<HTMLElement | null>(null)
 
 // Navigation structure
 const docsLinks = [
-  { to: '/architecture', label: 'Architecture' },
-  { to: '/backends', label: 'Parsing Backends' },
   { to: '/parsers', label: 'Parsers' },
   { to: '/transforms', label: 'Transforms' },
   { to: '/errors', label: 'Error Handling' },
+  { to: '/examples', label: 'Examples' },
+  { to: '/api', label: 'API Reference' },
+  { to: '/architecture', label: 'Architecture' },
+  { to: '/backends', label: 'Parsing Backends' },
 ]
 
 const rustLinks = [
@@ -294,8 +296,6 @@ const rubyLinks = [
 ]
 
 const simpleLinks = [
-  { to: '/examples', label: 'Examples' },
-  { to: '/api', label: 'API' },
   { to: '/about', label: 'About' },
 ]
 

@@ -114,7 +114,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Extract named values from your input, like named groups in regular expressions but but integrated into the the parsing grammar."
+        "text": "Extract named values from your input, like named groups in regular expressions but integrated into the parsing grammar."
       },
       {
         "type": "code",
@@ -203,21 +203,34 @@
     ]
   },
   {
-    "id": "0.2.0",
-    "date": "2026-03-05T14:00:00Z",
-    "title": "Parsanol 0.2.0: Streaming Parser and Benchmarks",
-    "summary": "Added streaming parser for large files, comprehensive benchmarks, and improved documentation.",
+    "id": "ruby-1.1.0",
+    "date": "2026-03-05T16:00:00Z",
+    "title": "Parsanol Ruby 1.1.0: Slice Support and Performance",
+    "summary": "Added Slice objects for lazy extraction and streaming parser support for large files.",
     "tags": [
       "release",
-      "rust",
-      "streaming",
+      "ruby",
       "performance"
     ],
     "featured": false,
     "content": [
       {
         "type": "paragraph",
-        "text": "Parsanol 0.2.0 brings streaming parser support, comprehensive benchmarking tools, and significant documentation improvements."
+        "text": "Parsanol Ruby 1.1.0 adds Slice objects for lazy extraction and streaming parser support for large files."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Slice Objects"
+      },
+      {
+        "type": "paragraph",
+        "text": "Extract values lazily without loading entire parse results into memory:"
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "require 'parsanol'\n\nparser = str('hello').repeat(1)\nresult = parser.parse('hellohellohello')\n\n# Access results as Slice objects\nresult.each_slice do |slice|\n  puts slice.to_s  # => \"hello\"\nend"
       },
       {
         "type": "heading",
@@ -226,33 +239,294 @@
       },
       {
         "type": "paragraph",
-        "text": "Parse large files without loading them into memory. The streaming parser processes input in configurable chunks with a sliding window for backtracking support."
+        "text": "Parse large files without loading them entirely into memory:"
       },
       {
         "type": "code",
-        "language": "rust",
-        "text": "use parsanol::portable::streaming::{StreamingParser, ChunkConfig};\n\nlet config = ChunkConfig {\n    chunk_size: 1024 * 1024, // 1MB chunks\n    window_size: 2,           // 2 chunk lookback\n};\n\nlet mut parser = StreamingParser::new(&grammar, config);\nlet result = parser.parse_from_reader(&mut file, &mut arena)?;"
+        "language": "ruby",
+        "text": "# Stream parsing for large files\nparser = Parsanol::StreamingParser.new(grammar)\nparser.parse_file('large_data.json') do |result|\n  process(result)\nend"
       },
       {
         "type": "heading",
         "level": 2,
-        "text": "Benchmark Suite"
+        "text": "Integration Modes Update"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Mode",
+          "Method",
+          "Description"
+        ],
+        "rows": [
+          [
+            "Ruby",
+            "`parse_ruby`",
+            "Pure Ruby, maximum compatibility"
+          ],
+          [
+            "Native",
+            "`parse_native`",
+            "Rust FFI, 17-42x faster"
+          ],
+          [
+            "JSON",
+            "`parse_json`",
+            "Serialize result to JSON"
+          ],
+          [
+            "Slice",
+            "`parse_slice`",
+            "Return Slice objects for lazy extraction"
+          ],
+          [
+            "ZeroCopy",
+            "`parse_zerocopy`",
+            "Direct FFI pointer access"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "`parse_slice` method for lazy extraction",
+          "`parse_zerocopy` for direct FFI pointer access",
+          "Streaming parser support for large files",
+          "Improved memory efficiency",
+          "850+ tests passing"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "0.2.0",
+    "date": "2026-03-05T14:00:00Z",
+    "title": "Parsanol 0.2.0: Backend Abstraction and Bytecode VM",
+    "summary": "Introduced backend abstraction with trait-based selection, Bytecode VM for faster parsing, and pre-commit hooks.",
+    "tags": [
+      "release",
+      "rust",
+      "performance",
+      "backends"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol 0.2.0 introduces backend abstraction with trait-based selection, a new Bytecode VM backend for improved performance, and pre-commit hooks for local development."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Backend Abstraction"
       },
       {
         "type": "paragraph",
-        "text": "New comprehensive benchmark suite comparing all backends across different grammar types."
+        "text": "Choose the right parsing backend for your grammar with trait-based selection."
+      },
+      {
+        "type": "code",
+        "language": "rust",
+        "text": "use parsanol::portable::backend::{ParsingBackend, Backend};\n\n// Auto-select the best backend for your grammar\nlet backend = Backend::default_for_grammar(&grammar);\n\n// Or explicitly choose a backend\nlet backend = Backend::Packrat;  // Traditional memoization\nlet backend = Backend::Bytecode; // VM-based parsing"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Bytecode VM Backend"
+      },
+      {
+        "type": "paragraph",
+        "text": "The new Bytecode VM backend compiles grammar to bytecode instructions for faster execution on linear patterns."
       },
       {
         "type": "heading",
         "level": 3,
-        "text": "Results vs Pure Ruby"
+        "text": "Backend Comparison"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Backend",
+          "Best For",
+          "Performance"
+        ],
+        "rows": [
+          [
+            "Packrat",
+            "General purpose, left recursion",
+            "O(n) memoized"
+          ],
+          [
+            "Bytecode",
+            "Linear patterns, no nested repetition",
+            "Faster execution"
+          ],
+          [
+            "Auto",
+            "Best of both worlds",
+            "Automatic selection"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Pre-commit Hooks"
+      },
+      {
+        "type": "paragraph",
+        "text": "CI checks now available locally:"
+      },
+      {
+        "type": "code",
+        "language": "bash",
+        "text": "# Install pre-commit hooks\npre-commit install\n\n# Or use the shell script directly\n./.githooks/pre-commit"
+      },
+      {
+        "type": "paragraph",
+        "text": "Checks: format, clippy, docs, machete, typos, semver."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "**Backend Abstraction**: `ParsingBackend` trait for custom backends",
+          "**Bytecode VM**: VM-based parser for linear patterns",
+          "`Backend::default_for_grammar()` for auto-selection",
+          "Pre-commit hooks for local CI checks",
+          "FFI module reorganization (`parsanol::ffi`)",
+          "Breaking: `once_cell` feature removed (use `std::sync::OnceLock`)"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ruby-1.0.2",
+    "date": "2026-03-03T14:00:00Z",
+    "title": "Parsanol Ruby 1.0.2: Release Infrastructure",
+    "summary": "Improved release infrastructure with automated gem builds and cross-platform support.",
+    "tags": [
+      "release",
+      "ruby"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol Ruby 1.0.2 focuses on release infrastructure improvements for reliable gem distribution."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Cross-Platform Support"
+      },
+      {
+        "type": "paragraph",
+        "text": "Precompiled native gems for major platforms:"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Platform",
+          "Architecture"
+        ],
+        "rows": [
+          [
+            "Linux",
+            "x86_64, aarch64"
+          ],
+          [
+            "macOS",
+            "x86_64, arm64"
+          ],
+          [
+            "Windows",
+            "x86_64"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Automated Releases"
+      },
+      {
+        "type": "list",
+        "items": [
+          "GitHub Actions workflow for automated gem builds",
+          "RubyGems.org publishing on tag push",
+          "Automated version synchronization with parsanol-rs"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Precompiled native gems for Linux, macOS, Windows",
+          "Automated release workflow via GitHub Actions",
+          "Fixed native extension loading for various platforms",
+          "Improved error messages for missing native extension"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ruby-1.0.0",
+    "date": "2026-03-03T10:00:00Z",
+    "title": "Parsanol Ruby 1.0.0: Initial Release",
+    "summary": "First release of Parsanol Ruby bindings with native extension support and Parslet-compatible API.",
+    "tags": [
+      "release",
+      "ruby"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol Ruby 1.0.0 provides Ruby bindings for the Parsanol parser combinator library with native extension support for maximum performance."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Parslet-Compatible API"
+      },
+      {
+        "type": "paragraph",
+        "text": "Familiar API for users coming from Parslet:"
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "require 'parsanol'\n\nclass MyParser < Parsanol::Parser\n  rule(:integer) { match('[0-9]').repeat(1) }\n  rule(:plus)    { str('+') }\n  rule(:expr)    { integer >> plus >> integer }\n\n  root :expr\nend\n\nparser = MyParser.new\nresult = parser.parse('1+2')"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Native Extension"
+      },
+      {
+        "type": "paragraph",
+        "text": "The native extension provides significant performance improvements over pure Ruby parsers:"
       },
       {
         "type": "table",
         "headers": [
           "Grammar",
           "Pure Ruby",
-          "parsanol-rs",
+          "Parsanol Native",
           "Speedup"
         ],
         "rows": [
@@ -279,16 +553,55 @@
       {
         "type": "heading",
         "level": 2,
+        "text": "Integration Modes"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Mode",
+          "Method",
+          "Description"
+        ],
+        "rows": [
+          [
+            "Ruby",
+            "`parse_ruby`",
+            "Pure Ruby, maximum compatibility"
+          ],
+          [
+            "Native",
+            "`parse_native`",
+            "Rust FFI, 17-42x faster"
+          ],
+          [
+            "JSON",
+            "`parse_json`",
+            "Serialize result to JSON"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Installation"
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "gem 'parsanol', '~> 1.0'"
+      },
+      {
+        "type": "heading",
+        "level": 2,
         "text": "What's Changed"
       },
       {
         "type": "list",
         "items": [
-          "`StreamingParser` with `ChunkConfig` for large file support",
-          "Backend comparison benchmarks (`all-examples.rs`, `backend-comparison.rs`)",
-          "Improved error messages with source context",
-          "Updated documentation and migration guides",
-          "396 tests passing"
+          "Native extension for Rust FFI parsing",
+          "Parslet-compatible parser API",
+          "Multiple parsing modes (Ruby, Native, JSON)",
+          "Comprehensive test suite"
         ]
       }
     ]
