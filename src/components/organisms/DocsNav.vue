@@ -453,6 +453,22 @@
           </li>
         </ul>
       </div>
+
+      <!-- News -->
+      <div v-if="showSections.includes('news')">
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">News & Releases</h3>
+        <ul class="space-y-1">
+          <li v-for="post in newsPosts" :key="post.id">
+            <router-link
+              :to="`/news#${post.id}`"
+              class="nav-link text-sm flex items-center gap-2"
+            >
+              <span class="text-xs text-gray-500 dark:text-gray-400">{{ post.id }}</span>
+              <span class="truncate">{{ post.title.replace(/^Parsanol\s+\d+\.\d+\.\d+:\s*/, '') }}</span>
+            </router-link>
+          </li>
+        </ul>
+      </div>
     </nav>
   </aside>
 </template>
@@ -460,6 +476,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, watch } from 'vue'
 import examplesManifest from '../../data/examples-manifest.json'
+import newsPosts from '../../data/news.json'
 
 interface Props {
   showSections?: string[]

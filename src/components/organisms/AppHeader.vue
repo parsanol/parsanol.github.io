@@ -18,6 +18,11 @@
             Get Started
           </router-link>
 
+          <!-- News - Top level -->
+          <router-link to="/news" class="nav-link" active-class="active">
+            News
+          </router-link>
+
           <!-- Learn Dropdown (Generic Concepts) -->
           <div class="relative" ref="docsDropdownRef">
             <button

@@ -24,6 +24,9 @@ import RustGuide from './views/docs/RustGuide.vue'
 import RustComparison from './views/docs/RustComparison.vue'
 import RustMigration from './views/docs/RustMigration.vue'
 import RubyComparison from './views/docs/RubyComparison.vue'
+import CapturesGuide from './views/CapturesGuide.vue'
+import FeatureComparison from './views/FeatureComparison.vue'
+import News from './views/News.vue'
 
 // Import manifest for dynamic route generation
 import examplesManifest from './data/examples-manifest.json'
@@ -53,6 +56,11 @@ const staticRoutes = [
   { path: '/rust-migration', name: 'RustMigration', component: RustMigration },
   // Ruby-specific pages
   { path: '/ruby-comparison', name: 'RubyComparison', component: RubyComparison },
+  // Guides
+  { path: '/guides/captures', name: 'CapturesGuide', component: CapturesGuide },
+  { path: '/guides/feature-comparison', name: 'FeatureComparison', component: FeatureComparison },
+  // News
+  { path: '/news', name: 'News', component: News },
 ]
 
 // AUTO-GENERATED routes from manifest - NO HARD CODED PATHS!
