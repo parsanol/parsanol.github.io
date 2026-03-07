@@ -1,9 +1,9 @@
 ---
 id: ruby-1.2.2
-date: 2026-03-07
+date: 2026-03-07T10:00:00Z
 title: "Parsanol Ruby 1.2.2: FFI Captures, Scopes, and Dynamic Atoms"
 summary: Ruby bindings now support native capture extraction, isolated scopes, and context-sensitive parsing via FFI callbacks.
-tags: [release, features]
+tags: [release, ruby, features]
 featured: true
 ---
 
