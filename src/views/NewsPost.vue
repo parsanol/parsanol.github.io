@@ -110,7 +110,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DocsNav from '../components/organisms/DocsNav.vue'
 import Icon from '../components/atoms/Icon.vue'
-import news from '../data/news.json'
+import news from '../data/news-manifest.json'
 
 const route = useRoute()
 

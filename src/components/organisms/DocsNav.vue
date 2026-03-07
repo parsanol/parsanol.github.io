@@ -477,7 +477,7 @@
 <script setup lang="ts">
 import { computed, ref, onMounted, watch } from 'vue'
 import examplesManifest from '../../data/examples-manifest.json'
-import newsPosts from '../../data/news.json'
+import newsPosts from '../../data/news-manifest.json'
 
 interface Props {
   showSections?: string[]

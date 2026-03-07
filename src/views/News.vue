@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import DocsNav from '../components/organisms/DocsNav.vue'
-import news from '../data/news.json'
+import news from '../data/news-manifest.json'
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr)

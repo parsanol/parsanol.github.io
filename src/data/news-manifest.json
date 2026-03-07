@@ -1,0 +1,506 @@
+[
+  {
+    "id": "0.3.0",
+    "date": "2026-03-07",
+    "title": "Parsanol 0.3.0: Captures, Scopes, and Dynamic Atoms",
+    "summary": "Major release adding capture extraction, isolated scopes, and context-sensitive parsing.",
+    "tags": [
+      "release",
+      "features"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol 0.3.0 introduces three powerful new features for extracting and managing parsed data: **Capture Atoms**, **Scope Atoms**, and **Dynamic Atoms**."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Capture Atoms"
+      },
+      {
+        "type": "paragraph",
+        "text": "Extract named values from your input, like named groups in regular expressions but integrated into the parsing grammar."
+      },
+      {
+        "type": "code",
+        "language": "rust",
+        "text": "let grammar = GrammarBuilder::new()\n    .rule(\"email\", capture(\"email\",\n        sequence([\n            capture(\"local\", re(r\"[a-zA-Z0-9._%+-]+\")),\n            str(\"@\"),\n            capture(\"domain\", re(r\"[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}\")),\n        ])\n    ))\n    .build();\n\nlet result = parser.parse(\"user@example.com\")?;\nprintln!(\"Local: {:?}\", result.get_capture(\"local\", input));\nprintln!(\"Domain: {:?}\", result.get_capture(\"domain\", input));"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "ParseResult Methods"
+      },
+      {
+        "type": "code",
+        "language": "rust",
+        "text": "impl ParseResult {\n    /// Get all capture names\n    pub fn capture_names(&self) -> Vec<&String>;\n\n    /// Get a specific capture by name\n    pub fn get_capture(&self, name: &str, input: &str) -> Option<&str>;\n\n    /// Get all captures as a HashMap\n    pub fn captures(&self, input: &str) -> HashMap<&str, &str>;\n}"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Scope Atoms"
+      },
+      {
+        "type": "paragraph",
+        "text": "Create isolated capture contexts for nested parsing. Captures made inside a scope are discarded when the scope exits."
+      },
+      {
+        "type": "code",
+        "language": "rust",
+        "text": "let grammar = GrammarBuilder::new()\n    .rule(\"outer\", sequence([\n        capture(\"prefix\", str(\"start\")),\n        scope(sequence([\n            capture(\"temp\", str(\"inner\")),  // Discarded after scope\n            str(\" \"),\n        ])),\n        capture(\"suffix\", str(\"end\")),\n    ]))\n    .build();\n\n// Result only contains \"prefix\" and \"suffix\""
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Dynamic Atoms"
+      },
+      {
+        "type": "paragraph",
+        "text": "Runtime-determined parsing via callbacks. Enable context-sensitive parsing."
+      },
+      {
+        "type": "code",
+        "language": "rust",
+        "text": "struct TypeCallback;\nimpl DynamicCallback for TypeCallback {\n    fn resolve(&self, ctx: &DynamicContext) -> Option<Atom> {\n        match ctx.get_capture_text(\"type\")? {\n            \"int\" => Some(Atom::Re { pattern: r\"\\d+\".into() }),\n            \"str\" => Some(Atom::Re { pattern: r#\"[^\"]*\"#.into() }),\n            _ => None,\n        }\n    }\n}"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Backend Compatibility"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Feature",
+          "Packrat",
+          "Bytecode",
+          "Streaming"
+        ],
+        "rows": [
+          [
+            "Capture",
+            "Full",
+            "Full",
+            "Full"
+          ],
+          [
+            "Scope",
+            "Full",
+            "Full",
+            "Full"
+          ],
+          [
+            "Dynamic",
+            "Full",
+            "Fallback",
+            "Fallback"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "New `Atom::Capture`, `Atom::Scope`, `Atom::Dynamic` variants",
+          "New `ParseResult` methods: `capture_names()`, `get_capture()`, `captures()`",
+          "`CaptureState` for zero-copy string storage",
+          "Thread-safe dynamic callback registry",
+          "Streaming parser capture persistence across chunks",
+          "DSL helpers: `capture()`, `scope()`, `dynamic_with_id()`",
+          "400+ tests (up from 396)"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ruby-1.2.2",
+    "date": "2026-03-07",
+    "title": "Parsanol Ruby 1.2.2: FFI Captures, Scopes, and Dynamic Atoms",
+    "summary": "Ruby bindings now support native capture extraction, isolated scopes, and context-sensitive parsing via FFI callbacks.",
+    "tags": [
+      "release",
+      "features"
+    ],
+    "featured": true,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol Ruby 1.2.2 brings full FFI support for the new features introduced in parsanol-rs 0.3.0. Ruby code can now use capture atoms, scope atoms, and dynamic atoms with native performance."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Version Sync"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "parsanol-ruby",
+          "parsanol-rs",
+          "Features"
+        ],
+        "rows": [
+          [
+            "1.0.x",
+            "0.1.x",
+            "Core parsing, native extension"
+          ],
+          [
+            "1.1.x",
+            "0.2.x",
+            "Slice support, streaming parser"
+          ],
+          [
+            "1.2.x",
+            "0.3.x",
+            "Captures, scopes, dynamic atoms"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Capture Atoms in Ruby"
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "require 'parsanol'\n\nparser = str('hello').capture(:greeting)\nresult = parser.parse('hello world')\nputs result[:greeting].to_s  # => \"hello\""
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Dynamic Atoms with Ruby Callbacks"
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "# Type-driven parsing with FFI callbacks\nparser = match('[a-z]+').capture(:type) >> str(':') >>\n        dynamic { |ctx|\n          case ctx[:type].to_s\n          when 'int' then match('\\d+')\n          when 'str' then match('[a-z]+')\n          else match('[a-z]+')\n          end\n        }\n\nresult = parser.parse('int:42')\nputs result[:type].to_s  # => \"int\""
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Streaming Builder API"
+      },
+      {
+        "type": "paragraph",
+        "text": "The StreamingBuilder module provides maximum performance by eliminating intermediate AST construction. Include `Parsanol::BuilderCallbacks` in your class to receive parse events directly."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "FFI bindings for capture, scope, and dynamic atoms",
+          "`Parsanol::BuilderCallbacks` module for streaming parsing",
+          "`Parsanol::Native::Dynamic` module for callback registration",
+          "Fixed native extension loading for precompiled gems",
+          "1178 tests passing"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "0.2.0",
+    "date": "2026-03-05",
+    "title": "Parsanol 0.2.0: Streaming Parser and Benchmarks",
+    "summary": "Added streaming parser for large files, comprehensive benchmarks, and improved documentation.",
+    "tags": [
+      "release",
+      "streaming",
+      "performance"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol 0.2.0 brings streaming parser support, comprehensive benchmarking tools, and significant documentation improvements."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Streaming Parser"
+      },
+      {
+        "type": "paragraph",
+        "text": "Parse large files without loading them into memory. The streaming parser processes input in configurable chunks with a sliding window for backtracking support."
+      },
+      {
+        "type": "code",
+        "language": "rust",
+        "text": "use parsanol::portable::streaming::{StreamingParser, ChunkConfig};\n\nlet config = ChunkConfig {\n    chunk_size: 1024 * 1024, // 1MB chunks\n    window_size: 2,           // 2 chunk lookback\n};\n\nlet mut parser = StreamingParser::new(&grammar, config);\nlet result = parser.parse_from_reader(&mut file, &mut arena)?;"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "ChunkConfig Options"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Option",
+          "Default",
+          "Description"
+        ],
+        "rows": [
+          [
+            "`chunk_size`",
+            "64KB",
+            "Bytes per read"
+          ],
+          [
+            "`window_size`",
+            "2",
+            "Chunks kept for backtracking"
+          ],
+          [
+            "`max_backtrack`",
+            "chunk_size × window_size",
+            "Maximum backtrack distance"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Benchmark Suite"
+      },
+      {
+        "type": "paragraph",
+        "text": "New comprehensive benchmark suite comparing all backends across different grammar types."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Results vs Pure Ruby"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Grammar",
+          "Pure Ruby",
+          "parsanol-rs",
+          "Speedup"
+        ],
+        "rows": [
+          [
+            "JSON",
+            "45ms",
+            "1.2ms",
+            "37x"
+          ],
+          [
+            "CSV",
+            "120ms",
+            "2.7ms",
+            "44x"
+          ],
+          [
+            "Calculator",
+            "8ms",
+            "0.4ms",
+            "20x"
+          ]
+        ]
+      },
+      {
+        "type": "paragraph",
+        "text": "Run benchmarks:"
+      },
+      {
+        "type": "code",
+        "language": "bash",
+        "text": "# All examples\ncargo bench --bench all-examples\n\n# Backend comparison\ncargo bench --bench backend-comparison"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "`StreamingParser` with `ChunkConfig` for large file support",
+          "Backend comparison benchmarks (`all-examples.rs`, `backend-comparison.rs`)",
+          "Improved error messages with source context",
+          "Updated documentation and migration guides",
+          "396 tests passing"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "0.1.0",
+    "date": "2026-02-20",
+    "title": "Parsanol 0.1.0: Initial Release",
+    "summary": "First public release of Parsanol, a modern parser combinator library for Rust and Ruby.",
+    "tags": [
+      "release"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol is a modern parser combinator library that combines the elegance of PEG parsing with the performance of Rust. It provides multiple parsing backends, rich error reporting, and seamless Ruby bindings."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Core Features"
+      },
+      {
+        "type": "list",
+        "items": [
+          "**Packrat parser** with O(n) complexity guarantee",
+          "**Bytecode VM** for fast execution",
+          "**Arena allocation** for zero-copy AST construction",
+          "**Rich error messages** with tree-structured context",
+          "**Derive macros** for automatic AST conversion",
+          "**Ruby FFI bindings** with 5 integration approaches"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Multiple Backends"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Backend",
+          "Use Case",
+          "Performance"
+        ],
+        "rows": [
+          [
+            "Packrat",
+            "General purpose, left recursion",
+            "O(n) memoized"
+          ],
+          [
+            "Bytecode",
+            "Production, speed-critical",
+            "Fastest execution"
+          ],
+          [
+            "Auto",
+            "Best of both worlds",
+            "Automatic selection"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Ruby Integration"
+      },
+      {
+        "type": "paragraph",
+        "text": "Five integration approaches from pure Ruby to ZeroCopy+Slice for maximum flexibility and performance. Parslet-compatible API makes migration straightforward."
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "# Parslet-compatible Ruby API\nrequire 'parsanol'\n\nclass MyParser < Parsanol::Parser\n  rule(:integer) { match('[0-9]').repeat(1) }\n  rule(:plus)    { str('+') }\n  rule(:expr)    { integer >> plus >> integer }\n\n  root :expr\nend\n\nparser = MyParser.new\nresult = parser.parse('1+2')"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Integration Modes"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Mode",
+          "Method",
+          "Description"
+        ],
+        "rows": [
+          [
+            "Ruby",
+            "`parse_ruby`",
+            "Pure Ruby, maximum compatibility"
+          ],
+          [
+            "Native",
+            "`parse_native`",
+            "Rust FFI, 17-42x faster"
+          ],
+          [
+            "JSON",
+            "`parse_json`",
+            "Serialize result to JSON"
+          ],
+          [
+            "Slice",
+            "`parse_slice`",
+            "Return Slice objects for lazy extraction"
+          ],
+          [
+            "ZeroCopy",
+            "`parse_zerocopy`",
+            "Direct FFI pointer access"
+          ]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Example Grammars"
+      },
+      {
+        "type": "paragraph",
+        "text": "30+ complete examples included for real-world formats:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "**Data formats**: JSON, CSV, XML, TOML, YAML",
+          "**Code**: Ruby-like syntax, S-expressions, ERB templates",
+          "**Network**: URL, Email, IP address, ISO 8601/6709",
+          "**Text**: Markdown, balanced parentheses, comments"
+        ]
+      },
+      {
+        "type": "code",
+        "language": "rust",
+        "text": "// JSON parser in 50 lines\nlet grammar = GrammarBuilder::new()\n    .rule(\"value\", choice([\n        str(\"true\"), str(\"false\"), str(\"null\"),\n        rule_ref(\"number\"), rule_ref(\"string\"),\n        rule_ref(\"array\"), rule_ref(\"object\"),\n    ]))\n    .rule(\"number\", re(r\"-?[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?\"))\n    .build();"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Installation"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Rust"
+      },
+      {
+        "type": "code",
+        "language": "toml",
+        "text": "[dependencies]\nparsanol = \"0.1\""
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Ruby"
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "gem 'parsanol', '~> 1.0'"
+      }
+    ]
+  }
+]
