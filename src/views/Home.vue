@@ -79,6 +79,24 @@
             icon="globe"
           />
           <FeatureCard
+            title="Captures"
+            description="Extract named values from your input. Zero-copy string access for immediate processing."
+            icon="capture"
+            badge="new"
+          />
+          <FeatureCard
+            title="Scopes"
+            description="Isolated capture contexts for nested parsing without capture pollution."
+            icon="scope"
+            badge="new"
+          />
+          <FeatureCard
+            title="Dynamic Parsing"
+            description="Context-sensitive parsing at runtime. Callbacks can access captures for decisions."
+            icon="dynamic"
+            badge="new"
+          />
+          <FeatureCard
             title="37 Examples"
             description="Complete examples for JSON, CSV, XML, TOML, YAML, Markdown, URL, Email, expressions, and more."
             icon="code"
