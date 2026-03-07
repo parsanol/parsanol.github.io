@@ -274,7 +274,7 @@
   },
   {
     "id": "ruby-1.1.0",
-    "date": "2025-03-15",
+    "date": "2026-03-05",
     "title": "Parsanol Ruby 1.1.0: Slice Support and Performance",
     "summary": "Position information now returned by default with Slice objects, plus ZeroCopy API and parallel batch parsing.",
     "tags": ["release", "performance"],
@@ -336,7 +336,7 @@
   },
   {
     "id": "ruby-1.0.2",
-    "date": "2025-03-05",
+    "date": "2026-03-03",
     "title": "Parsanol Ruby 1.0.2: Release Infrastructure",
     "summary": "Improved release workflow with trusted publishing for secure gem distribution.",
     "tags": ["release"],
@@ -363,7 +363,7 @@
   },
   {
     "id": "ruby-1.0.0",
-    "date": "2025-03-02",
+    "date": "2026-03-03",
     "title": "Parsanol Ruby 1.0.0: Initial Release",
     "summary": "First release of Parsanol Ruby, a high-performance PEG parser library with Rust native extension.",
     "tags": ["release"],

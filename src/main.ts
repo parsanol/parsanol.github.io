@@ -27,6 +27,7 @@ import RubyComparison from './views/docs/RubyComparison.vue'
 import CapturesGuide from './views/CapturesGuide.vue'
 import FeatureComparison from './views/FeatureComparison.vue'
 import News from './views/News.vue'
+import NewsPost from './views/NewsPost.vue'
 
 // Import manifest for dynamic route generation
 import examplesManifest from './data/examples-manifest.json'
@@ -61,6 +62,7 @@ const staticRoutes = [
   { path: '/guides/feature-comparison', name: 'FeatureComparison', component: FeatureComparison },
   // News
   { path: '/news', name: 'News', component: News },
+  { path: '/news/:id', name: 'NewsPost', component: NewsPost },
 ]
 
 // AUTO-GENERATED routes from manifest - NO HARD CODED PATHS!

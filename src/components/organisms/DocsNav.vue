@@ -456,15 +456,16 @@
 
       <!-- News -->
       <div v-if="showSections.includes('news')">
-        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">News & Releases</h3>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Releases</h3>
         <ul class="space-y-1">
           <li v-for="post in newsPosts" :key="post.id">
             <router-link
-              :to="`/news#${post.id}`"
+              :to="`/news/${post.id}`"
               class="nav-link text-sm flex items-center gap-2"
+              :class="{ 'active': $route.path === `/news/${post.id}` }"
             >
               <span class="text-xs text-gray-500 dark:text-gray-400">{{ post.id }}</span>
-              <span class="truncate">{{ post.title.replace(/^Parsanol\s+\d+\.\d+\.\d+:\s*/, '') }}</span>
+              <span class="truncate">{{ getShortTitle(post.title) }}</span>
             </router-link>
           </li>
         </ul>
@@ -507,6 +508,11 @@ watch([showRust, showRuby, showParsletOnly], () => {
   localStorage.setItem('parsanol-filter-ruby', String(showRuby.value))
   localStorage.setItem('parsanol-filter-parslet', String(showParsletOnly.value))
 })
+
+// Helper function to get short title from news posts
+function getShortTitle(title: string): string {
+  return title.replace(/^Parsanol\s+(\w+\s+)?\d+\.\d+\.\d+:\s*/, '').replace(/^Parsanol\s+Ruby\s+\d+\.\d+\.\d+:\s*/, '')
+}
 
 // Category labels for display - matches data/categories.json
 const categoryLabels: Record<string, string> = {
