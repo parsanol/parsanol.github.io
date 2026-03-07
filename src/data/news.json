@@ -271,5 +271,148 @@
         "text": "30+ complete examples included for real-world formats: JSON, CSV, XML, TOML, YAML, Markdown, URL, Email, S-expressions, and more."
       }
     ]
+  },
+  {
+    "id": "ruby-1.1.0",
+    "date": "2025-03-15",
+    "title": "Parsanol Ruby 1.1.0: Slice Support and Performance",
+    "summary": "Position information now returned by default with Slice objects, plus ZeroCopy API and parallel batch parsing.",
+    "tags": ["release", "performance"],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol Ruby 1.1.0 introduces Slice objects for position tracking, ZeroCopy API for maximum performance, and parallel batch parsing capabilities."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Slice Objects"
+      },
+      {
+        "type": "paragraph",
+        "text": "All parse methods now return Parsanol::Slice objects by default, providing offset, length, and line/column information without performance overhead."
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "result = parser.parse('hello world')\nputs result.offset        # => 0\nputs result.length       # => 5\nputs result.line_and_column  # => [1, 1]\nputs result.extract_from(input)  # => \"hello\""
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "ZeroCopy API"
+      },
+      {
+        "type": "paragraph",
+        "text": "Direct FFI object construction for maximum performance. Bypass Ruby object creation entirely for speed-critical paths."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Parallel Batch Parsing"
+      },
+      {
+        "type": "paragraph",
+        "text": "New Parsanol::Parallel module for multi-core batch processing. Parse thousands of files concurrently with automatic workload distribution."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "All parse methods return Parsanol::Slice objects",
+          "Slice#offset, #length, #line_and_column methods",
+          "ZeroCopy API via Parsanol::Native.parse_to_objects",
+          "Parallel batch parsing with Parsanol::Parallel",
+          "Native extension ~20x faster than pure Ruby",
+          "1205 tests passing"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ruby-1.0.2",
+    "date": "2025-03-05",
+    "title": "Parsanol Ruby 1.0.2: Release Infrastructure",
+    "summary": "Improved release workflow with trusted publishing for secure gem distribution.",
+    "tags": ["release"],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol Ruby 1.0.2 improves the release infrastructure with trusted publishing to RubyGems, ensuring secure and reliable gem distribution."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Trusted publishing to RubyGems (no API keys needed)",
+          "Improved release workflow reliability",
+          "Better error handling for gem pushes"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ruby-1.0.0",
+    "date": "2025-03-02",
+    "title": "Parsanol Ruby 1.0.0: Initial Release",
+    "summary": "First release of Parsanol Ruby, a high-performance PEG parser library with Rust native extension.",
+    "tags": ["release"],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol Ruby 1.0.0 is the initial release, providing a Parslet-compatible API with optional Rust native extension for 17-42x faster parsing."
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Core Features"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Parslet-compatible API for easy migration",
+          "Optional Rust native extension (17-42x faster)",
+          "Static frozen parsers for thread-safe operation",
+          "Dynamic parsers for mutable grammars",
+          "Packrat memoization for O(n) complexity",
+          "Great error reporting with source location tracking"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Parslet Compatibility"
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "require 'parsanol'\n\nclass MyParser < Parsanol::Parser\n  rule(:integer) { match('[0-9]').repeat(1) }\n  rule(:plus)    { str('+') }\n  rule(:expr)    { integer >> plus >> integer }\n  \n  root :expr\nend\n\nparser = MyParser.new\nresult = parser.parse('1+2')"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Three Parsing Modes"
+      },
+      {
+        "type": "table",
+        "headers": ["Mode", "Method", "Performance"],
+        "rows": [
+          ["Ruby", "parse_ruby", "Baseline (pure Ruby)"],
+          ["Native", "parse_native", "~20x faster (Rust FFI)"],
+          ["JSON", "parse_json", "~18x faster (JSON output)"]
+        ]
+      }
+    ]
   }
 ]
