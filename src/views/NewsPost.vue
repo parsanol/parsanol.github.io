@@ -37,9 +37,7 @@
           <div class="prose dark:prose-invert max-w-none">
             <template v-for="(block, idx) in post.content" :key="idx">
               <!-- Paragraph -->
-              <p v-if="block.type === 'paragraph'" class="text-gray-600 dark:text-gray-400 mb-4">
-                {{ block.text }}
-              </p>
+              <p v-if="block.type === 'paragraph'" class="text-gray-600 dark:text-gray-400 mb-4" v-html="parseInlineMarkdown(block.text)"></p>
 
               <!-- Heading -->
               <component
@@ -58,7 +56,7 @@
 
               <!-- List -->
               <ul v-else-if="block.type === 'list'" class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2 mb-4">
-                <li v-for="(item, i) in block.items" :key="i">{{ item }}</li>
+                <li v-for="(item, i) in block.items" :key="i" v-html="parseInlineMarkdown(item)"></li>
               </ul>
 
               <!-- Table -->
@@ -81,9 +79,8 @@
                         v-for="(cell, j) in row"
                         :key="j"
                         class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400"
-                      >
-                        {{ cell }}
-                      </td>
+                        v-html="parseInlineMarkdown(cell)"
+                      ></td>
                     </tr>
                   </tbody>
                 </table>
@@ -140,7 +137,26 @@ function getTagClass(tag: string): string {
     features: 'bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300',
     streaming: 'bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300',
     performance: 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300',
+    backends: 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300',
+    ruby: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+    rust: 'bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300',
   }
   return classes[tag] || 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'
+}
+
+function parseInlineMarkdown(text: string): string {
+  // Escape HTML first
+  let result = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+
+  // Bold: **text**
+  result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+
+  // Inline code: `code`
+  result = result.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-sm font-mono">$1</code>')
+
+  return result
 }
 </script>

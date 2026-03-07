@@ -19,7 +19,7 @@
           <Icon name="lightning" class="w-4 h-4 mr-2" />
           Parser Combinators for Rust & Ruby
           <span class="mx-2 text-primary-300 dark:text-primary-700">|</span>
-          <span class="text-primary-600 dark:text-primary-400 font-semibold">18-44x Faster</span>
+          <span class="text-primary-600 dark:text-primary-400 font-semibold">O(n) Guaranteed</span>
         </div>
 
         <!-- Headline -->
