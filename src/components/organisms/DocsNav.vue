@@ -230,6 +230,11 @@
             </router-link>
           </li>
           <li>
+            <router-link to="/ruby#streaming" class="nav-link text-sm">
+              Streaming Parser
+            </router-link>
+          </li>
+          <li>
             <router-link to="/ruby#when-to-use" class="nav-link text-sm">
               When to Use Which
             </router-link>
@@ -279,6 +284,11 @@
           <li>
             <router-link to="/rust#performance" class="nav-link text-sm">
               Performance Tips
+            </router-link>
+          </li>
+          <li>
+            <router-link to="/rust#streaming" class="nav-link text-sm">
+              Streaming Parser
             </router-link>
           </li>
           <li>
@@ -449,6 +459,18 @@
           <li>
             <router-link to="/backends#known-differences" class="nav-link text-sm">
               Known Differences
+            </router-link>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Guides -->
+      <div v-if="showSections.includes('guides')">
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Guides</h3>
+        <ul class="space-y-1">
+          <li>
+            <router-link to="/guides/captures" class="nav-link text-sm" :class="{ 'active': $route.path === '/guides/captures' }">
+              Captures, Scopes & Dynamic
             </router-link>
           </li>
         </ul>

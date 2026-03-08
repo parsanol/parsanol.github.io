@@ -231,6 +231,126 @@
           </div>
         </section>
 
+        <!-- Choosing a Backend -->
+        <section id="backends" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+            Choosing a Backend
+          </h2>
+
+          <div class="prose dark:prose-invert max-w-none mb-6">
+            <p class="text-gray-600 dark:text-gray-400">
+              Parsanol provides multiple parsing backends. The backend determines how your grammar is executed.
+            </p>
+          </div>
+
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b-2 border-gray-200 dark:border-gray-700">
+                  <th class="text-left py-3 px-4">Backend</th>
+                  <th class="text-left py-3 px-4">When to Use</th>
+                  <th class="text-left py-3 px-4">Performance</th>
+                </tr>
+              </thead>
+              <tbody class="text-gray-600 dark:text-gray-400">
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <td class="py-3 px-4 font-medium text-blue-600 dark:text-blue-400">Packrat</td>
+                  <td class="py-3 px-4">Captures, dynamic atoms, complex grammars</td>
+                  <td class="py-3 px-4">O(n) time, O(n × r) memory</td>
+                </tr>
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <td class="py-3 px-4 font-medium text-green-600 dark:text-green-400">Bytecode VM</td>
+                  <td class="py-3 px-4">Simple patterns, expressions, memory-limited</td>
+                  <td class="py-3 px-4">10-32x faster, O(depth) memory</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-medium text-amber-600 dark:text-amber-400">Streaming</td>
+                  <td class="py-3 px-4">Large files (logs, CSV) that don't fit in RAM</td>
+                  <td class="py-3 px-4">Bounded memory, ~5-10% overhead</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+            <CodeTabs :rust="backendExampleRust" :ruby="backendExampleRuby" />
+          </div>
+        </section>
+
+        <!-- When to Use Captures -->
+        <section id="captures" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+            When to Use Captures
+          </h2>
+
+          <div class="prose dark:prose-invert max-w-none mb-6">
+            <p class="text-gray-600 dark:text-gray-400">
+              Captures let you extract specific values from your input without building a full transform pipeline.
+              Think of them like named groups in regular expressions.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="card">
+              <h3 class="font-semibold text-green-700 dark:text-green-300 mb-3">
+                ✓ Use Captures When:
+              </h3>
+              <ul class="space-y-2 text-gray-600 dark:text-gray-400 text-sm">
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">•</span>
+                  <span>You need to extract <strong>specific fields</strong> from input</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">•</span>
+                  <span>You want to <strong>avoid building a full AST</strong></span>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">•</span>
+                  <span>You're parsing <strong>structured data</strong> (JSON, logs, CSV)</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-green-500 mr-2">•</span>
+                  <span>You need <strong>zero-copy extraction</strong> of substrings</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <h3 class="font-semibold text-amber-700 dark:text-amber-300 mb-3">
+                ✗ Skip Captures When:
+              </h3>
+              <ul class="space-y-2 text-gray-600 dark:text-gray-400 text-sm">
+                <li class="flex items-start">
+                  <span class="text-amber-500 mr-2">•</span>
+                  <span>You need the <strong>full parse tree</strong> anyway</span>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-amber-500 mr-2">•</span>
+                  <span>You're doing <strong>complex transformations</strong></span>
+                </li>
+                <li class="flex items-start">
+                  <span class="text-amber-500 mr-2">•</span>
+                  <span>You need <strong>type conversion</strong> (str → int)</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4">
+            <h4 class="font-medium text-gray-900 dark:text-white mb-3">Example: Extract Email Parts</h4>
+            <CodeTabs :rust="captureExampleRust" :ruby="captureExampleRuby" />
+          </div>
+
+          <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+            <h4 class="font-medium text-blue-900 dark:text-blue-100 mb-2">Related Features</h4>
+            <ul class="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+              <li>• <strong>Scope atoms</strong>: Isolate captures in nested structures (each level has its own captures)</li>
+              <li>• <strong>Dynamic atoms</strong>: Change parsing based on captured values (context-sensitive)</li>
+              <li>• <router-link to="/guides/captures" class="underline">Learn more about captures, scopes &amp; dynamic atoms →</router-link></li>
+            </ul>
+          </div>
+        </section>
+
         <!-- Navigation -->
         <div class="mt-12 flex justify-between">
           <router-link to="/installation" class="btn btn-secondary">
@@ -414,4 +534,80 @@ parser = CalculatorParser.new
 tree = parser.parse("1 + 2 * 3")`
 
 // Parses: 1 + 2 * 3 as 1 + (2 * 3)
+
+const backendExampleRust = `use parsanol::portable::{Parser, GrammarBuilder};
+
+// 1. Packrat backend (default) - full features
+let parser = Parser::packrat(grammar);
+let result = parser.parse(input)?;
+
+// 2. Bytecode VM - fastest for simple patterns
+let parser = Parser::bytecode(grammar);
+let result = parser.parse(input)?;
+
+// 3. Streaming - for large files
+use parsanol::portable::streaming::{StreamingParser, ChunkConfig};
+let config = ChunkConfig {
+    chunk_size: 1024 * 1024,  // 1MB chunks
+    window_size: 2,
+};
+let mut parser = StreamingParser::new(&grammar, config);
+let result = parser.parse_from_reader(&mut file, &mut arena)?;`
+
+const backendExampleRuby = `# 1. Packrat backend (default) - full features
+parser = Parsanol::Parser.packrat(grammar)
+result = parser.parse(input)
+
+# 2. Bytecode VM - fastest for simple patterns
+parser = Parsanol::Parser.bytecode(grammar)
+result = parser.parse(input)
+
+# 3. Streaming - for large files
+config = Parsanol::ChunkConfig.new(
+  chunk_size: 1024 * 1024,  # 1MB chunks
+  window_size: 2
+)
+parser = Parsanol::StreamingParser.new(grammar, config)
+result = parser.parse_from_file("large_file.log")`
+
+const captureExampleRust = `use parsanol::portable::{GrammarBuilder, parser_dsl::*};
+
+let grammar = GrammarBuilder::new()
+    .rule("email", seq(vec![
+        capture("local", re(r"[a-zA-Z0-9._%+-]+")),
+        str("@"),
+        capture("domain", re(r"[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")),
+    ]))
+    .build();
+
+let parser = Parser::packrat(grammar);
+let result = parser.parse("user@example.com")?;
+
+// Extract captures
+let local = result.get_capture("local", "user@example.com");
+let domain = result.get_capture("domain", "user@example.com");
+
+println!("Local: {:?}", local);  // "user"
+println!("Domain: {:?}", domain); // "example.com"`
+
+const captureExampleRuby = `require 'parsanol'
+
+grammar = GrammarBuilder.new
+  .rule(:email, seq([
+    capture(:local, re("[a-zA-Z0-9._%+-]+")),
+    str("@"),
+    capture(:domain, re("[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")),
+  ]))
+  .build
+
+parser = Parsanol::Parser.packrat(grammar)
+result = parser.parse("user@example.com")
+
+# Extract captures
+local = result.get_capture(:local)
+domain = result.get_capture(:domain)
+
+puts "Local: #{local}"    # "user"
+puts "Domain: #{domain}"  # "example.com"`
+
 </script>

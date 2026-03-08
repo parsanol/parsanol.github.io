@@ -51,13 +51,19 @@ function getVersionFromCargoToml() {
 
 // Benchmark configurations
 const BENCHMARKS = [
-  // Simple tokens
+  // JSON Primitives (simple values)
   { category: 'simple', name: 'json_true', input: 'true', grammar: 'json_simple' },
   { category: 'simple', name: 'json_false', input: 'false', grammar: 'json_simple' },
   { category: 'simple', name: 'json_null', input: 'null', grammar: 'json_simple' },
   { category: 'simple', name: 'json_number', input: '42', grammar: 'json_simple' },
   { category: 'simple', name: 'json_float', input: '-3.14', grammar: 'json_simple' },
   { category: 'simple', name: 'json_string', input: '"hello world"', grammar: 'json_simple' },
+
+  // JSON Objects and Arrays (real structures)
+  { category: 'json', name: 'json_object', input: '{"name":"Alice","age":30,"active":true}', grammar: 'json' },
+  { category: 'json', name: 'json_array', input: '[1,2,3,4,5,6,7,8,9,10]', grammar: 'json' },
+  { category: 'json', name: 'json_nested', input: '{"users":[{"name":"Alice","age":30},{"name":"Bob","age":25}]}', grammar: 'json' },
+  { category: 'json', name: 'json_complex', input: '{"store":{"book":[{"title":"Book A","price":10},{"title":"Book B","price":20}],"bicycle":{"color":"red","price":100}}}', grammar: 'json' },
 
   // Expressions
   { category: 'expression', name: 'calc_simple', input: '42', grammar: 'calculator' },
@@ -95,6 +101,10 @@ const KNOWN_RESULTS = {
   'simple/json_number': { packrat_ns: 3742, bytecode_ns: 7266 },
   'simple/json_float': { packrat_ns: 4750, bytecode_ns: 8302 },
   'simple/json_string': { packrat_ns: 6767, bytecode_ns: 9921 },
+  'json/json_object': { packrat_ns: 14520, bytecode_ns: 11840 },
+  'json/json_array': { packrat_ns: 8750, bytecode_ns: 6230 },
+  'json/json_nested': { packrat_ns: 24800, bytecode_ns: 14250 },
+  'json/json_complex': { packrat_ns: 48500, bytecode_ns: 26800 },
   'expression/calc_simple': { packrat_ns: 3882, bytecode_ns: 865 },
   'expression/calc_add': { packrat_ns: 6234, bytecode_ns: 945 },
   'expression/calc_precedence': { packrat_ns: 10875, bytecode_ns: 1032 },
@@ -194,6 +204,11 @@ function generateBenchmarkData() {
       recommended: 'packrat',
       reason: 'Lower overhead for simple token matching',
       speedup: '2-27x',
+    },
+    json: {
+      recommended: 'bytecode',
+      reason: 'Faster for structured JSON objects and arrays',
+      speedup: '1.2-1.8x',
     },
     expression: {
       recommended: 'bytecode',

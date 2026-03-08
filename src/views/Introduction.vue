@@ -113,7 +113,7 @@
                 </li>
                 <li class="flex items-start">
                   <span class="text-amber-500 mr-2">•</span>
-                  <span>You require <strong>streaming</strong> for huge files</span>
+                  <span>You need <strong>LR(k) with k > 1</strong> lookahead</span>
                 </li>
               </ul>
             </div>
@@ -240,11 +240,11 @@
 
           <!-- Benchmark Results -->
           <div class="mt-8 p-6 bg-gray-50 dark:bg-gray-800 rounded-xl">
-            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Benchmark Results</h3>
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Performance Characteristics</h3>
             <div class="grid grid-cols-3 gap-4 text-center">
               <div>
-                <div class="text-3xl font-bold text-green-600">18-44x</div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">Faster than Ruby</div>
+                <div class="text-3xl font-bold text-green-600">O(n)</div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">Guaranteed Time</div>
               </div>
               <div>
                 <div class="text-3xl font-bold text-blue-600">99.5%</div>

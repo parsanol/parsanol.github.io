@@ -887,7 +887,8 @@ const selectedCategory = ref('all')
 
 const categories = [
   { key: 'all', label: 'All' },
-  { key: 'simple', label: 'Simple Tokens' },
+  { key: 'simple', label: 'JSON Primitives' },
+  { key: 'json', label: 'JSON Objects' },
   { key: 'expression', label: 'Expressions' },
   { key: 'nested', label: 'Nested' },
   { key: 'linear', label: 'Linear' },

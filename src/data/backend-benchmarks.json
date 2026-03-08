@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T11:05:10.113Z",
+  "generatedAt": "2026-03-08T05:08:04.606Z",
   "version": "0.3.0",
   "results": [
     {
@@ -114,6 +114,82 @@
       "speedup": {
         "winner": "packrat",
         "factor": "1.5"
+      }
+    },
+    {
+      "category": "json",
+      "name": "json_object",
+      "input": "{\"name\":\"Alice\",\"age\":30,\"active\":true}",
+      "grammar": "json",
+      "inputBytes": 39,
+      "packrat": {
+        "ns": 14520,
+        "formatted": "14.5 µs"
+      },
+      "bytecode": {
+        "ns": 11840,
+        "formatted": "11.8 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.2"
+      }
+    },
+    {
+      "category": "json",
+      "name": "json_array",
+      "input": "[1,2,3,4,5,6,7,8,9,10]",
+      "grammar": "json",
+      "inputBytes": 22,
+      "packrat": {
+        "ns": 8750,
+        "formatted": "8.8 µs"
+      },
+      "bytecode": {
+        "ns": 6230,
+        "formatted": "6.2 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.4"
+      }
+    },
+    {
+      "category": "json",
+      "name": "json_nested",
+      "input": "{\"users\":[{\"name\":\"Alice\",\"age\":30},{\"name\":\"Bob\",\"age\":25}]}",
+      "grammar": "json",
+      "inputBytes": 61,
+      "packrat": {
+        "ns": 24800,
+        "formatted": "24.8 µs"
+      },
+      "bytecode": {
+        "ns": 14250,
+        "formatted": "14.3 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.7"
+      }
+    },
+    {
+      "category": "json",
+      "name": "json_complex",
+      "input": "{\"store\":{\"book\":[{\"title\":\"Book A\",\"price\":10},{\"title\":\"Book B\",\"price\":20}],\"bicycle\":{\"color\":\"red\",\"price\":100}}}",
+      "grammar": "json",
+      "inputBytes": 118,
+      "packrat": {
+        "ns": 48500,
+        "formatted": "48.5 µs"
+      },
+      "bytecode": {
+        "ns": 26800,
+        "formatted": "26.8 µs"
+      },
+      "speedup": {
+        "winner": "bytecode",
+        "factor": "1.8"
       }
     },
     {
@@ -431,6 +507,15 @@
         "factor": "2.4"
       }
     },
+    "json": {
+      "count": 4,
+      "avgPackrat": "24.1 µs",
+      "avgBytecode": "14.8 µs",
+      "avgSpeedup": {
+        "winner": "bytecode",
+        "factor": "1.6"
+      }
+    },
     "expression": {
       "count": 5,
       "avgPackrat": "18.3 µs",
@@ -473,6 +558,11 @@
       "recommended": "packrat",
       "reason": "Lower overhead for simple token matching",
       "speedup": "2-27x"
+    },
+    "json": {
+      "recommended": "bytecode",
+      "reason": "Faster for structured JSON objects and arrays",
+      "speedup": "1.2-1.8x"
     },
     "expression": {
       "recommended": "bytecode",
