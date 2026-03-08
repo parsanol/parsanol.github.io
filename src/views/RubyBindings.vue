@@ -420,6 +420,104 @@ bundle exec ruby benchmark/run_all.rb
           </div>
         </section>
 
+        <!-- Streaming Parser -->
+        <section id="streaming" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
+            Streaming Parser
+          </h2>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Parse large files without loading them entirely into memory. The streaming parser
+            processes input in configurable chunks with a sliding window for backtracking support.
+          </p>
+
+          <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+            <p class="text-green-800 dark:text-green-200 text-sm">
+              <strong>Use streaming when:</strong> Files are larger than available memory, or input arrives
+              incrementally (network streams, pipes).
+            </p>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Basic Usage</h3>
+
+          <div class="card mb-6">
+            <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
+require 'parsanol/streaming'
+
+# Configure chunk size and backtracking window
+config = Parsanol::Streaming::ChunkConfig.new(
+  chunk_size: 64 * 1024,  # 64 KB chunks
+  window_size: 3          # Keep 3 chunks for backtracking
+)
+
+# Parse from a file
+parser = Parsanol::StreamingParser.new(grammar, config)
+result = parser.parse_from_file('large_file.json')
+
+# Parse from any IO object
+result = parser.parse_from_io(socket, config)
+            </pre>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-8">With Captures</h3>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Captures work with streaming and persist across chunk boundaries:
+          </p>
+
+          <div class="card mb-6">
+            <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
+# Define grammar with captures
+class LogParser < Parsanol::Parser
+  rule(:ip) { match('\d').repeat(1,3) >> str('.') >> match('\d').repeat(1,3) >> str('.') >> match('\d').repeat(1,3) >> str('.') >> match('\d').repeat(1,3) }
+  rule(:log_line) { capture(:ip, ip) >> str(' ') >> capture(:status, match('\d').repeat(3)) }
+  root(:log_line)
+end
+
+# Parse large log file with streaming
+config = Parsanol::Streaming::ChunkConfig.new(chunk_size: 1024 * 1024, window_size: 2)
+parser = Parsanol::StreamingParser.new(LogParser.new.grammar, config)
+
+result = parser.parse_from_file('access.log')
+# Access captures from streaming parse
+result.captures[:ip].each { |ip| puts ip }
+            </pre>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-8">StreamingBuilder Callbacks</h3>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            For maximum performance, use <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">Parsanol::BuilderCallbacks</code>
+            to receive parse events directly without intermediate AST construction:
+          </p>
+
+          <div class="card mb-6">
+            <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
+class MyBuilder
+  include Parsanol::BuilderCallbacks
+
+  def on_rule(name, start_pos, end_pos)
+    puts "Rule #{name} at #{start_pos}..#{end_pos}"
+  end
+
+  def on_capture(name, value)
+    puts "Captured #{name}: #{value}"
+  end
+end
+
+builder = MyBuilder.new
+parser.parse_from_file('large.json', builder: builder)
+            </pre>
+          </div>
+
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+            <p class="text-yellow-800 dark:text-yellow-200 text-sm">
+              <strong>Limitations:</strong> Backtracking is limited to the window size. Some grammars may require
+              larger windows. The current implementation collects chunks into memory before parsing.
+            </p>
+          </div>
+        </section>
+
         <!-- Migration from Parslet -->
         <section id="migration" class="mb-16">
           <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">

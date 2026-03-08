@@ -130,6 +130,129 @@
           </div>
         </section>
 
+        <!-- Choosing a Backend -->
+        <section class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Choosing a Backend</h2>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Parsanol offers three parsing backends, each optimized for different use cases. Choose based on your grammar complexity and memory requirements.
+          </p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Packrat -->
+            <div class="card border-2 border-blue-200 dark:border-blue-800">
+              <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                  <span class="text-white font-bold text-sm">P</span>
+                </div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Packrat</h3>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Default backend. Memoizes all parse results for O(n) time complexity.
+              </p>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>Full feature support</span>
+                </div>
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>Captures & dynamic atoms</span>
+                </div>
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>Complex grammars</span>
+                </div>
+                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                  <span>~</span>
+                  <span>Memory: O(n × rules)</span>
+                </div>
+              </div>
+              <div class="mt-4 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-700 dark:text-blue-300">
+                Best for: Captures, dynamic atoms, complex grammars
+              </div>
+            </div>
+
+            <!-- Bytecode VM -->
+            <div class="card border-2 border-green-200 dark:border-green-800">
+              <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 bg-green-500 rounded flex items-center justify-center">
+                  <span class="text-white font-bold text-sm">VM</span>
+                </div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Bytecode VM</h3>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Stack-based virtual machine. Minimal memory, fast for simple patterns.
+              </p>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>10-32x faster for expressions</span>
+                </div>
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>Memory: O(depth) only</span>
+                </div>
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>Simple patterns</span>
+                </div>
+                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                  <span>~</span>
+                  <span>Dynamic atoms use fallback</span>
+                </div>
+              </div>
+              <div class="mt-4 p-2 bg-green-50 dark:bg-green-900/20 rounded text-xs text-green-700 dark:text-green-300">
+                Best for: Simple patterns, memory-constrained, expressions
+              </div>
+            </div>
+
+            <!-- Streaming -->
+            <div class="card border-2 border-amber-200 dark:border-amber-800">
+              <div class="flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 bg-amber-500 rounded flex items-center justify-center">
+                  <span class="text-white font-bold text-sm">S</span>
+                </div>
+                <h3 class="font-semibold text-gray-900 dark:text-white">Streaming</h3>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Chunk-based parsing for large files. Bounded memory regardless of input size.
+              </p>
+              <div class="space-y-2 text-sm">
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>Parse GB files in MB RAM</span>
+                </div>
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>Works with captures</span>
+                </div>
+                <div class="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <span>✓</span>
+                  <span>Bounded memory</span>
+                </div>
+                <div class="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+                  <span>~</span>
+                  <span>~5-10% overhead</span>
+                </div>
+              </div>
+              <div class="mt-4 p-2 bg-amber-50 dark:bg-amber-900/20 rounded text-xs text-amber-700 dark:text-amber-300">
+                Best for: Large files (logs, CSV, JSON streams)
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <h4 class="font-medium text-gray-900 dark:text-white mb-2">Quick Decision Guide</h4>
+            <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+              <li>• <strong>Using captures or dynamic atoms?</strong> → Use Packrat (default)</li>
+              <li>• <strong>Memory-constrained environment?</strong> → Use Bytecode VM</li>
+              <li>• <strong>Files larger than available RAM?</strong> → Use Streaming</li>
+              <li>• <strong>Simple patterns only?</strong> → Bytecode VM is fastest</li>
+            </ul>
+          </div>
+        </section>
+
         <!-- Troubleshooting -->
         <section>
           <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Troubleshooting</h2>

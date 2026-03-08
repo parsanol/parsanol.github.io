@@ -277,6 +277,7 @@ const docsLinks = [
   { to: '/parsers', label: 'Parsers' },
   { to: '/transforms', label: 'Transforms' },
   { to: '/errors', label: 'Error Handling' },
+  { to: '/guides/captures', label: 'Captures & Scopes' },
   { to: '/examples', label: 'Examples' },
   { to: '/api', label: 'API Reference' },
   { to: '/architecture', label: 'Architecture' },

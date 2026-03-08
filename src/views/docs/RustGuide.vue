@@ -254,6 +254,96 @@ strip = true</code></pre>
           </div>
         </section>
 
+        <!-- Streaming Parser -->
+        <section id="streaming" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Streaming Parser</h2>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Parse large files without loading them entirely into memory. The streaming parser processes
+            input in configurable chunks with a sliding window for backtracking support.
+          </p>
+
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+            <p class="text-blue-800 dark:text-blue-200 text-sm">
+              <strong>Use streaming when:</strong> Files are larger than available memory, or input arrives
+              incrementally (network streams, pipes).
+            </p>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Basic Usage</h3>
+
+          <div class="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 mb-6">
+            <pre class="text-sm text-gray-100 overflow-x-auto"><code>use parsanol::portable::streaming::{StreamingParser, ChunkConfig};
+use std::fs::File;
+
+// Configure chunk size and backtracking window
+let config = ChunkConfig {
+    chunk_size: 64 * 1024,  // 64 KB chunks
+    window_size: 3,         // Keep 3 chunks for backtracking
+};
+
+let mut parser = StreamingParser::new(&grammar, config);
+
+// Parse from any Read implementation
+let mut file = File::open("large_file.json")?;
+let result = parser.parse_from_reader(&mut file, &mut arena)?;</code></pre>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-8">Bounded Memory Mode</h3>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            For strict memory limits, use <code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">parse_chunked()</code>
+            which limits the maximum chunks kept in memory:
+          </p>
+
+          <div class="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 mb-6">
+            <pre class="text-sm text-gray-100 overflow-x-auto"><code>// Limit to 10 chunks maximum (~640 KB with 64 KB chunks)
+let result = parser.parse_chunked(&mut reader, &mut arena, 10)?;</code></pre>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-8">With Captures</h3>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Captures work with streaming and persist across chunk boundaries:
+          </p>
+
+          <div class="bg-gray-900 dark:bg-gray-950 rounded-lg p-4 mb-6">
+            <pre class="text-sm text-gray-100 overflow-x-auto"><code>use parsanol::portable::{capture, GrammarBuilder};
+
+let grammar = GrammarBuilder::new()
+    .rule("email", capture("email",
+        sequence([
+            capture("local", re(r"[a-zA-Z0-9._%+-]+")),
+            str("@"),
+            capture("domain", re(r"[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}")),
+        ])
+    ))
+    .build();
+
+let mut parser = StreamingParser::new(&grammar, config);
+let result = parser.parse_from_reader(&mut file, &mut arena)?;
+
+// Access captures from streaming parse
+println!("Email: {:?}", result.get_capture("email", input));</code></pre>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-8">Limitations</h3>
+
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
+            <ul class="text-yellow-800 dark:text-yellow-200 text-sm space-y-2">
+              <li>• <strong>Backtracking window:</strong> Can only backtrack within the configured window size</li>
+              <li>• <strong>Grammar restrictions:</strong> Some grammars may require larger windows</li>
+              <li>• <strong>Current implementation:</strong> Collects chunks into memory before parsing (use <code class="bg-yellow-100 dark:bg-yellow-900 px-1 rounded">parse_chunked()</code> for bounded memory)</li>
+            </ul>
+          </div>
+
+          <p class="text-gray-600 dark:text-gray-400">
+            See <router-link to="/examples/streaming" class="text-primary-600 dark:text-primary-400">Streaming Example</router-link>
+            and <router-link to="/examples/streaming-captures" class="text-primary-600 dark:text-primary-400">Streaming with Captures</router-link>
+            for complete code.
+          </p>
+        </section>
+
         <!-- Feature Flags -->
         <section id="features" class="mb-16">
           <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Feature Flags</h2>
