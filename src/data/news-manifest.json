@@ -1,5 +1,283 @@
 [
   {
+    "id": "0.4.1",
+    "date": "2026-03-22T10:00:00Z",
+    "title": "Parsanol 0.4.1: Batch FFI, Tagged AST, and Pattern Fixes",
+    "summary": "Batch FFI support with tagged AST nodes for repetition/sequence markers, major AST transformation fixes for Parslet-compatible semantics.",
+    "tags": ["release", "features", "ruby", "fixes"],
+    "featured": true,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol 0.4.1 adds **batch FFI support** with tagged AST nodes and fixes critical AST transformation bugs for correct Parslet-compatible semantics."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Batch FFI Support"
+      },
+      {
+        "type": "paragraph",
+        "text": "New batch parsing mode supports tagged AST nodes to preserve repetition and sequence semantics across the FFI boundary. Tags like `:repetition` and `:sequence` mark nodes for proper Ruby transformation."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "AST Transformation Fixes"
+      },
+      {
+        "type": "paragraph",
+        "text": "Critical fixes to the AST transformation layer ensure correct Parslet-compatible semantics:"
+      },
+      {
+        "type": "list",
+        "items": [
+          "**Duplicate labels**: Sequence patterns with duplicate `.as()` labels now correctly merge with last value wins",
+          "**Wrapper vs repetition**: Correctly distinguish true repetition patterns from wrapper patterns",
+          "**Duplicate keys**: Duplicate keys in hashes keep last value (Parslet semantics)",
+          "**intern_string**: Returns `StringRef` with `#[non_exhaustive]` on `AstNode`"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Ruby 4.0 Compatibility"
+      },
+      {
+        "type": "paragraph",
+        "text": "Updated Magnus and rb-sys for Ruby 4.0 compatibility. **Note**: Ruby 4.0 support requires unreleased magnus 0.9.0 and rb-sys — parsanol-rs 0.4.1 is not on crates.io until these packages are released."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Ruby FFI Improvements"
+      },
+      {
+        "type": "paragraph",
+        "text": "Fixed normalize.rs push operation and resolved Ruby FFI warnings. Combined with the unified `parse()` API from 0.4.0, the Ruby API is now simpler and more consistent."
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "# Simple unified API (from 0.4.0)\nresult = Parsanol::Native.parse(grammar, input)\n\n# Batch mode with tagged AST (new in 0.4.1)\nresult = Parsanol::Native.parse_batch(grammar, input)\n# Supports :repetition and :sequence tags for correct semantics"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "**Batch FFI**: Tagged AST nodes for repetition/sequence preservation",
+          "**Tagged variant**: `AstNode::Tagged` with `#[non_exhaustive]`",
+          "**Pattern detection**: Distinguish duplicate labels from true repetition",
+          "**Parslet semantics**: Duplicate keys keep last value",
+          "**Ruby 4.0**: Magnus 0.9.0 + rb-sys compatibility",
+          "400 tests passing"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ruby-1.3.0",
+    "date": "2026-03-23T10:00:00Z",
+    "title": "Parsanol Ruby 1.3.0: Up to 1300x Faster with Native Mode",
+    "summary": "Benchmarks confirm massive speedups: Native mode is 200-1300x faster than pure Ruby, with simple string patterns reaching 1340x speedup.",
+    "tags": ["release", "ruby", "performance", "benchmark"],
+    "featured": true,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol Ruby 1.3.0 benchmarks confirm **200-1300x speedups** over pure Ruby mode. Simple string matching now runs at ~775,000 iterations/sec compared to ~575/sec for Ruby — a **1340x speedup**. All 1195 tests pass with the latest parsanol-rs."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Benchmark Results"
+      },
+      {
+        "type": "paragraph",
+        "text": "Comprehensive benchmarks were run across 8 pattern types. Native mode consistently outperforms Ruby mode by 200-1300x:"
+      },
+      {
+        "type": "table",
+        "headers": ["Pattern Type", "Ruby (i/s)", "Native (i/s)", "Speedup"],
+        "rows": [
+          ["Simple string", "~575", "~775,000", "1,340x"],
+          ["Sequence (3 parts)", "~580", "~530,000", "910x"],
+          ["Named capture", "~575", "~510,000", "880x"],
+          ["Repetition (unnamed)", "~560", "~720,000", "1,280x"],
+          ["Alternative", "~575", "~720,000", "1,250x"],
+          ["Calculator expression", "~570", "~180,000", "315x"],
+          ["Repetition (named)", "~575", "~125,000", "220x"]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Key Findings"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Simple patterns (strings, alternatives, unnamed repetition) achieve **1000-1300x speedups**",
+          "Named captures add transformation overhead but still achieve **880x speedups**",
+          "Complex grammars (calculator expressions) show **315x speedups**",
+          "Named repetitions have highest overhead due to Ruby transformation (**220x speedups**)"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What Makes Native Mode Fast"
+      },
+      {
+        "type": "paragraph",
+        "text": "The native Rust parser uses packrat memoization for O(n) guaranteed complexity, arena allocation for zero-copy AST construction, and SIMD acceleration via memchr for fast substring search. The Ruby FFI layer now correctly joins consecutive Slices in sequences, eliminating unnecessary array allocations."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Example Files"
+      },
+      {
+        "type": "paragraph",
+        "text": "Run the benchmarks yourself to verify:"
+      },
+      {
+        "type": "code",
+        "language": "bash",
+        "text": "# Run quick benchmarks\nbundle exec ruby examples/benchmark_examples.rb\n\n# Run comprehensive benchmarks\nbundle exec ruby examples/benchmark_full.rb\n\n# Test parsing modes\nbundle exec ruby examples/parsing_modes.rb\n\n# See Parslet migration examples\nbundle exec ruby examples/parslet_migration.rb"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Bug Fixes"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Fixed AST transformer to correctly join consecutive Slices in sequences",
+          "Fixed single-item array unwrapping in sequence flattening",
+          "Added explicit return statements in flatten_sequence for joined Slices"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Benchmarks confirm 200-1300x Native mode speedups over Ruby",
+          "Updated parsanol-rs reference to '8f62777'",
+          "Fixed AST transformer sequence flattening",
+          "Added example files: benchmark_examples.rb, benchmark_full.rb, parsing_modes.rb, parslet_migration.rb",
+          "README.adoc updated with benchmark results table",
+          "All 1195 tests passing"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "0.4.0",
+    "date": "2026-03-19T10:00:00Z",
+    "title": "Parsanol 0.4.0: Unified API and Lazy Line/Column",
+    "summary": "Single parse() API, zero-overhead position info, Ruby 4.0 support, and WASM build fixes.",
+    "tags": ["release", "features", "ruby", "performance"],
+    "featured": true,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "Parsanol 0.4.0 is a major release that simplifies the Ruby FFI with a **unified `parse()` API** and introduces **lazy line/column computation** for zero-overhead position info."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Unified parse() API"
+      },
+      {
+        "type": "paragraph",
+        "text": "One method replaces five confusing options. The new unified API is simpler and more intuitive:"
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "# Before 0.4.0 - Too many options!\nparse_parslet(g, i)\nparse_parslet_with_positions(g, i, cache)\nparse_with_transform(g, i, cache)\nparse_to_objects(g, i, map)\nparse_raw(atom, i)\n\n# After 0.4.0 - One method to rule them all\nresult = Parsanol::Native.parse(grammar, input)"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "Migration Guide"
+      },
+      {
+        "type": "table",
+        "headers": ["Old Method", "New Method", "Notes"],
+        "rows": [
+          ["parse_parslet(g, i)", "parse(g, i)", "Position info included"],
+          ["parse_parslet_with_positions(g, i, cache)", "parse(g, i)", "Cache no longer needed"],
+          ["parse_with_transform(g, i, cache)", "parse(g, i)", "Transform in Ruby"],
+          ["parse_to_objects(g, i, map)", "parse(g, i)", "Use ZeroCopy for typed objects"],
+          ["parse_raw(atom, i)", "parse_with_grammar(atom, i)", "For pre-serialized grammars"]
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Lazy Line/Column"
+      },
+      {
+        "type": "paragraph",
+        "text": "Position information is now **always available** but with **zero overhead** if you don't use it. The `line_and_column` method is computed lazily and cached on first access."
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "result = Parsanol::Native.parse(grammar, \"hello world\")\n\n# Core attributes - always available, zero cost\nresult[:name].offset   # => 0\nresult[:name].content  # => \"hello\"\n\n# Lazy computation - only calculated when needed\nresult[:name].line_and_column  # => [1, 1] (computed and cached)"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "Ruby 4.0 Support"
+      },
+      {
+        "type": "paragraph",
+        "text": "Parsanol 0.4.0 supports Ruby 4.0 via unreleased magnus 0.9.0 and rb-sys HEAD. **Note**: parsanol-rs 0.4.0 is not officially released on crates.io because magnus 0.9.0 and the required rb-sys are not yet released. Ruby 4.0 support requires these unreleased packages."
+      },
+      {
+        "type": "code",
+        "language": "toml",
+        "text": "# Workspace Cargo.toml includes these patches\n[patch.crates-io]\nrb-sys = { git = \"https://github.com/oxidized-rb/oxidized-rb\", rev = \"b42b5fba\" }\n\n[dependencies]\nmagnus = { git = \"https://github.com/matsadler/magnus\", rev = \"4e46772\" }"
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "WASM Build Fixes"
+      },
+      {
+        "type": "paragraph",
+        "text": "Fixed `getrandom` crate configuration for WASM targets with `.cargo/config.toml` that sets `getrandom_backend=\"wasm_js\"`."
+      },
+      {
+        "type": "heading",
+        "level": 2,
+        "text": "What's Changed"
+      },
+      {
+        "type": "list",
+        "items": [
+          "**Unified parse() API**: Single method replaces 5+ confusing options",
+          "**Lazy Line/Column**: Zero-overhead position info, always available",
+          "**Ruby 4.0 Support**: Via magnus 0.9.0 + rb-sys HEAD patches",
+          "**WASM Fixes**: getrandom configuration for wasm32-unknown-unknown",
+          "Simplified Ruby FFI dependencies (rb-sys now transitive through magnus)"
+        ]
+      }
+    ]
+  },
+  {
     "id": "ruby-1.2.2",
     "date": "2026-03-07T10:00:00Z",
     "title": "Parsanol Ruby 1.2.2: FFI Captures, Scopes, and Dynamic Atoms",

@@ -22,7 +22,7 @@
           <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg p-6 mb-6">
             <h3 class="font-semibold text-primary-900 dark:text-primary-100 mb-2">Why Choose Parsanol-Ruby?</h3>
             <ul class="text-primary-700 dark:text-primary-300 space-y-1">
-              <li>• <strong>Drop-in Parslet replacement</strong> - Same API, 20-30x faster</li>
+              <li>• <strong>Drop-in Parslet replacement</strong> - Same API, ~17x faster</li>
               <li>• <strong>Multiple integration modes</strong> - Choose your performance level</li>
               <li>• <strong>Rust-powered</strong> - Native performance with Ruby convenience</li>
               <li>• <strong>Zero-copy available</strong> - Minimal allocations for maximum speed</li>
@@ -62,7 +62,7 @@
                 </tr>
                 <tr>
                   <td class="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">Relative Speed</td>
-                  <td class="px-4 py-3 text-sm text-center"><span class="text-green-600 dark:text-green-400 font-semibold">20-30x</span></td>
+                  <td class="px-4 py-3 text-sm text-center"><span class="text-green-600 dark:text-green-400 font-semibold">~17x</span></td>
                   <td class="px-4 py-3 text-sm text-center text-gray-600 dark:text-gray-400">1x (baseline)</td>
                   <td class="px-4 py-3 text-sm text-center text-gray-600 dark:text-gray-400">~5-10x</td>
                   <td class="px-4 py-3 text-sm text-center text-gray-600 dark:text-gray-400">~3-5x</td>
@@ -113,9 +113,9 @@ end</code></pre>
               </div>
             </div>
             <div class="border border-green-200 dark:border-green-800 rounded-lg p-4 bg-green-50 dark:bg-green-900/20">
-              <h4 class="font-semibold text-green-800 dark:text-green-200 mb-2">20-30x Faster</h4>
+              <h4 class="font-semibold text-green-800 dark:text-green-200 mb-2">~17x Faster</h4>
               <p class="text-sm text-green-700 dark:text-green-300 mb-2">
-                The same parser runs 20-30x faster with Parsanol's Rust backend while maintaining full compatibility.
+                The same parser runs ~17x faster with Parsanol's Rust backend while maintaining full compatibility.
               </p>
               <div class="text-xs text-green-600 dark:text-green-400">
                 Benchmark: JSON parsing, 1000 iterations
@@ -170,14 +170,14 @@ end</code></pre>
                 <h4 class="font-medium text-gray-900 dark:text-white">parsanol-ruby</h4>
                 <p class="text-sm text-gray-600 dark:text-gray-400">Rust parsing, Ruby AST construction</p>
               </div>
-              <span class="text-gray-500 dark:text-gray-400 text-sm">~20x</span>
+              <span class="text-gray-500 dark:text-gray-400 text-sm">~17x</span>
             </div>
             <div class="border border-green-200 dark:border-green-800 rounded-lg p-4 flex items-center justify-between bg-green-50 dark:bg-green-900/20">
               <div>
                 <h4 class="font-medium text-green-800 dark:text-green-200">ZeroCopy + Slice</h4>
                 <p class="text-sm text-green-700 dark:text-green-300">Direct FFI, with source positions</p>
               </div>
-              <span class="text-green-600 dark:text-green-400 font-semibold">~29x</span>
+              <span class="text-green-600 dark:text-green-400 font-semibold">~17x</span>
             </div>
           </div>
         </section>

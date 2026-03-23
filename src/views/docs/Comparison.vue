@@ -147,7 +147,7 @@
               <div>
                 <div class="flex justify-between text-sm mb-1">
                   <span class="text-gray-600 dark:text-gray-400">Speedup</span>
-                  <span class="font-medium text-primary-600 dark:text-primary-400">35x faster</span>
+                  <span class="font-medium text-primary-600 dark:text-primary-400">~17x faster</span>
                 </div>
               </div>
             </div>
