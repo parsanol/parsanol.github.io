@@ -1,0 +1,62 @@
+name: Check PR
+
+on:
+  pull_request:
+    branches: ['main']
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - 'package.json'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v4
+
+      - name: Checkout parsanol-rs
+        uses: actions/checkout@v4
+        with:
+          repository: parsanol/parsanol-rs
+          path: parsanol-rs
+          sparse-checkout: |
+            examples
+            Cargo.toml
+            benches
+            docs
+          sparse-checkout-cone-mode: false
+
+      - name: Checkout parsanol-ruby
+        uses: actions/checkout@v4
+        with:
+          repository: parsanol/parsanol-ruby
+          path: parsanol-ruby
+          sparse-checkout: |
+            example
+          sparse-checkout-cone-mode: false
+
+      - name: Extract parsanol-rs version
+        id: version
+        run: |
+          VERSION=$(grep -m1 'version\s*=' parsanol-rs/Cargo.toml | sed 's/.*version\s*=\s*"\([^"]*\)".*/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          PARSANOL_RS_DIR: ./parsanol-rs
+          PARSANOL_RUBY_DIR: ./parsanol-ruby
+          PARSANOL_VERSION: ${{ steps.version.outputs.version }}
