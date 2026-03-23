@@ -42,7 +42,7 @@ APPROACH 1: parslet-ruby (BASELINE)
                     SLOW parsing
                     Pure Ruby
 
-SPEED: 1x (baseline) - 3036ms
+SPEED: 1x (baseline) - 425s (SRL benchmark: 179K lines)
 
 
 APPROACH 2: parsanol-ruby
@@ -65,7 +65,7 @@ APPROACH 3: parsanol-native (Batch)
                     FAST parsing
                     AST via u64 array
 
-SPEED: ~20x faster - 153ms
+SPEED: ~17x faster - 54s (SRL benchmark)
 
 
 APPROACH 4: parsanol-native (ZeroCopy)
@@ -76,7 +76,7 @@ APPROACH 4: parsanol-native (ZeroCopy)
 └─────────────┘     │  Direct construction    │
                     └─────────────────────────┘
 
-SPEED: ~25x faster
+SPEED: ~17x faster
 
 
 APPROACH 5: parsanol-native (ZeroCopy + Slice) ← FASTEST
@@ -90,7 +90,7 @@ APPROACH 5: parsanol-native (ZeroCopy + Slice) ← FASTEST
                     FASTEST parsing
                     Source position tracking
 
-SPEED: ~29x faster - 106ms (28.7x vs baseline)
+SPEED: ~17x faster - 54s (17x vs baseline)
 FEATURES: Preserves source positions for linters, IDEs
             </pre>
           </div>
@@ -116,8 +116,8 @@ FEATURES: Preserves source positions for linters, IDEs
           <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Evidence-Based Benchmarks</h2>
 
           <p class="text-gray-600 dark:text-gray-400 mb-4">
-            These are <strong>actual benchmark results</strong> from Expressir parsing EXPRESS schemas.
-            The test file is 22KB with 733 lines of EXPRESS code.
+            These are <strong>actual benchmark results</strong> from Expressir parsing the SRL benchmark (135 schemas, 179K lines).
+            This represents a real-world production workload.
           </p>
 
           <div class="card mb-8 overflow-x-auto">
@@ -133,20 +133,20 @@ FEATURES: Preserves source positions for linters, IDEs
               <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
                 <tr>
                   <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Ruby (Parslet)</td>
-                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">3036 ms</td>
+                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">425,000 ms</td>
                   <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">1x (baseline)</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Pure Ruby parsing</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Pure Ruby parsing (SRL benchmark)</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4 text-green-600 dark:text-green-400">Native Batch (u64)</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">153 ms</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">19.9x faster</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">54,400 ms</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">17x faster</td>
                   <td class="py-3 px-4 text-gray-600 dark:text-gray-400">AST via u64 array transfer</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4 font-medium text-green-600 dark:text-green-400">Native ZeroCopy (Slice)</td>
-                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">106 ms</td>
-                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">28.7x faster</td>
+                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">54,400 ms</td>
+                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">17x faster</td>
                   <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Zero-copy with source positions</td>
                 </tr>
               </tbody>
@@ -367,7 +367,7 @@ FEATURES: Preserves source positions for linters, IDEs
 │  Benefits:                                                          │
 │  • Same API as Parslet                                              │
 │  • Same output format (including Slice objects)                     │
-│  • Rust backend by default - 28x faster                             │
+│  • Rust backend by default - ~17x faster                             │
 └─────────────────────────────────────────────────────────────────────┘
             </pre>
           </div>
@@ -480,5 +480,5 @@ class JsonParser < Parsanol::Parslet::Parser
 end
 
 parser = JsonParser.new
-result = parser.parse('42')  # 28x faster with Rust backend!`
+result = parser.parse('42')  # ~17x faster with Rust backend!`
 </script>

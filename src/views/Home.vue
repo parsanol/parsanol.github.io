@@ -70,7 +70,7 @@
           />
           <FeatureCard
             title="Ruby Bindings"
-            description="5 integration approaches from pure Ruby to ZeroCopy+Slice. Parslet-compatible API for easy migration."
+            description="Up to 1300x faster than pure Ruby. Parslet-compatible API for easy migration. Slice objects with position info."
             icon="gem"
           />
           <FeatureCard
@@ -113,14 +113,18 @@
             Performance That Matters
           </h2>
           <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Built with Rust's zero-cost abstractions for maximum performance.
+            Built with Rust's zero-cost abstractions for maximum performance. Native mode is 200-1300x faster than pure Ruby.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
           <div class="card">
             <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">O(n)</div>
             <div class="text-gray-600 dark:text-gray-400">Guaranteed complexity</div>
+          </div>
+          <div class="card">
+            <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">1300x</div>
+            <div class="text-gray-600 dark:text-gray-400">Ruby speedup</div>
           </div>
           <div class="card">
             <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">99.5%</div>
@@ -130,6 +134,72 @@
             <div class="text-5xl font-bold text-primary-600 dark:text-primary-400 mb-2">100MB</div>
             <div class="text-gray-600 dark:text-gray-400">Streaming support</div>
           </div>
+        </div>
+
+        <!-- Ruby Benchmarks -->
+        <div class="mt-16">
+          <h3 class="text-2xl font-semibold text-gray-900 dark:text-white text-center mb-8">
+            Ruby Benchmark Results
+          </h3>
+          <div class="overflow-x-auto">
+            <table class="w-full max-w-3xl mx-auto text-sm">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Pattern</th>
+                  <th class="text-right py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Ruby (i/s)</th>
+                  <th class="text-right py-3 px-4 font-semibold text-gray-500 dark:text-gray-400">Native (i/s)</th>
+                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">Speedup</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Simple string</td>
+                  <td class="py-3 px-4 text-right text-gray-500 dark:text-gray-500">~575</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~775,000</td>
+                  <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">1,340x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Repetition (unnamed)</td>
+                  <td class="py-3 px-4 text-right text-gray-500 dark:text-gray-500">~560</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~720,000</td>
+                  <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">1,280x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Alternative</td>
+                  <td class="py-3 px-4 text-right text-gray-500 dark:text-gray-500">~575</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~720,000</td>
+                  <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">1,250x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Sequence (3 parts)</td>
+                  <td class="py-3 px-4 text-right text-gray-500 dark:text-gray-500">~580</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~530,000</td>
+                  <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">910x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Named capture</td>
+                  <td class="py-3 px-4 text-right text-gray-500 dark:text-gray-500">~575</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~510,000</td>
+                  <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">880x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Calculator expression</td>
+                  <td class="py-3 px-4 text-right text-gray-500 dark:text-gray-500">~570</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~180,000</td>
+                  <td class="py-3 px-4 text-right font-bold text-green-600 dark:text-green-400">315x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Repetition (named)</td>
+                  <td class="py-3 px-4 text-right text-gray-500 dark:text-gray-500">~575</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~125,000</td>
+                  <td class="py-3 px-4 text-right font-bold text-orange-600 dark:text-orange-400">220x</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-center text-gray-500 dark:text-gray-500 text-sm mt-4">
+            <router-link to="/ruby-bindings" class="text-primary-600 dark:text-primary-400 hover:underline">See Ruby Bindings</router-link> for full details
+          </p>
         </div>
       </div>
     </section>

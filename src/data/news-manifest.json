@@ -41,11 +41,25 @@
       {
         "type": "heading",
         "level": 2,
+        "text": "Ruby 4.0 Compatibility"
+      },
+      {
+        "type": "paragraph",
+        "text": "Updated Magnus and rb-sys for Ruby 4.0 compatibility. **Note**: Ruby 4.0 support requires unreleased magnus 0.9.0 and rb-sys — parsanol-rs 0.4.1 is not on crates.io until these packages are released."
+      },
+      {
+        "type": "heading",
+        "level": 2,
         "text": "Ruby FFI Improvements"
       },
       {
         "type": "paragraph",
-        "text": "Updated Magnus and rb-sys for Ruby 4.0 compatibility. Fixed normalize.rs push operation and resolved Ruby FFI warnings."
+        "text": "Fixed normalize.rs push operation and resolved Ruby FFI warnings. Combined with the unified `parse()` API from 0.4.0, the Ruby API is now simpler and more consistent."
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "# Simple unified API (from 0.4.0)\nresult = Parsanol::Native.parse(grammar, input)\n\n# Batch mode with tagged AST (new in 0.4.1)\nresult = Parsanol::Native.parse_batch(grammar, input)\n# Supports :repetition and :sequence tags for correct semantics"
       },
       {
         "type": "heading",
@@ -230,7 +244,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Parsanol 0.4.0 supports Ruby 4.0 via unreleased magnus 0.9.0 and rb-sys HEAD. The workspace `Cargo.toml` patches rb-sys automatically for ABI compatibility."
+        "text": "Parsanol 0.4.0 supports Ruby 4.0 via unreleased magnus 0.9.0 and rb-sys HEAD. **Note**: parsanol-rs 0.4.0 is not officially released on crates.io because magnus 0.9.0 and the required rb-sys are not yet released. Ruby 4.0 support requires these unreleased packages."
       },
       {
         "type": "code",

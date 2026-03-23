@@ -13,8 +13,27 @@
           Parsanol offers 3 parsing modes for Ruby. All modes return <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">Slice</code> objects with position information by default.
         </p>
 
+        <!-- Unified API Banner -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+          <h3 class="text-blue-800 dark:text-blue-200 font-semibold mb-2">✨ Unified parse() API</h3>
+          <p class="text-blue-700 dark:text-blue-300 text-sm">
+            One method replaces five confusing options. The unified <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">parse()</code> API is simpler and more intuitive:
+          </p>
+          <div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+            <pre class="text-xs text-gray-100 overflow-x-auto"># Before 0.4.0 - Too many options!
+parse_parslet(g, i)
+parse_parslet_with_positions(g, i, cache)
+parse_with_transform(g, i, cache)
+parse_to_objects(g, i, map)
+parse_raw(atom, i)
+
+# After 0.4.0 - One method to rule them all
+result = Parsanol::Native.parse(grammar, input)</pre>
+          </div>
+        </div>
+
         <!-- Key Change Banner -->
-        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-12">
+        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
           <h3 class="text-green-800 dark:text-green-200 font-semibold mb-2">✨ Position Info is Now Default</h3>
           <p class="text-green-700 dark:text-green-300 text-sm">
             All parse methods now return <code class="bg-green-100 dark:bg-green-800 px-1 rounded">Parsanol::Slice</code> objects
@@ -23,6 +42,16 @@
             <code class="bg-green-100 dark:bg-green-800 px-1 rounded">line</code>, and
             <code class="bg-green-100 dark:bg-green-800 px-1 rounded">column</code>.
             No special options needed!
+          </p>
+        </div>
+
+        <!-- Ruby 4.0 Support Banner -->
+        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-12">
+          <h3 class="text-yellow-800 dark:text-yellow-200 font-semibold mb-2">🚀 Ruby 4.0 Support (Coming Soon)</h3>
+          <p class="text-yellow-700 dark:text-yellow-300 text-sm">
+            Parsanol 0.4.1 will support Ruby 4.0 via <code class="bg-yellow-100 dark:bg-yellow-800 px-1 rounded">magnus 0.9.0</code>
+            and <code class="bg-yellow-100 dark:bg-yellow-800 px-1 rounded">rb-sys</code> HEAD. These packages are not yet released.
+            The workspace <code class="bg-yellow-100 dark:bg-yellow-800 px-1 rounded">Cargo.toml</code> patches rb-sys automatically for ABI compatibility.
           </p>
         </div>
 
@@ -54,14 +83,137 @@
                 <tr>
                   <td class="py-3 px-4 font-medium text-green-600 dark:text-green-400">Native</td>
                   <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Rust parsing, Slice objects</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~20x</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~200-1300x</td>
                   <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Production use (RECOMMENDED)</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-4 font-medium text-green-600 dark:text-green-400">JSON</td>
                   <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Rust parsing, JSON output</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~20x</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~200-1300x</td>
                   <td class="py-3 px-4 text-gray-600 dark:text-gray-400">APIs, serialization</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Benchmark Results</h3>
+
+          <div class="card mb-6 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Pattern Type</th>
+                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">Ruby (i/s)</th>
+                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">Native (i/s)</th>
+                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">Speedup</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Simple string</td>
+                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">~575</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~775,000</td>
+                  <td class="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">1,340x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Sequence (3 parts)</td>
+                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">~580</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~530,000</td>
+                  <td class="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">910x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Named capture</td>
+                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">~575</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~510,000</td>
+                  <td class="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">880x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Repetition (unnamed)</td>
+                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">~560</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~720,000</td>
+                  <td class="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">1,280x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Alternative</td>
+                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">~575</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~720,000</td>
+                  <td class="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">1,250x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Calculator expression</td>
+                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">~570</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~180,000</td>
+                  <td class="py-3 px-4 text-right font-semibold text-green-600 dark:text-green-400">315x</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Repetition (named)</td>
+                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">~575</td>
+                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">~125,000</td>
+                  <td class="py-3 px-4 text-right font-semibold text-orange-600 dark:text-orange-400">220x</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-4 text-sm">
+            Speedup varies by pattern complexity. Simple patterns show highest speedups (1000-1300x),
+            while patterns with named repetitions show lower speedups (200-400x) due to transformation overhead.
+          </p>
+        </section>
+
+        <!-- Batch Parsing Mode -->
+        <section id="batch-mode" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Batch Parsing Mode</h2>
+
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Batch mode supports tagged AST nodes to preserve repetition and sequence semantics across the FFI boundary.
+            Tags like <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">:repetition</code> and <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">:sequence</code>
+            mark nodes for proper Ruby transformation.
+          </p>
+
+          <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 mb-6">
+            <h3 class="text-purple-800 dark:text-purple-200 font-semibold mb-2">🎯 When to Use Batch Mode</h3>
+            <p class="text-purple-700 dark:text-purple-300 text-sm">
+              Batch mode is ideal when you need correct Parslet-compatible semantics for complex grammars with
+              repetition patterns. It preserves the distinction between true repetitions and wrapper patterns.
+            </p>
+          </div>
+
+          <div class="card mb-6">
+            <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
+# Batch mode with tagged AST nodes
+result = Parsanol::Native.parse_batch(grammar, input)
+
+# Results preserve :repetition and :sequence tags
+# This enables correct Ruby transformation for complex patterns</pre>
+          </div>
+
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pattern Detection</h3>
+
+          <div class="card mb-6 overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-gray-200 dark:border-gray-700">
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Pattern</th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Example</th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Result</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">True Repetition</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400"><code>[{x:1}, {x:2}]</code></td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Array of hashes</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Wrapper Pattern</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400"><code>{x: {y:1}, z:2}</code></td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Single hash</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Duplicate Labels</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400"><code>[{a:{x:1}}, {a:{y:2}}]</code></td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Last value wins</td>
                 </tr>
               </tbody>
             </table>
@@ -100,13 +252,24 @@ slice.extract_from(input)  # => "test"
 
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Slice API</h3>
 
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
+            <h4 class="text-blue-800 dark:text-blue-200 font-semibold mb-2">⚡ Lazy Line/Column</h4>
+            <p class="text-blue-700 dark:text-blue-300 text-sm">
+              <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">line_and_column</code> is computed lazily and cached.
+              This means <strong>zero overhead</strong> if you don't need position info,
+              but it's <strong>always available</strong> when you do.
+            </p>
+          </div>
+
           <div class="card mb-6">
             <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
 class Parsanol::Slice
-  # Core attributes
+  # Core attributes (always available, zero cost)
   def content       # String content
   def offset        # Byte offset in original input
   def length        # Length of the slice
+
+  # Lazy computation (computed on first access, then cached)
   def line_and_column  # [line, column] tuple (1-indexed)
 
   # String compatibility
@@ -163,7 +326,7 @@ end
                     SLOW parsing
                     Pure Ruby
 
-SPEED: 1x (baseline) - 3036ms
+SPEED: 1x (baseline) - 425s (SRL benchmark)
             </pre>
           </div>
 
@@ -190,7 +353,7 @@ SPEED: 1x (baseline) - 3036ms
                     FAST parsing
                     Position tracking included
 
-SPEED: ~20x faster - 153ms
+SPEED: ~200-1300x faster depending on pattern complexity
 FEATURES: Slice objects with offset, length, line, column
             </pre>
           </div>
@@ -219,7 +382,7 @@ FEATURES: Slice objects with offset, length, line, column
                     FAST parsing
                     Position inline in JSON
 
-SPEED: ~20x faster
+SPEED: ~200-1300x faster depending on pattern complexity
 FORMAT: {"value": "hello", "offset": 0, "length": 5, ...}
             </pre>
           </div>
@@ -282,7 +445,7 @@ FORMAT: {"value": "hello", "offset": 0, "length": 5, ...}
           </h2>
 
           <p class="text-gray-600 dark:text-gray-400 mb-6">
-            For maximum performance (~29x faster than pure Ruby), use the ZeroCopy interface
+            For maximum performance (~200-1300x faster than pure Ruby), use the ZeroCopy interface
             which bypasses Ruby transformation overhead. This is a separate low-level API from
             the 3 parse modes above.
           </p>
@@ -672,7 +835,7 @@ end
 
 parser = JsonParser.new
 result = parser.parse('42', mode: :ruby)
-# Speed: 1x (baseline) - 3036ms for 22KB EXPRESS schema
+# Speed: 1x (baseline) - 425s for SRL benchmark (179K lines)
 # Returns Slice objects with position info`
 
 const modeNativeCode = `# Mode: Native (Recommended)
@@ -690,7 +853,7 @@ parser = JsonParser.new
 # Just use mode: :native - position info is included!
 result = parser.parse('42', mode: :native)
 
-# Speed: ~20x faster - 153ms for 22KB EXPRESS schema
+# Speed: ~200-1300x faster depending on pattern
 # Returns Slice objects with position info
 
 # Access position info
@@ -745,7 +908,7 @@ class MyParser < Parsanol::Parslet::Parser
 end
 
 parser = MyParser.new
-result = parser.parse('42')  # 20x faster with Rust backend!
+result = parser.parse('42')  # ~200-1300x faster with Rust backend!
 
 # Position info is included by default
 result.offset  # => 0

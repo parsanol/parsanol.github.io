@@ -169,7 +169,7 @@ class StringParser &lt; Parslet::Parser
 end</pre>
                 <p class="text-xs text-gray-400 mb-2">Parsanol (after - no changes needed!)</p>
                 <pre class="text-sm text-green-400">require 'parsanol/parslet'
-class StringParser &lt; Parslet::Parser  # Same code, 35x faster!
+class StringParser &lt; Parslet::Parser  # Same code, ~17x faster!
   rule(:string) { str('"') &gt;&gt; (str('\\') &gt;&gt; any | str('"').absent? &gt;&gt; any).repeat &gt;&gt; str('"') }
 end</pre>
               </div>
