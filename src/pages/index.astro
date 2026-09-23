@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro'
+import news from '../data/news-manifest.json'
+const recent = news.slice(0, 3)
+---
+<Layout title="Parsanol">
+  <section class="text-center mb-16">
+    <h1 class="text-5xl font-bold mb-4">Parsanol</h1>
+    <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">A PEG parser generator with a Rust engine and Ruby bindings. Two engines, one tree.</p>
+    <div class="mt-6 flex items-center justify-center gap-3">
+      <a href="/installation" class="px-5 py-2.5 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700">Get started</a>
+      <a href="/news" class="px-5 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800">News</a>
+    </div>
+  </section>
+  <section>
+    <h2 class="text-2xl font-semibold mb-4">Recent News</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      {recent.map((p: any) => (
+        <a href={`/news/${p.id}`} class="card hover:border-primary-400 transition">
+          <div class="text-xs text-gray-500 mb-1">{p.date?.slice(0, 10)}</div>
+          <div class="font-semibold mb-1">{p.title}</div>
+          <div class="text-sm text-gray-600 dark:text-gray-300">{p.summary}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

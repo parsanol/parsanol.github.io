@@ -1,0 +1,17 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import news from '../../data/news-manifest.json'
+const sorted = news.slice().sort((a: any, b: any) => (a.date < b.date ? 1 : -1))
+---
+<Layout title="News — Parsanol" active="news">
+  <h1 class="text-4xl font-bold mb-8">News</h1>
+  <div class="space-y-3">
+    {sorted.map((p: any) => (
+      <a href={`/news/${p.id}`} class="card block hover:border-primary-400 transition">
+        <div class="text-xs text-gray-500 mb-1">{p.date?.slice(0, 10)}</div>
+        <div class="font-semibold">{p.title}</div>
+        <div class="text-sm text-gray-600 dark:text-gray-300 mt-1">{p.summary}</div>
+      </a>
+    ))}
+  </div>
+</Layout>
