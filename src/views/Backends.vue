@@ -1067,8 +1067,11 @@ result = parser.parse('42+10')
 # For explicit control, use the native API:
 grammar_json = Parsanol::Native.serialize_grammar(parser.root)
 
-# Parse with automatic backend selection (recommended)
-result = Parsanol::Native.parse_to_ruby_objects(grammar_json, input)
+# Raw tagged tree, skipping the transform (~12-14% faster)
+result = Parsanol::Native.parse_raw(parser.root, '42+10')
+
+# Or via pre-serialized grammar JSON
+result = Parsanol::Native.parse_batch(grammar_json, '42+10', Parsanol::Slice)
 
 # The backend selection is transparent to Ruby users
 # - Complex grammars → Packrat for O(n) guarantee
