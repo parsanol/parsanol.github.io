@@ -1,0 +1,210 @@
+
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Parser Writing Tutorial</h1>
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-12">
+          Learn to build parsers from scratch with Parsanol.
+        </p>
+
+        <!-- Introduction -->
+        <section id="introduction" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Introduction</h2>
+          <div class="prose dark:prose-invert max-w-none">
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              A <strong>parser</strong> is a program that analyzes text according to a set of rules (grammar)
+              and produces a structured representation of that text. Parsanol is a <strong>parser combinator</strong>
+              library that lets you build parsers by combining smaller parsers together.
+            </p>
+            <p class="text-gray-600 dark:text-gray-400">
+              This tutorial will take you from zero to building real parsers.
+            </p>
+          </div>
+        </section>
+
+        <!-- Chapter 1: Basic Atoms -->
+        <section id="chapter-1" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Chapter 1: Basic Atoms</h2>
+          <div class="prose dark:prose-invert max-w-none mb-6">
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              <strong>Atoms</strong> are the fundamental building blocks of parsers. They match specific
+              patterns in the input text.
+            </p>
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">str() - Match Literal String</h3>
+            
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">re() - Regular Expression</h3>
+            
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">any() - Any Character</h3>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">match() - Character Class</h3>
+            
+          </div>
+        </section>
+
+        <!-- Chapter 2: Combinators -->
+        <section id="chapter-2" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Chapter 2: Combinators</h2>
+          <div class="prose dark:prose-invert max-w-none mb-6">
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              <strong>Combinators</strong> combine atoms (and other combinators) to build more complex parsers.
+            </p>
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Sequence (then or >>)</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              Match multiple patterns in order.
+            </p>
+            
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Choice (or or |)</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              Try each alternative in order.
+            </p>
+            
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Repetition (repeat)</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              Match patterns zero or more times.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Optional (maybe)</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              Match a pattern zero or one time.
+            </p>
+            
+          </div>
+        </section>
+
+        <!-- Chapter 3: Captures -->
+        <section id="chapter-3" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Chapter 3: Captures & Labels</h2>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Labels (.as)</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              Attach names to matched content for the parse tree.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Lookahead</h3>
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+              Check what's ahead without consuming input.
+            </p>
+            
+          </div>
+        </section>
+
+        <!-- Chapter 4: Building a Real Parser -->
+        <section id="chapter-4" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Chapter 4: Building a Real Parser</h2>
+          <div class="prose dark:prose-invert max-w-none mb-6">
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Let's build a complete JSON parser step by step.
+            </p>
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Step 1: Basic Structure</h3>
+            
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Step 2: Numbers and Strings</h3>
+            
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Step 3: Arrays and Objects</h3>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Step 4: Complete Parser</h3>
+            
+          </div>
+        </section>
+
+        <!-- Chapter 5: Transformations -->
+        <section id="chapter-5" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Chapter 5: Transformations</h2>
+          <div class="prose dark:prose-invert max-w-none mb-6">
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Transforms convert the generic parse tree into your domain objects.
+            </p>
+          </div>
+
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Basic Transform</h3>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Recursive Transform</h3>
+            
+          </div>
+        </section>
+
+        <!-- Best Practices -->
+        <section id="best-practices" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Best Practices</h2>
+
+          <div class="space-y-4">
+            <div class="card">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">1. Start Simple</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Build your parser incrementally. Test each rule before combining them.
+              </p>
+            </div>
+
+            <div class="card">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">2. Handle Whitespace</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Create a reusable `space?` rule and use it throughout your grammar.
+              </p>
+            </div>
+
+            <div class="card">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">3. Name Your Rules</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Use `.as(:name)` to label captures for easier debugging.
+              </p>
+            </div>
+
+            <div class="card">
+              <h3 class="font-semibold text-gray-900 dark:text-white mb-2">4. Use Two-Stage Parsing</h3>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                Separate parsing (syntax) from transformation (semantics).
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Navigation -->
+        <div class="mt-12 flex justify-between">
+          <a href="/first-parser" class="btn btn-secondary">
+            ← Your First Parser
+          </a>
+          <a href="/examples" class="btn btn-primary">
+            Browse Examples →
+          </a>
+        </div>
+      

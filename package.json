@@ -1,32 +1,24 @@
 {
   "name": "parsanol-docs",
-  "private": true,
-  "version": "0.1.0",
-  "description": "Documentation website for Parsanol - a high-performance PEG parser library",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "generate": "node scripts/generate-examples.cjs",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "generate": "node scripts/generate-news.cjs",
     "generate:news": "node scripts/generate-news.cjs",
-    "generate:benchmarks": "node scripts/generate-backend-benchmarks.cjs",
-    "build": "npm run generate && npm run generate:news && npm run generate:benchmarks && vite build",
-    "typecheck": "vue-tsc -b",
-    "preview": "vite preview"
+    "generate:benchmarks": "node scripts/generate-backend-benchmarks.cjs"
   },
   "dependencies": {
-    "prismjs": "^1.29.0",
-    "vue": "^3.5.13",
-    "vue-router": "^4.6.4"
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/vue": "^7.0.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.4",
+    "marked": "^14.1.2",
+    "tailwindcss": "^4.3.3",
+    "vue": "^3.5.13"
   },
   "devDependencies": {
-    "@types/node": "^22.13.1",
-    "@types/prismjs": "^1.26.5",
-    "@vitejs/plugin-vue": "^5.2.1",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.5.1",
-    "tailwindcss": "^3.4.17",
-    "typescript": "~5.7.3",
-    "vite": "^6.1.0",
-    "vue-tsc": "^2.2.0"
+    "typescript": "^5.6.3"
   }
 }

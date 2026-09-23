@@ -1,0 +1,126 @@
+
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">Parser Combinators</h1>
+
+        <!-- Basic Atoms -->
+        <section id="basic-atoms" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Basic Atoms</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Basic atoms are the building blocks of parsers. They match specific patterns in the input.
+          </p>
+
+          <div class="space-y-8">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                <code>str("pattern")</code> - String Matching
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Matches a literal string exactly.
+              </p>
+              
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                <code>re("pattern")</code> - Regular Expression
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Matches a regular expression pattern.
+              </p>
+              
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                <code>any()</code> - Any Character
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Matches any single character.
+              </p>
+              
+            </div>
+          </div>
+        </section>
+
+        <!-- Combinators -->
+        <section id="combinators" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Combinators</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Combinators combine parsers to create more complex patterns.
+          </p>
+
+          <div class="space-y-8">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Sequence - <code>.then()</code> or <code>&gt;&gt;</code>
+              </h3>
+              
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Alternative - <code>.or()</code> or <code>|</code>
+              </h3>
+              
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Repetition - <code>.repeat(min, max)</code>
+              </h3>
+              
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Optional - <code>.maybe()</code>
+              </h3>
+              
+            </div>
+          </div>
+        </section>
+
+        <!-- Advanced -->
+        <section id="advanced" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Advanced</h2>
+
+          <div class="space-y-8">
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Named Capture - <code>.as("name")</code>
+              </h3>
+              
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Lookahead - <code>.lookahead(bool)</code>
+              </h3>
+              
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Ignore Results - <code>.ignore()</code>
+              </h3>
+              
+            </div>
+
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                Dynamic Parser - <code>dynamic()</code>
+              </h3>
+              
+            </div>
+          </div>
+        </section>
+
+        <!-- Infix Expressions -->
+        <section id="infix" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Infix Expressions</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Parsanol provides special support for parsing infix expressions like mathematical expressions with operator precedence.
+          </p>
+
+          
+        </section>
+      

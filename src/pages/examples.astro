@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro'
+import content from '../data/views/examples.html?raw'
+---
+<Layout title="Examples — Parsanol" active="examples">
+  <div class="flex gap-12">
+    <aside class="w-64 flex-shrink-0 hidden lg:block">
+      <div class="sticky top-20 text-sm">
+        <a href="/introduction" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Introduction</a>
+        <a href="/installation" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Installation</a>
+        <a href="/news" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">News</a>
+      </div>
+    </aside>
+    <div class="flex-1 min-w-0 prose max-w-none">
+      <Fragment set:html={content} />
+    </div>
+  </div>
+</Layout>
