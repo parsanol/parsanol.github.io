@@ -84,13 +84,32 @@
             <CodeTabs :ruby="rubyInstall" />
           </div>
 
+          <div class="card mb-6">
+            <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Prebuilt Platform Gems</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">
+              RubyGems resolves a prebuilt gem for your platform — no Rust toolchain needed.
+              Each carries the Ruby extension <em>and</em> a pure-portable cdylib
+              (<code>lib/parsanol/native/</code>) that backs the ffi tier
+              (native parsing on TruffleRuby; a fallback for MRI).
+            </p>
+            <ul class="list-disc pl-5 text-sm text-gray-600 dark:text-gray-300 space-y-1">
+              <li>x86_64-linux, x86_64-linux-musl, aarch64-linux, aarch64-linux-musl</li>
+              <li>arm-linux, arm-linux-musl (32-bit armv7)</li>
+              <li>arm64-darwin, x86_64-darwin (macOS 11+)</li>
+              <li>x64-mingw-ucrt, aarch64-mingw-ucrt (Windows)</li>
+            </ul>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
+              Ruby 3.2–4.0 per gem. JRuby installs the binary-free source gem and runs the
+              pure-Ruby engine.
+            </p>
+          </div>
+
           <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <h4 class="font-medium text-blue-900 dark:text-blue-100 mb-2">Requirements</h4>
             <ul class="list-disc pl-5 text-blue-800 dark:text-blue-200 space-y-1 text-sm">
-              <li>Ruby 2.7 or later (3.0+ recommended)</li>
-              <li>Rust toolchain (for native extension compilation)</li>
-              <li>On macOS: Xcode Command Line Tools</li>
-              <li>On Linux: build-essential package</li>
+              <li>Ruby 3.2 or later</li>
+              <li>Prebuilt platform gem: nothing else — no Rust, no compilers</li>
+              <li>Source gem fallback: Rust toolchain to compile the extension (or let the ffi tier / pure-Ruby engine serve you)</li>
             </ul>
           </div>
         </section>
