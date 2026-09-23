@@ -29,3 +29,5 @@ code, pre, .font-mono { font-family: var(--font-mono); }
 .prose blockquote { @apply border-l-4 border-gray-300 pl-4 italic my-4; }
 
 .card { @apply p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700; }
+
+@custom-variant dark (&:where(.dark, .dark *));
