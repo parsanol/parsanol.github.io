@@ -806,5 +806,4 @@ dynamic_with_id(callback_id)</pre>
 
 <script setup lang="ts">
 import Icon from '../components/atoms/Icon.vue'
-import DocsNav from '../components/organisms/DocsNav.vue'
 </script>

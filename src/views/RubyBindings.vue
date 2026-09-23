@@ -438,16 +438,17 @@ FORMAT: {"value": "hello", "offset": 0, "length": 5, ...}
           </div>
         </section>
 
-        <!-- ZeroCopy Interface -->
+        <!-- Raw Tree Interface -->
         <section id="zerocopy" class="mb-16">
           <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
-            ZeroCopy Interface (Low-Level API)
+            Raw Tree Interface (Low-Level API)
           </h2>
 
           <p class="text-gray-600 dark:text-gray-400 mb-6">
-            For maximum performance (~200-1300x faster than pure Ruby), use the ZeroCopy interface
-            which bypasses Ruby transformation overhead. This is a separate low-level API from
-            the 3 parse modes above.
+            For maximum throughput, <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">Parsanol::Native.parse_raw</code>
+            skips the parslet-compatibility transform entirely and hands you the engine's raw
+            tagged tree — batch-encoded across the FFI boundary and decoded in pure Ruby.
+            This is a stable, documented interface (it is what high-throughput consumers use).
           </p>
 
           <div class="card mb-6 overflow-x-auto">
@@ -455,95 +456,51 @@ FORMAT: {"value": "hello", "offset": 0, "length": 5, ...}
               <thead>
                 <tr class="border-b border-gray-200 dark:border-gray-700">
                   <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Method</th>
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Keys</th>
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Values</th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Input</th>
+                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Returns</th>
                   <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Use Case</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 dark:border-gray-700">
                 <tr>
-                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">parse_to_ruby_objects</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">String</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Slice</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Low-level, direct from Rust</td>
+                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">parse</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">grammar, input</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">parslet-compatible tree</td>
+                  <td class="py-3 px-4 text-green-600 dark:text-green-400">Default — native + transformed</td>
                 </tr>
                 <tr>
-                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">Parsanol::ZeroCopy</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Ruby objects</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Ruby objects</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Maximum performance</td>
+                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">parse_raw</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">grammar, input</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">raw tagged tree</td>
+                  <td class="py-3 px-4 text-orange-600 dark:text-orange-400">Skip the transform — ~12-14% faster</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">parse_batch</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">grammar JSON, input, slice class</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">raw tagged tree</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Flat u64 FFI protocol, minimal overhead</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-4 font-mono text-gray-600 dark:text-gray-400">parse_prefix</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">grammar, input</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">[value, end_pos]</td>
+                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Streaming / partial parses</td>
                 </tr>
               </tbody>
             </table>
           </div>
 
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            When to Use Parse Modes vs ZeroCopy
-          </h3>
-
-          <div class="card mb-6 overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="border-b border-gray-200 dark:border-gray-700">
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Your Need</th>
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Use This</th>
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Why</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Building an API</td>
-                  <td class="py-3 px-4 text-green-600 dark:text-green-400">JSON mode (<code>:json</code>)</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Direct JSON serialization</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Building a linter/IDE</td>
-                  <td class="py-3 px-4 text-green-600 dark:text-green-400">Native mode (<code>:native</code>)</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Position info for errors</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Need position info</td>
-                  <td class="py-3 px-4 text-green-600 dark:text-green-400">Parse Modes (not ZeroCopy)</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">ZeroCopy skips position tracking</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">High-throughput parsing</td>
-                  <td class="py-3 px-4 text-orange-600 dark:text-orange-400">ZeroCopy</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Maximum performance</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Type-safe AST with methods</td>
-                  <td class="py-3 px-4 text-orange-600 dark:text-orange-400">ZeroCopy</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Direct typed objects</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Example: Calculator with Direct Object Construction
+            Example: Calculator via the Raw Tree
           </h3>
 
           <CodeTabs :ruby="zerocopyCode" />
 
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 mt-8">
-            Low-Level: parse_to_ruby_objects
+            Batch Decoding Without the Transform
           </h3>
 
-          <p class="text-gray-600 dark:text-gray-400 mb-4">
-            When you don't need typed objects, use <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">parse_to_ruby_objects</code>
-            for direct Slice access with String keys:
-          </p>
-
           <CodeTabs :ruby="zerocopyLowlevelCode" />
-
-          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-6">
-            <p class="text-yellow-800 dark:text-yellow-200 text-sm">
-              <strong>Requirements:</strong> ZeroCopy requires (1) native extension via <code class="bg-yellow-100 dark:bg-yellow-800 px-2 py-1 rounded">rake compile</code>,
-              (2) <code class="bg-yellow-100 dark:bg-yellow-800 px-2 py-1 rounded">output_types</code> mapping in your parser,
-              and (3) Ruby classes with matching constructors.
-            </p>
-          </div>
         </section>
 
         <!-- Running Benchmarks -->
@@ -914,33 +871,23 @@ result = parser.parse('42')  # ~200-1300x faster with Rust backend!
 result.offset  # => 0
 result.line_and_column  # => [1, 1]`
 
-const zerocopyLowlevelCode = `# Low-Level ZeroCopy: parse_to_ruby_objects
-require 'parsanol'
+const zerocopyCode = `require 'parsanol'
 
-# When you don't need typed objects, use parse_to_ruby_objects
-# This gives you direct Slice access with String keys
-class SimpleParser < Parsanol::Parser
-  rule(:word) { match('[a-z]').repeat(1).as(:name) }
-  rule(:number) { match('[0-9]').repeat(1).as(:value) }
-  root(:word)
-end
+grammar = Parsanol.match('[0-9]').repeat(1).as(:int) |
+          Parsanol.match(/[a-z]+/).repeat(1).as(:sym)
 
-parser = SimpleParser.new
+# Raw tagged tree: skips the parslet-compatibility transform.
+# Tree shapes are the engine's tagged envelopes (see the docs).
+tree = Parsanol::Native.parse_raw(grammar, '42')
 
-# Serialize grammar once (cache this!)
-grammar = Parsanol::Native.serialize_grammar(parser.root)
+# Consumers that walk the raw shape save the transform cost
+# (measured ~12-14% on real workloads).`
 
-# Parse with direct FFI - String keys, Slice values
-result = Parsanol::Native.parse_to_ruby_objects(grammar, "hello")
-# => { "name" => Slice("hello", offset: 0, length: 5) }
+const zerocopyLowlevelCode = `require 'parsanol'
 
-# Access position info directly
-result["name"].offset    # => 0
-result["name"].length    # => 5
-result["name"].to_s      # => "hello"
+# parse_batch takes pre-serialized grammar JSON and returns the raw
+# tagged tree, decoded in pure Ruby from a flat u64 batch.
+json = Parsanol::Native.serialize_grammar(grammar)
+tree = Parsanol::Native.parse_batch(json, '42', Parsanol::Slice)`
 
-# Use case: High-throughput batch parsing
-inputs = ["hello", "world", "test"]
-results = inputs.map { |input| Parsanol::Native.parse_to_ruby_objects(grammar, input) }
-# All results have String keys and Slice values with position info`
 </script>

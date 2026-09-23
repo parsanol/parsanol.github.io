@@ -505,7 +505,7 @@ interface Props {
   showSections?: string[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
+withDefaults(defineProps<Props>(), {
   showSections: () => ['getting-started', 'parsers', 'transforms', 'errors', 'examples', 'ruby'],
 })
 

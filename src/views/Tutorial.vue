@@ -425,7 +425,7 @@ end
 parser = JsonParser.new
 puts parser.parse('{"name": "John", "age": 30}').inspect`
 
-const chapter4Step4 = `// Full parser in Rust - see json_parser.rs example`
+const chapter4Complete = `// Full parser in Rust - see json_parser.rs example`
 
 // Chapter 5: Transformations
 const chapter5Basic = `// Transform: Convert parse tree to typed value

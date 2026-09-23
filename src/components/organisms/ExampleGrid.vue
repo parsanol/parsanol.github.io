@@ -233,7 +233,7 @@ function toExample(item: typeof examplesManifest[0]): Example {
     concepts: item.concepts || item.tags,
     languages,
     to: item.path,
-    diagram: item.diagram,
+    diagram: ('diagram' in item ? item.diagram : undefined) as string | undefined,
   }
 }
 
