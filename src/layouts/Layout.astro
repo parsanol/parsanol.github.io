@@ -1,0 +1,53 @@
+---
+import '../styles/global.css'
+
+interface Props {
+  title?: string
+  description?: string
+  active?: string
+}
+const {
+  title = 'Parsanol',
+  description = 'Parsanol is a PEG parser generator with a Rust engine and Ruby bindings.',
+  active = '',
+} = Astro.props
+
+const nav = [
+  { id: 'introduction', label: 'Introduction', href: '/introduction' },
+  { id: 'installation', label: 'Installation', href: '/installation' },
+  { id: 'news',         label: 'News',         href: '/news' },
+]
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <header class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+      <a href="/" class="font-bold text-lg">Parsanol</a>
+      <nav class="flex gap-1 text-sm">
+        {nav.map(item => (
+          <a href={item.href}
+             class:list={['px-3 py-1.5 rounded', active === item.id ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700']}>
+            {item.label}
+          </a>
+        ))}
+      </nav>
+    </div>
+  </header>
+  <main class="max-w-6xl mx-auto px-6 py-12">
+    <slot />
+  </main>
+  <footer class="border-t border-gray-200 dark:border-gray-700 mt-24 py-8 text-sm text-gray-500 dark:text-gray-400">
+    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
+      <span>Parsanol v0.8.8</span>
+      <a href="https://github.com/parsanol/parsanol-ruby" class="hover:text-primary-600">Source</a>
+    </div>
+  </footer>
+</body>
+</html>

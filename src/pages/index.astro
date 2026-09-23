@@ -1,0 +1,51 @@
+---
+import Layout from '../layouts/Layout.astro'
+import news from '../data/news-manifest.json'
+
+const features = [
+  { icon: '⚡', title: 'Fast',        desc: 'Native Rust engine, 10 to 15 times faster than parslet on real corpora.' },
+  { icon: '✓',  title: 'Correct',     desc: 'Exact parslet-compatible trees from a CanFlatten port.' },
+  { icon: '◈',  title: 'Cross-runtime', desc: 'MRI, TruffleRuby, and JRuby via the ffi tier.' },
+  { icon: '⟳',  title: 'Incremental', desc: 'Edit-span reparse with snapshot-tier memo retention.' },
+  { icon: '◎',  title: 'Scopes',     desc: 'Isolated capture contexts without capture pollution.' },
+  { icon: '▣',  title: 'Captures',   desc: 'Named extractions with zero-copy string access.' },
+  { icon: '✦',  title: 'Dynamic',    desc: 'Callbacks with capture context and write-back into scope.' },
+  { icon: '◆',  title: 'Packaged',   desc: 'Per-platform gems with a vendored cdylib.' },
+]
+const recent = news.slice(0, 3)
+---
+<Layout title="Parsanol">
+  <section class="text-center mb-16">
+    <h1 class="text-5xl font-bold mb-4">Parsanol</h1>
+    <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+      A PEG parser generator with a Rust engine and Ruby bindings. Two engines, one tree.
+    </p>
+    <div class="mt-6 flex items-center justify-center gap-3">
+      <a href="/installation" class="px-5 py-2.5 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700">Get started</a>
+      <a href="/news" class="px-5 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800">News</a>
+    </div>
+  </section>
+
+  <section class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+    {features.map(f => (
+      <div class="card">
+        <div class="text-2xl text-primary-600 mb-3">{f.icon}</div>
+        <h3 class="font-semibold mb-1">{f.title}</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-300">{f.desc}</p>
+      </div>
+    ))}
+  </section>
+
+  <section>
+    <h2 class="text-2xl font-semibold mb-4">Recent News</h2>
+    <div class="grid md:grid-cols-3 gap-4">
+      {recent.map((p: any) => (
+        <a href={`/news/${p.id}`} class="card hover:border-primary-400 transition">
+          <div class="text-xs text-gray-500 mb-1">{p.date?.slice(0, 10)}</div>
+          <div class="font-semibold mb-1">{p.title}</div>
+          <div class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">{p.summary}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>
