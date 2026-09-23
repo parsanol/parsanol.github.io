@@ -1,0 +1,383 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">API Reference</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-12">
+      Complete reference for all Parsanol functions and types.
+    </p>
+
+    <SearchBox />
+
+    <div class="mt-8 space-y-12">
+      <!-- Basic Parsers -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Basic Parsers</h2>
+
+        <div class="space-y-6">
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              str(pattern: &str) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Matches a literal string exactly.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              re(pattern: &str) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Matches a regular expression pattern.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              any() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Matches any single character.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              eof() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Matches end of input.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              cut() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Commits to the current parsing branch, preventing backtracking.
+              Use after a decision point to improve error messages.
+            </p>
+            
+          </div>
+        </div>
+      </section>
+
+      <!-- Character Classes -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Character Classes</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+          Pre-defined character classes with O(1) lookup using pre-computed tables.
+        </p>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">digit()</code>
+            <p class="text-sm text-gray-500 mt-1">[0-9] or \d</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">non_digit()</code>
+            <p class="text-sm text-gray-500 mt-1">\D</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">alpha()</code>
+            <p class="text-sm text-gray-500 mt-1">[a-zA-Z]</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">lower()</code>
+            <p class="text-sm text-gray-500 mt-1">[a-z]</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">upper()</code>
+            <p class="text-sm text-gray-500 mt-1">[A-Z]</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">alnum()</code>
+            <p class="text-sm text-gray-500 mt-1">[a-zA-Z0-9]</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">word()</code>
+            <p class="text-sm text-gray-500 mt-1">[a-zA-Z0-9_] or \w</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">non_word()</code>
+            <p class="text-sm text-gray-500 mt-1">\W</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">space()</code>
+            <p class="text-sm text-gray-500 mt-1">[ \t\n\r\f\v] or \s</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">non_space()</code>
+            <p class="text-sm text-gray-500 mt-1">\S</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">hex_digit()</code>
+            <p class="text-sm text-gray-500 mt-1">[0-9a-fA-F]</p>
+          </div>
+          <div class="card p-4">
+            <code class="text-primary-600 dark:text-primary-400">blank()</code>
+            <p class="text-sm text-gray-500 mt-1">[ \t]</p>
+          </div>
+        </div>
+
+        
+      </section>
+
+      <!-- Combinators -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Combinators</h2>
+
+        <div class="space-y-6">
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .then(other: Atom) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Sequences two parsers. Both must succeed in order.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .or(other: Atom) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Ordered choice: tries the first parser, falls back to the second if it fails.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              seq(atoms: Vec&lt;Atom&gt;) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Sequence of multiple atoms. All must succeed in order.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              choice(atoms: Vec&lt;Atom&gt;) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Ordered choice among multiple alternatives. Tries each in order until one succeeds.
+            </p>
+            
+          </div>
+        </div>
+      </section>
+
+      <!-- Repetition -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Repetition</h2>
+
+        <div class="space-y-6">
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .repeat(min: usize, max: Option&lt;usize&gt;) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Repeats the parser between min and max times.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .many() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Zero or more repetitions. Equivalent to <code>.repeat(0, None)</code>.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .many1() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              One or more repetitions. Equivalent to <code>.repeat(1, None)</code>.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .optional() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Makes the parser optional (zero or one). Equivalent to <code>.repeat(0, Some(1))</code>.
+            </p>
+            
+          </div>
+        </div>
+      </section>
+
+      <!-- Lookahead -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Lookahead</h2>
+
+        <div class="space-y-6">
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .lookahead() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Positive lookahead: succeeds if the pattern matches, but doesn't consume input.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .not_ahead() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Negative lookahead: succeeds if the pattern does NOT match, doesn't consume input.
+            </p>
+            
+          </div>
+        </div>
+      </section>
+
+      <!-- Modifiers -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Modifiers</h2>
+
+        <div class="space-y-6">
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .label(name: &str) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Names the capture for later access in transforms. Key feature for structured output.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              .ignore() -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Excludes the result from the output AST. Useful for whitespace and delimiters.
+            </p>
+            
+          </div>
+        </div>
+      </section>
+
+      <!-- Grammar -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Grammar Definition</h2>
+
+        <div class="space-y-6">
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              ref_(name: &str) -> Atom
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              References a named rule in the grammar. Essential for recursive structures.
+            </p>
+            
+          </div>
+
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              grammar! { ... }
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Macro for defining grammars with named rules. Clean syntax for complex parsers.
+            </p>
+            
+          </div>
+        </div>
+      </section>
+
+      <!-- Infix Builder -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Infix Expressions</h2>
+
+        <div class="card">
+          <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+            InfixBuilder
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Builder for parsing infix expressions with operator precedence and associativity.
+          </p>
+          
+        </div>
+      </section>
+
+      <!-- Transform System -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Transform System</h2>
+
+        <div class="space-y-6">
+          <div class="card">
+            <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+              Transform::new()
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              Transform raw parse trees into structured data using pattern matching.
+            </p>
+            
+          </div>
+        </div>
+      </section>
+
+      <!-- Derive Macros -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Derive Macros</h2>
+
+        <div class="card">
+          <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+            #[derive(FromAst)]
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Automatically derive AST-to-struct conversion for type-safe parsing.
+          </p>
+          
+        </div>
+      </section>
+
+      <!-- Visitor Pattern -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Visitor Pattern</h2>
+
+        <div class="card">
+          <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+            trait Visitor
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Walk the AST without transforming it. Useful for analysis, validation, and code generation.
+          </p>
+          
+        </div>
+      </section>
+
+      <!-- Streaming Builder -->
+      <section>
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Streaming Builder</h2>
+
+        <div class="card">
+          <h3 class="text-lg font-mono font-semibold text-gray-900 dark:text-white mb-2">
+            trait StreamingBuilder
+          </h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Build custom output structures during parsing without intermediate AST.
+            Zero-allocation for maximum performance.
+          </p>
+          
+        </div>
+      </section>
+
+    </div>
+  </div>
