@@ -15,7 +15,7 @@
 <script setup lang="ts">
 import Icon from '../atoms/Icon.vue'
 
-type IconName = 'menu' | 'close' | 'sun' | 'moon' | 'github' | 'search' | 'chevron-right' | 'check' | 'code' | 'book' | 'lightning' | 'puzzle' | 'cube' | 'arrows' | 'exclamation'
+type IconName = 'menu' | 'close' | 'sun' | 'moon' | 'github' | 'search' | 'chevron-right' | 'chevron-down' | 'check' | 'code' | 'book' | 'lightning' | 'puzzle' | 'cube' | 'arrows' | 'exclamation' | 'info' | 'globe' | 'gem' | 'layers' | 'sync' | 'stream' | 'capture' | 'scope' | 'dynamic'
 
 interface Props {
   title: string
