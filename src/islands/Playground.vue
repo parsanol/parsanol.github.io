@@ -96,17 +96,68 @@ function scheduleParse() {
   parseTimer = setTimeout(parse, 180)
 }
 
+interface RecoveryError {
+  offset?: number
+  line?: number
+  column?: number
+  expected?: string
+  message?: string
+}
+
+interface RecoveryEnvelope {
+  ok: boolean
+  shape?: unknown
+  captures?: Record<string, unknown>
+  error?: RecoveryError
+  consumed_upto?: number
+}
+
+function formatRecovery(envelope: RecoveryEnvelope): string {
+  const error = envelope.error ?? {}
+  const position = [
+    typeof error.offset === 'number' ? `offset ${error.offset}` : null,
+    typeof error.line === 'number' ? `line ${error.line}` : null,
+    typeof error.column === 'number' ? `column ${error.column}` : null,
+  ]
+    .filter(Boolean)
+    .join(', ')
+  const lines = [
+    `Parse failed${position ? ` at ${position}` : ''}` +
+      `${error.expected ? `; expected ${error.expected}` : ''}`,
+  ]
+  if (typeof envelope.consumed_upto === 'number') {
+    lines.push(`consumed up to byte ${envelope.consumed_upto}`)
+  }
+  const captures = envelope.captures ?? {}
+  if (Object.keys(captures).length > 0) {
+    lines.push(`captures observed before the failure:\n${JSON.stringify(captures, null, 2)}`)
+  }
+  return lines.join('\n')
+}
+
 function parse() {
   if (!artifactInstance) return
   errorText.value = ''
   try {
-    const shape = artifactInstance.parseShape(current.value.entry, input.value)
+    const envelope = JSON.parse(
+      artifactInstance.parseShapeRecovering(current.value.entry, input.value),
+    ) as RecoveryEnvelope
+    if (!envelope.ok) {
+      treeText.value = ''
+      boundText.value = ''
+      errorText.value = formatRecovery(envelope)
+      return
+    }
+    const shapeText = JSON.stringify(envelope.shape, null, 2)
     treeText.value =
-      shape.length > TREE_LIMIT
-        ? `${shape.slice(0, TREE_LIMIT)}\n… (${shape.length - TREE_LIMIT} more characters)`
-        : shape
+      shapeText.length > TREE_LIMIT
+        ? `${shapeText.slice(0, TREE_LIMIT)}\n… (${shapeText.length - TREE_LIMIT} more characters)`
+        : shapeText
     try {
-      boundText.value = artifactInstance.applyBindings(current.value.entry, shape)
+      boundText.value = artifactInstance.applyBindings(
+        current.value.entry,
+        JSON.stringify(envelope.shape),
+      )
     } catch {
       boundText.value = ''
     }
@@ -310,7 +361,7 @@ onBeforeUnmount(() => {
     </details>
 
     <p class="text-xs text-gray-500 dark:text-gray-400">
-      The engine is the published <code>@parsanol/wasm</code> build (~1.3&nbsp;MB), the same
+      The engine is the published <code>@parsanol/wasm</code> build (~1.4&nbsp;MB), the same
       binary the Rust and Ruby conformance suites validate. Parsing runs locally; nothing is
       uploaded. Share links carry the grammar id and input, gzipped in the URL hash.
     </p>
