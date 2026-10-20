@@ -13,7 +13,7 @@
     "@astrojs/check": "^0.9.4",
     "@astrojs/vue": "^7.0.3",
     "@codemirror/lang-json": "^6.0.2",
-    "@parsanol/wasm": "^0.18.9",
+    "@parsanol/wasm": "^0.18.10",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.4",
     "codemirror": "^6.0.2",
