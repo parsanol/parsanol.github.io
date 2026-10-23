@@ -1,18 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import content from '../data/views/examples.html?raw'
+import DocsNav from '../components/organisms/DocsNav.astro'
+import ExampleGrid from '../components/organisms/ExampleGrid.astro'
+import examplesManifest from '../data/examples-manifest.json'
 ---
-<Layout title="Examples — Parsanol" active="examples">
-  <div class="flex gap-12">
-    <aside class="w-64 flex-shrink-0 hidden lg:block">
-      <div class="sticky top-20 text-sm">
-        <a href="/introduction" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Introduction</a>
-        <a href="/installation" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Installation</a>
-        <a href="/news" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">News</a>
+<Layout title="Examples — Parsanol">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex gap-12">
+      <DocsNav showSections={['introduction']} />
+      <div class="flex-1 min-w-0">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Examples</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          Explore {examplesManifest.length} complete parser examples to learn how to use Parsanol effectively.
+          Each example includes architecture diagrams, code in both Rust and Ruby, and explanations.
+        </p>
+        <ExampleGrid />
       </div>
-    </aside>
-    <div class="flex-1 min-w-0 prose max-w-none">
-      <Fragment set:html={content} />
     </div>
   </div>
 </Layout>

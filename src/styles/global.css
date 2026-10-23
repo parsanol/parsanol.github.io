@@ -1,16 +1,71 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary-50:  #f5f7fb;
   --color-primary-100: #e6ecf5;
+  --color-primary-200: #c8d6ee;
+  --color-primary-300: #a3bce3;
+  --color-primary-400: #7a9bd4;
   --color-primary-500: #4b6cc1;
   --color-primary-600: #3d5bab;
   --color-primary-700: #2f4789;
+  --color-primary-800: #26396b;
+  --color-primary-900: #1d2b4f;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-html { font-family: ui-sans-serif, system-ui, sans-serif; }
+html { font-family: ui-sans-serif, system-ui, sans-serif; scroll-behavior: smooth; }
 code, pre, .font-mono { font-family: var(--font-mono); }
+
+@layer components {
+  .badge { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium; }
+  .badge-rust { @apply bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400; }
+  .badge-ruby { @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400; }
+  .badge-python { @apply bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400; }
+  .badge-js { @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400; }
+
+  .btn { @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200; }
+  .btn-primary { @apply bg-primary-600 text-white hover:bg-primary-700; }
+  .btn-secondary { @apply bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600; }
+
+  .card { @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6; }
+  .card-hover { @apply transition-all duration-200 hover:shadow-md hover:border-primary-300 dark:hover:border-primary-600; }
+
+  .nav-link { @apply block px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors; }
+  .nav-link.active { @apply text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20; }
+
+  .code-block-wrapper { @apply relative; }
+  .code-block-wrapper pre code { @apply block; }
+  .code-block { @apply font-mono text-sm text-left bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto; }
+
+  .code-tabs { @apply rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-left; }
+  .code-tabs .tabs { @apply flex bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700; }
+  .code-tabs .tab-btn { @apply px-4 py-2 text-sm font-medium transition-colors duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 border-b-2 border-transparent; }
+  .code-tabs .tab-btn.active { @apply text-primary-600 dark:text-primary-400 border-primary-600 dark:border-primary-400; }
+  .code-tabs .code-content { @apply bg-gray-900; }
+
+  .tab-container { @apply flex border-b border-gray-200 dark:border-gray-700; }
+  .tab-container .tab-btn { @apply px-4 py-2 text-sm font-medium transition-colors duration-200 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 border-b-2 border-transparent -mb-px; }
+  .tab-container .tab-btn.active { @apply text-primary-600 dark:text-primary-400 border-primary-600 dark:border-primary-400; }
+
+  .feature-card { @apply p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700; }
+
+  .dd-panel { @apply absolute left-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 opacity-0 scale-95 pointer-events-none transition duration-150 ease-out; }
+  .dd-wrap[data-open] .dd-panel { @apply opacity-100 scale-100 pointer-events-auto; }
+  .dd-wrap[data-open] .dd-chevron { @apply rotate-180; }
+
+  .filter-btn { @apply flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 ring-1 ring-gray-200 dark:ring-gray-700; }
+  .filter-btn .filter-dot { @apply w-2.5 h-2.5 rounded-sm bg-gray-300 dark:bg-gray-600; }
+  .filter-btn[data-on] { @apply bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 ring-1 ring-gray-300 dark:ring-gray-600; }
+  .filter-btn[data-on][data-filter="rust"] { @apply bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 ring-1 ring-orange-300 dark:ring-orange-700; }
+  .filter-btn[data-on][data-filter="rust"] .filter-dot { @apply bg-orange-500; }
+  .filter-btn[data-on][data-filter="ruby"] { @apply bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 ring-1 ring-red-300 dark:ring-red-700; }
+  .filter-btn[data-on][data-filter="ruby"] .filter-dot { @apply bg-red-500; }
+  .filter-btn[data-on][data-filter="parslet"] { @apply bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 ring-1 ring-purple-300 dark:ring-purple-700; }
+  .filter-btn[data-on][data-filter="parslet"] .filter-dot { @apply bg-purple-500; }
+}
 
 .prose h1 { @apply text-4xl font-bold mt-8 mb-4 text-gray-900 dark:text-white; }
 .prose h2 { @apply text-2xl font-semibold mt-8 mb-4 text-gray-900 dark:text-white; }
@@ -28,6 +83,66 @@ code, pre, .font-mono { font-family: var(--font-mono); }
 .prose a  { @apply text-primary-600 underline; }
 .prose blockquote { @apply border-l-4 border-gray-300 pl-4 italic my-4; }
 
-.card { @apply p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700; }
+.header-logo { height: 2.5rem; width: auto; }
+.footer-logo { height: 2rem; width: auto; }
 
-@custom-variant dark (&:where(.dark, .dark *));
+/* Prism token colors (from the original Vue design system) */
+code[class*="language-"],
+pre[class*="language-"] {
+  @apply text-sm;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  @apply text-gray-500;
+}
+
+.token.punctuation {
+  @apply text-gray-400;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  @apply text-red-400;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  @apply text-green-400;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  @apply text-yellow-400;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  @apply text-purple-400;
+}
+
+.token.function,
+.token.class-name {
+  @apply text-blue-400;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  @apply text-orange-400;
+}

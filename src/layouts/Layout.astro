@@ -1,25 +1,16 @@
 ---
 import '../styles/global.css'
-import version from '../data/version.json'
+import AppHeader from '../components/organisms/AppHeader.astro'
+import AppFooter from '../components/organisms/AppFooter.astro'
 
 interface Props {
   title?: string
   description?: string
-  active?: string
 }
 const {
   title = 'Parsanol',
   description = 'Parsanol is a PEG parser generator with a Rust engine and Ruby bindings.',
-  active = '',
 } = Astro.props
-
-const nav = [
-  { id: 'introduction', label: 'Introduction', href: '/introduction' },
-  { id: 'parg',         label: 'PARG',         href: '/parg' },
-  { id: 'installation', label: 'Installation', href: '/installation' },
-  { id: 'playground',   label: 'Playground',   href: '/playground' },
-  { id: 'news',         label: 'News',         href: '/news' },
-]
 ---
 <!doctype html>
 <html lang="en">
@@ -37,48 +28,11 @@ const nav = [
     }
   </script>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-  <header class="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 sticky top-0 z-10">
-    <div class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-      <a href="/" class="font-bold text-lg">Parsanol</a>
-      <nav class="flex gap-1 text-sm">
-        {nav.map(item => (
-          <a href={item.href}
-             class:list={['px-3 py-1.5 rounded', active === item.id ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700']}>
-            {item.label}
-          </a>
-        ))}
-      </nav>
-      <button id="theme-toggle" class="p-1.5 rounded text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700" aria-label="Toggle dark mode">
-        <svg id="theme-icon-light" class="w-4 h-4 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
-        <svg id="theme-icon-dark" class="w-4 h-4 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
-      </button>
-    </div>
-  </header>
-  <main class="max-w-6xl mx-auto px-6 py-12">
+<body class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
+  <AppHeader />
+  <main class="flex-1">
     <slot />
   </main>
-  <footer class="border-t border-gray-200 dark:border-gray-700 mt-24 py-8 text-sm text-gray-500 dark:text-gray-400">
-    <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
-      <span>Parsanol v{version.parsanolVersion}</span>
-      <a href="https://github.com/parsanol/parsanol-ruby" class="hover:text-primary-600">Source</a>
-    </div>
-  </footer>
-  <script is:inline>
-    const toggle = document.getElementById('theme-toggle')
-    const light = document.getElementById('theme-icon-light')
-    const dark = document.getElementById('theme-icon-dark')
-    function updateIcon() {
-      const isDark = document.documentElement.classList.contains('dark')
-      light.classList.toggle('hidden', !isDark)
-      dark.classList.toggle('hidden', isDark)
-    }
-    updateIcon()
-    toggle?.addEventListener('click', () => {
-      document.documentElement.classList.toggle('dark')
-      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light')
-      updateIcon()
-    })
-  </script>
+  <AppFooter />
 </body>
 </html>

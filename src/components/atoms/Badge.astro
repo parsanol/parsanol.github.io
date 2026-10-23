@@ -1,0 +1,19 @@
+---
+interface Props {
+  variant?: 'default' | 'rust' | 'ruby' | 'python' | 'js'
+  class?: string
+}
+
+const { variant = 'default', class: className } = Astro.props
+
+const variantClasses: Record<string, string> = {
+  rust: 'badge-rust',
+  ruby: 'badge-ruby',
+  python: 'badge-python',
+  js: 'badge-js',
+  default: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+}
+---
+<span class:list={['badge', variantClasses[variant], className]}>
+  <slot />
+</span>

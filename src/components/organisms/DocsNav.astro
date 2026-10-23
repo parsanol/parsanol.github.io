@@ -1,0 +1,223 @@
+---
+import newsPosts from '../../data/news-manifest.json'
+
+interface Props {
+  showSections?: string[]
+}
+
+const { showSections = ['introduction'] } = Astro.props
+const { pathname } = Astro.url
+const show = (s: string) => showSections.includes(s)
+
+const getShortTitle = (title: string): string =>
+  title
+    .replace(/^Parsanol\s+(\w+\s+)?\d+\.\d+\.\d+:\s*/, '')
+    .replace(/^Parsanol\s+Ruby\s+\d+\.\d+\.\d+:\s*/, '')
+---
+<aside class="w-64 flex-shrink-0 hidden lg:block">
+  <nav class="sticky top-20 space-y-6">
+    <!-- About -->
+    {show('about') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">About</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="/about" class:list={['nav-link text-sm', { active: pathname === '/about' }]}>
+              About Parsanol
+            </a>
+          </li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Getting Started (separate pages) -->
+    {(show('introduction') || show('installation') || show('first-parser')) && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Getting Started</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="/introduction" class:list={['nav-link text-sm', { active: pathname === '/introduction' }]}>
+              What is Parsanol?
+            </a>
+          </li>
+          <li>
+            <a href="/installation" class:list={['nav-link text-sm', { active: pathname === '/installation' }]}>
+              Installation
+            </a>
+          </li>
+          <li>
+            <a href="/first-parser" class:list={['nav-link text-sm', { active: pathname === '/first-parser' }]}>
+              Your First Parser
+            </a>
+          </li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Getting Started (legacy single page) -->
+    {show('getting-started') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Getting Started</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="/getting-started#installation" class="nav-link text-sm">
+              Installation
+            </a>
+          </li>
+          <li>
+            <a href="/getting-started#what-is-parser-combinator" class="nav-link text-sm">
+              Basic Concepts
+            </a>
+          </li>
+          <li>
+            <a href="/getting-started#first-parser" class="nav-link text-sm">
+              First Parser
+            </a>
+          </li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Parsers -->
+    {show('parsers') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Parser Combinators</h3>
+        <ul class="space-y-1">
+          <li><a href="/parsers#basic-atoms" class="nav-link text-sm">Basic Atoms</a></li>
+          <li><a href="/parsers#combinators" class="nav-link text-sm">Combinators</a></li>
+          <li><a href="/parsers#advanced" class="nav-link text-sm">Advanced</a></li>
+          <li><a href="/parsers#infix" class="nav-link text-sm">Infix Expressions</a></li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Transforms -->
+    {show('transforms') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Transforms</h3>
+        <ul class="space-y-1">
+          <li><a href="/transforms#why-transforms" class="nav-link text-sm">Why Transforms?</a></li>
+          <li><a href="/transforms#pattern-matching" class="nav-link text-sm">Pattern Matching</a></li>
+          <li><a href="/transforms#simple-transforms" class="nav-link text-sm">Simple Transforms</a></li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Errors -->
+    {show('errors') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Error Handling</h3>
+        <ul class="space-y-1">
+          <li><a href="/errors#tree-errors" class="nav-link text-sm">Tree-Structured Errors</a></li>
+          <li><a href="/errors#reporters" class="nav-link text-sm">Error Reporters</a></li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Ruby -->
+    {show('ruby') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Ruby Bindings</h3>
+        <ul class="space-y-1">
+          <li><a href="/ruby-bindings#three-modes" class="nav-link text-sm">The 3 Modes</a></li>
+          <li><a href="/ruby-bindings#slice-feature" class="nav-link text-sm">Slice Support</a></li>
+          <li><a href="/ruby-bindings#zerocopy" class="nav-link text-sm">ZeroCopy Interface</a></li>
+          <li><a href="/ruby-bindings#streaming" class="nav-link text-sm">Streaming Parser</a></li>
+          <li><a href="/ruby-bindings#when-to-use" class="nav-link text-sm">When to Use Which</a></li>
+          <li><a href="/ruby-bindings#benchmarks" class="nav-link text-sm">Verify Performance</a></li>
+          <li><a href="/ruby-bindings#migration" class="nav-link text-sm">Migration from Parslet</a></li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Docs -->
+    {show('docs') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Documentation</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="/architecture" class:list={['nav-link text-sm', { active: pathname === '/architecture' }]}>
+              Architecture
+            </a>
+          </li>
+          <li>
+            <a href="/feature-comparison" class:list={['nav-link text-sm', { active: pathname === '/feature-comparison' }]}>
+              Engine Comparison
+            </a>
+          </li>
+          <li>
+            <a href="/ruby-bindings#migration" class="nav-link text-sm">
+              Migrating from Parslet
+            </a>
+          </li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Architecture -->
+    {show('architecture') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Architecture</h3>
+        <ul class="space-y-1">
+          <li><a href="/architecture#benchmarks" class="nav-link text-sm">Evidence-Based Benchmarks</a></li>
+          <li><a href="/architecture#slice-feature" class="nav-link text-sm">Slice Support</a></li>
+          <li><a href="/architecture#when-to-use" class="nav-link text-sm">When to Use Which</a></li>
+          <li><a href="/architecture#rust-core" class="nav-link text-sm">Rust Core Engine</a></li>
+          <li><a href="/architecture#parslet-compat" class="nav-link text-sm">Parslet Compatibility</a></li>
+          <li><a href="/architecture#running-benchmarks" class="nav-link text-sm">Running Benchmarks</a></li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Backends -->
+    {show('backends') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Parsing Backends</h3>
+        <ul class="space-y-1">
+          <li><a href="/backends#comparison" class="nav-link text-sm">Quick Comparison</a></li>
+          <li><a href="/backends#how-they-work" class="nav-link text-sm">How They Work</a></li>
+          <li><a href="/backends#when-to-use" class="nav-link text-sm">When to Use Which</a></li>
+          <li><a href="/backends#problematic-patterns" class="nav-link text-sm">Problematic Patterns</a></li>
+          <li><a href="/backends#analyzing" class="nav-link text-sm">Analyzing Your Grammar</a></li>
+          <li><a href="/backends#usage" class="nav-link text-sm">Usage Examples</a></li>
+          <li><a href="/backends#optimizations" class="nav-link text-sm">Optimizations</a></li>
+          <li><a href="/backends#known-differences" class="nav-link text-sm">Known Differences</a></li>
+        </ul>
+      </div>
+    )}
+
+    <!-- Guides -->
+    {show('guides') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Guides</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="/captures-guide" class:list={['nav-link text-sm', { active: pathname === '/captures-guide' }]}>
+              Captures, Scopes & Dynamic
+            </a>
+          </li>
+        </ul>
+      </div>
+    )}
+
+    <!-- News -->
+    {show('news') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Releases</h3>
+        <ul class="space-y-1">
+          {newsPosts.map((post: any) => (
+            <li>
+              <a
+                href={`/news/${post.id}`}
+                class:list={['nav-link text-sm flex items-center gap-2', { active: pathname === `/news/${post.id}` }]}
+              >
+                <span class="text-xs text-gray-500 dark:text-gray-400">{post.id}</span>
+                <span class="truncate">{getShortTitle(post.title)}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </nav>
+</aside>

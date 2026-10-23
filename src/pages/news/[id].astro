@@ -9,11 +9,13 @@ export function getStaticPaths() {
 const { post } = Astro.props
 const html = marked.parse(post.body_md ?? '', { async: false }) as string
 ---
-<Layout title={`${post.title} — Parsanol`} description={post.summary} active="news">
-  <article class="prose max-w-none">
-    <div class="text-sm text-gray-500 mb-2">{post.date?.slice(0, 10)}</div>
-    <h1>{post.title}</h1>
-    <p>{post.summary}</p>
-    <Fragment set:html={html} />
-  </article>
+<Layout title={`${post.title} — Parsanol`} description={post.summary}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <article class="prose max-w-none">
+      <div class="text-sm text-gray-500 mb-2">{post.date?.slice(0, 10)}</div>
+      <h1>{post.title}</h1>
+      <p>{post.summary}</p>
+      <Fragment set:html={html} />
+    </article>
+  </div>
 </Layout>
