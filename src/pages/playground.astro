@@ -11,6 +11,9 @@ import Playground from '../islands/Playground.vue'
     <h1 class="text-3xl font-bold">Grammar playground</h1>
     <p class="text-lg text-gray-600 dark:text-gray-300">
       Pick a compiled PARG artifact, edit the input, and watch the wasm engine parse it live.
+      Break the input on the <strong>Error recovery</strong> grammar and the engine reports the
+      deepest failure position, keeps the partial tree, and — because that grammar declares a
+      <code>resync</code> policy — shows the exact span it consumed so parsing could resume.
       Every tree is produced by the same <code>@parsanol/wasm</code> binary that the Rust and
       Ruby conformance suites validate, and the badge reports the artifact's embedded tests
       replayed on that binary.
@@ -27,13 +30,15 @@ import Playground from '../islands/Playground.vue'
         time; the browser verifies the checksum before parsing.
       </li>
       <li>
-        Parsing, bindings application, and the embedded self-test all run in the wasm engine
-        (~1.4&nbsp;MB, <code>@parsanol/wasm</code> 0.18.10). No network calls, no server-side
-        parsing.
+        Parsing, bindings application, the embedded self-test, and error recovery all run in
+        the wasm engine (~1.4&nbsp;MB, <code>@parsanol/wasm</code> 0.18.18). No network calls,
+        no server-side parsing.
       </li>
       <li>
-        A failed parse returns the engine's recovery envelope: byte offset, line/column, the
-        expected set, how far it consumed, and the captures observed before the failure.
+        A failed parse returns the engine's recovery envelope: the deepest real-content
+        position, the expected set, the partial tree parsed before the failure, and — for
+        grammars that declare a <code>resync</code> policy — the exact spans consumed so
+        parsing could resume.
       </li>
       <li>
         The share button gzips the selected grammar id and input into the URL hash, so a link
