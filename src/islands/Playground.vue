@@ -5,6 +5,7 @@ import { EditorView, basicSetup } from 'codemirror'
 import { json } from '@codemirror/lang-json'
 import jsonArtifact from '../assets/playground/json.artifact.json?raw'
 import isoArtifact from '../assets/playground/iso.artifact.json?raw'
+import recoveryArtifact from '../assets/playground/recovery.artifact.json?raw'
 
 interface Demo {
   id: string
@@ -16,6 +17,14 @@ interface Demo {
 }
 
 const demos: Demo[] = [
+  {
+    id: 'recovery',
+    name: 'Error recovery (key = value)',
+    entry: 'main',
+    artifactRaw: recoveryArtifact,
+    artifact: JSON.parse(recoveryArtifact),
+    input: 'a=1;b=2;@@junk@@;c=3;d=4;',
+  },
   {
     id: 'iso',
     name: 'ISO identifier',
@@ -39,6 +48,7 @@ const input = ref(current.value.input)
 const treeText = ref('')
 const boundText = ref('')
 const errorText = ref('')
+const recovery = ref<{ ok: boolean; headline: string; text: string } | null>(null)
 const selfTest = ref<{ ok: boolean; text: string } | null>(null)
 const loading = ref(true)
 const shareState = ref('')
@@ -99,6 +109,7 @@ function scheduleParse() {
 function parse() {
   if (!artifactInstance) return
   errorText.value = ''
+  recovery.value = null
   try {
     const shape = artifactInstance.parseShape(current.value.entry, input.value)
     treeText.value =
@@ -114,7 +125,78 @@ function parse() {
     treeText.value = ''
     boundText.value = ''
     errorText.value = String(error)
+    runRecovery(error)
   }
+}
+
+// R1/R2 recovery: never throws. On failure it returns the deepest error
+// position, the best partial tree, and — when the grammar declares a
+// `resync` policy — the deterministic spans that were consumed so the
+// parse could resume.
+function runRecovery(strictError: unknown) {
+  let envelope: any = null
+  try {
+    envelope = JSON.parse(
+      artifactInstance.parseShapeRecovering(current.value.entry, input.value),
+    )
+  } catch {
+    envelope = null
+  }
+  if (!envelope || envelope.ok !== false) {
+    recovery.value = null
+    return
+  }
+
+  const err = envelope.error ?? {}
+  const where = `line ${err.line ?? 1}:${err.column ?? 1} (offset ${err.offset ?? '?'})`
+  const expected: string[] = Array.isArray(err.expected) ? err.expected : []
+  const resyncs: any[] = Array.isArray(envelope.resyncs) ? envelope.resyncs : []
+  const partial = envelope.partial ?? null
+
+  const bits: string[] = [`strict parse failed at ${where}`]
+  if (expected.length) {
+    bits.push(`expected ${expected.slice(0, 4).join(', ')}${expected.length > 4 ? '…' : ''}`)
+  }
+  const itemCount = countPartialItems(partial)
+  if (itemCount > 0) {
+    bits.push(
+      `partial tree keeps ${itemCount} complete ${itemCount === 1 ? 'item' : 'items'} before the failure`,
+    )
+  }
+  for (const span of resyncs) {
+    bits.push(
+      `recovery consumed ${JSON.stringify(span.skipped)} (offsets ${span.offset}→${span.resumed_at}) as one annotated span and resumed`,
+    )
+  }
+  if (!resyncs.length && itemCount > 0) {
+    bits.push('no resync policy applied — the partial tree is the deepest clean prefix')
+  }
+
+  recovery.value = {
+    ok: false,
+    headline: bits.join(' · '),
+    text: JSON.stringify(
+      {
+        partial,
+        error: err,
+        resyncs,
+        captured: envelope.captures ?? {},
+        consumed_upto: envelope.consumed_upto,
+      },
+      null,
+      2,
+    ),
+  }
+}
+
+function countPartialItems(partial: any): number {
+  if (partial == null) return 0
+  if (Array.isArray(partial)) return partial.length
+  if (typeof partial === 'object') {
+    const first = Object.values(partial)[0]
+    if (Array.isArray(first)) return first.length
+  }
+  return 0
 }
 
 function setupEditor(element: HTMLElement) {
@@ -300,6 +382,24 @@ onBeforeUnmount(() => {
           >{{ boundText === '{}' ? '(no bindings declared for this entry)' : boundText || '(no bindings declared for this entry)' }}</pre>
         </details>
       </section>
+    </div>
+
+    <div
+      v-if="recovery && !recovery.ok"
+      class="rounded-lg border border-amber-300 bg-amber-50 dark:border-amber-700/60 dark:bg-amber-900/20"
+    >
+      <div class="px-4 py-2 text-sm font-medium text-amber-900 dark:text-amber-200">
+        Error recovery · {{ recovery.headline }}
+      </div>
+      <pre
+        class="max-h-72 overflow-auto border-t border-amber-200 bg-white/70 px-4 py-3 text-xs text-gray-800 dark:border-amber-800/60 dark:bg-gray-900/60 dark:text-gray-100"
+      >{{ recovery.text }}</pre>
+      <p class="px-4 py-2 text-xs text-amber-800 dark:text-amber-300">
+        Produced by <code>parseShapeRecovering</code>: the deepest real-content position, the
+        best partial tree, and — because this grammar declares a
+        <code>resync document = …</code> policy — the exact spans consumed so the parse could
+        resume. Every engine returns these spans byte-identically.
+      </p>
     </div>
 
     <details class="rounded-lg border border-gray-200 dark:border-gray-700">

@@ -11,6 +11,9 @@ import Playground from '../islands/Playground.vue'
     <h1 class="text-3xl font-bold">Grammar playground</h1>
     <p class="text-lg text-gray-600 dark:text-gray-300">
       Pick a compiled PARG artifact, edit the input, and watch the wasm engine parse it live.
+      Break the input on the <strong>Error recovery</strong> grammar and the engine reports the
+      deepest failure position, keeps the partial tree, and — because that grammar declares a
+      <code>resync</code> policy — shows the exact span it consumed so parsing could resume.
       Every tree is produced by the same <code>@parsanol/wasm</code> binary that the Rust and
       Ruby conformance suites validate, and the badge reports the artifact's embedded tests
       replayed on that binary.
@@ -27,8 +30,8 @@ import Playground from '../islands/Playground.vue'
         time; the browser verifies the checksum before parsing.
       </li>
       <li>
-        Parsing, bindings application, and the embedded self-test all run in the wasm engine
-        (~1.3&nbsp;MB). No network calls, no server-side parsing.
+        Parsing, bindings application, the embedded self-test, and error recovery all run in
+        the wasm engine (~1.3&nbsp;MB). No network calls, no server-side parsing.
       </li>
       <li>
         The share button gzips the selected grammar id and input into the URL hash, so a link
