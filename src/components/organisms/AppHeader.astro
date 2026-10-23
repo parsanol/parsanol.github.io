@@ -74,6 +74,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
         <div class="relative dd-wrap" data-dd>
           <button
             type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
             class:list={['nav-link flex items-center gap-1', { active: pargActive }]}
           >
             PARG
@@ -98,6 +100,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
         <div class="relative dd-wrap" data-dd>
           <button
             type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
             class:list={['nav-link flex items-center gap-1', { active: docsActive }]}
           >
             Learn
@@ -123,6 +127,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
         <div class="relative dd-wrap" data-dd>
           <button
             type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
             class:list={['nav-link flex items-center gap-1', { active: rustActive }]}
           >
             Rust
@@ -147,6 +153,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
         <div class="relative dd-wrap" data-dd>
           <button
             type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
             class:list={['nav-link flex items-center gap-1', { active: rubyActive }]}
           >
             Ruby
@@ -272,8 +280,12 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
     const open = () => {
       closeAllDropdowns(dd)
       dd.setAttribute('data-open', '')
+      button.setAttribute('aria-expanded', 'true')
     }
-    const close = () => dd.removeAttribute('data-open')
+    const close = () => {
+      dd.removeAttribute('data-open')
+      button.setAttribute('aria-expanded', 'false')
+    }
     button.addEventListener('click', () => {
       if (dd.hasAttribute('data-open')) close()
       else open()

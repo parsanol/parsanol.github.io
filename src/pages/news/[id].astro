@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro'
+import CodeBlock from '../../components/atoms/CodeBlock.astro'
 import news from '../../data/news-manifest.json'
 import { marked } from 'marked'
 
@@ -36,9 +37,7 @@ const blocks: any[] = post.content ?? []
           )
         }
         if (block.type === 'code') {
-          return (
-            <pre><code class:list={[block.language ? `language-${block.language}` : '']}>{block.text}</code></pre>
-          )
+          return <CodeBlock lang={block.language || 'text'} code={block.text} />
         }
         if (block.type === 'table') {
           return (
