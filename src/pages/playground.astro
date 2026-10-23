@@ -31,7 +31,14 @@ import Playground from '../islands/Playground.vue'
       </li>
       <li>
         Parsing, bindings application, the embedded self-test, and error recovery all run in
-        the wasm engine (~1.3&nbsp;MB). No network calls, no server-side parsing.
+        the wasm engine (~1.4&nbsp;MB, <code>@parsanol/wasm</code> 0.18.18). No network calls,
+        no server-side parsing.
+      </li>
+      <li>
+        A failed parse returns the engine's recovery envelope: the deepest real-content
+        position, the expected set, the partial tree parsed before the failure, and — for
+        grammars that declare a <code>resync</code> policy — the exact spans consumed so
+        parsing could resume.
       </li>
       <li>
         The share button gzips the selected grammar id and input into the URL hash, so a link

@@ -106,18 +106,49 @@ function scheduleParse() {
   parseTimer = setTimeout(parse, 180)
 }
 
+interface RecoveryError {
+  offset?: number
+  line?: number
+  column?: number
+  expected?: string[]
+}
+
+interface RecoveryEnvelope {
+  ok: boolean
+  shape?: unknown
+  captures?: Record<string, unknown>
+  error?: RecoveryError
+  consumed_upto?: number
+  partial?: unknown
+  resyncs?: Array<{ offset?: number; skipped?: string; resumed_at?: number }>
+}
+
 function parse() {
   if (!artifactInstance) return
   errorText.value = ''
   recovery.value = null
   try {
-    const shape = artifactInstance.parseShape(current.value.entry, input.value)
+    // One wasm call serves both paths: a clean parse carries `shape`,
+    // a failed one carries the full recovery envelope (never throws).
+    const envelope = JSON.parse(
+      artifactInstance.parseShapeRecovering(current.value.entry, input.value),
+    ) as RecoveryEnvelope
+    if (!envelope.ok) {
+      treeText.value = ''
+      boundText.value = ''
+      applyFailure(envelope)
+      return
+    }
+    const shapeText = JSON.stringify(envelope.shape, null, 2)
     treeText.value =
-      shape.length > TREE_LIMIT
-        ? `${shape.slice(0, TREE_LIMIT)}\n… (${shape.length - TREE_LIMIT} more characters)`
-        : shape
+      shapeText.length > TREE_LIMIT
+        ? `${shapeText.slice(0, TREE_LIMIT)}\n… (${shapeText.length - TREE_LIMIT} more characters)`
+        : shapeText
     try {
-      boundText.value = artifactInstance.applyBindings(current.value.entry, shape)
+      boundText.value = artifactInstance.applyBindings(
+        current.value.entry,
+        JSON.stringify(envelope.shape),
+      )
     } catch {
       boundText.value = ''
     }
@@ -125,35 +156,24 @@ function parse() {
     treeText.value = ''
     boundText.value = ''
     errorText.value = String(error)
-    runRecovery(error)
   }
 }
 
-// R1/R2 recovery: never throws. On failure it returns the deepest error
-// position, the best partial tree, and — when the grammar declares a
-// `resync` policy — the deterministic spans that were consumed so the
-// parse could resume.
-function runRecovery(strictError: unknown) {
-  let envelope: any = null
-  try {
-    envelope = JSON.parse(
-      artifactInstance.parseShapeRecovering(current.value.entry, input.value),
-    )
-  } catch {
-    envelope = null
-  }
-  if (!envelope || envelope.ok !== false) {
-    recovery.value = null
-    return
-  }
-
+// R1/R2 recovery envelope: the deepest error position, the best partial
+// tree, and — when the grammar declares a `resync` policy — the
+// deterministic spans that were consumed so the parse could resume.
+function applyFailure(envelope: RecoveryEnvelope) {
   const err = envelope.error ?? {}
   const where = `line ${err.line ?? 1}:${err.column ?? 1} (offset ${err.offset ?? '?'})`
   const expected: string[] = Array.isArray(err.expected) ? err.expected : []
-  const resyncs: any[] = Array.isArray(envelope.resyncs) ? envelope.resyncs : []
+  const resyncs: Array<{ offset?: number; skipped?: string; resumed_at?: number }> = Array.isArray(
+    envelope.resyncs,
+  )
+    ? envelope.resyncs
+    : []
   const partial = envelope.partial ?? null
 
-  const bits: string[] = [`strict parse failed at ${where}`]
+  const bits: string[] = [`parse failed at ${where}`]
   if (expected.length) {
     bits.push(`expected ${expected.slice(0, 4).join(', ')}${expected.length > 4 ? '…' : ''}`)
   }
@@ -410,7 +430,7 @@ onBeforeUnmount(() => {
     </details>
 
     <p class="text-xs text-gray-500 dark:text-gray-400">
-      The engine is the published <code>@parsanol/wasm</code> build (~1.3&nbsp;MB), the same
+      The engine is the published <code>@parsanol/wasm</code> build (~1.4&nbsp;MB), the same
       binary the Rust and Ruby conformance suites validate. Parsing runs locally; nothing is
       uploaded. Share links carry the grammar id and input, gzipped in the URL hash.
     </p>
