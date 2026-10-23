@@ -24,6 +24,17 @@ File.write("demo.artifact.json", JSON.generate(result.envelope))
 artifact = Parsanol::PARG::Artifact.load("demo.artifact.json")
 artifact.parse_and_bind("identifier", "iso 12345")
 # => { publisher: "iso", number: 12345 }`
+
+const demoTypeScript = `import init, { PargArtifactJs } from "@parsanol/wasm";
+
+await init();
+
+// Checksum verified on load
+const parg = new PargArtifactJs(demoArtifactJson);
+const bound = parg.parseAndBind("identifier", "iso 12345");
+// => { publisher: "iso", number: 12345 }
+
+parg.runTests(); // replay the artifact's embedded tests`
 ---
 <section class="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
   <!-- Background Pattern -->
@@ -80,6 +91,7 @@ artifact.parse_and_bind("identifier", "iso 12345")
           tabs={[
             { name: 'parg', label: 'demo.parg', lang: 'parg', code: demoParg },
             { name: 'ruby', label: 'Ruby', lang: 'ruby', badge: 'ruby', code: demoRuby },
+            { name: 'typescript', label: 'TypeScript', lang: 'typescript', badge: 'js', code: demoTypeScript },
           ]}
         />
       </div>
