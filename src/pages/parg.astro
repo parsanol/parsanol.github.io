@@ -1,0 +1,189 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+const demoParg = `# demo.parg
+grammar Demo version "1.0.0" {
+  digit = %x30-39
+  number = 1*digit
+  space = " "
+  publisher = %i"iso" / %i"ieee"
+
+  iso_identifier = publisher as publisher space number as number
+}
+
+bindings iso_identifier {
+  publisher -> publisher (string)
+  number -> number (integer)
+}
+
+entry identifier: iso_identifier`
+
+const demoRuby = `require "parsanol"
+require "json"
+
+document = Parsanol::PARG::Parser.new(File.read("demo.parg")).parse
+result   = Parsanol::PARG::Compiler.compile(document)
+File.write("demo.artifact.json", JSON.generate(result.envelope))
+
+artifact = Parsanol::PARG::Artifact.load("demo.artifact.json")
+artifact.parse_and_bind("identifier", "iso 12345")
+# => { publisher: "iso", number: 12345 }`
+
+const lifecycle = [
+  {
+    step: '1',
+    title: 'Write',
+    body: 'One .parg text file: rules in an ABNF-flavored style, entries, bindings, in-file tests. The compiler lints it — shadowed alternatives and order-dependence are build failures, not runtime surprises.',
+  },
+  {
+    step: '2',
+    title: 'Compile',
+    body: 'Parsanol::PARG::Compiler bakes the grammar into portable atoms, applies compile-time rewrites (skip injection, left-recursion tiers, resync policies), and runs every in-file test. A failing test fails the build.',
+  },
+  {
+    step: '3',
+    title: 'Artifact',
+    body: 'A parsanol-tree/v2 envelope: the portable grammar JSON, bindings, embedded tests, the original source — and a sha256 checksum over the canonicalized content.',
+  },
+  {
+    step: '4',
+    title: 'Consume',
+    body: 'Every runtime loads the same file, verifies the checksum, and parses identically: PargArtifact (Ruby), the parsanol-rs crate, PargArtifactJs (@parsanol/wasm), PargRuntime (TypeScript).',
+  },
+]
+
+const features = [
+  {
+    title: 'Trivia, declared once',
+    body: 'skip = trivia injects whitespace/comment consumption before every terminal; captured trivia rides with the next capture under comments:. atomic rules opt out for token-shaped bodies.',
+    anchor: '/parg/language#skip',
+  },
+  {
+    title: 'Recovery with owned spans',
+    body: 'resync <rule> = <pattern> bakes a deterministic skip policy into the artifact: failures return the deepest position, the partial tree, and the exact spans consumed so parsing resumed.',
+    anchor: '/parg/language#resync',
+  },
+  {
+    title: 'Direct left recursion',
+    body: 'expr = expr "*" expr / INT is rewritten at compile time into left-folding precedence tiers — alternatives in source order bind tightest-first — and every engine runs the identical fold.',
+    anchor: '/parg/language#left-recursion',
+  },
+  {
+    title: 'Lookbehind guards',
+    body: '!<x and &<x inspect the text behind the position without consuming — the flank guards for intraword constraints like constrained emphasis.',
+    anchor: '/parg/language#behind-guards',
+  },
+  {
+    title: 'Tests travel with the grammar',
+    body: 'accept / reject / capture / example / shape assertions run at compile time and ride the artifact, so every engine replays the same expectations — that is the conformance corpus.',
+    anchor: '/parg/language#tests',
+  },
+  {
+    title: 'Data, not code',
+    body: 'alt from_table builds literal alternatives from a table at compile time; table_lookup preprocesses bound values; bindings map captures to typed model fields.',
+    anchor: '/parg/language#bindings',
+  },
+]
+---
+<Layout
+  title="PARG — the grammar language — Parsanol"
+  description="PARG is parsanol's grammar language: write once, compile to a checksummed artifact, parse identically on Ruby, Rust, WebAssembly, and TypeScript."
+  active="parg"
+>
+  <div class="flex gap-12">
+    <aside class="w-64 flex-shrink-0 hidden lg:block">
+      <div class="sticky top-20 text-sm space-y-1">
+        <a href="/parg" class="block px-3 py-1.5 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium">What is PARG?</a>
+        <a href="/parg/language" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Language tour</a>
+        <a href="/playground" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Playground</a>
+        <a href="/errors" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Diagnostics</a>
+      </div>
+    </aside>
+
+    <div class="flex-1 min-w-0 prose max-w-none">
+      <h1>PARG — the grammar language</h1>
+
+      <p class="text-lg">
+        PARG is how you write a parser for parsanol: one text file describing the grammar,
+        compiled <strong>once</strong> into a checksummed artifact that Ruby, Rust,
+        WebAssembly, and TypeScript all consume — building byte-identical trees and
+        recovering from broken input identically.
+      </p>
+
+      <div class="not-prose bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-900/40 rounded-xl p-5 my-8">
+        <p class="text-primary-900 dark:text-primary-200 font-medium">
+          Write once → compile → verify → parse everywhere. The grammar becomes data with a
+          checksum, not code pinned to one language.
+        </p>
+      </div>
+
+      <h2>The lifecycle</h2>
+      <div class="not-prose grid sm:grid-cols-2 lg:grid-cols-4 gap-4 my-6">
+        {lifecycle.map((item) => (
+          <div class="card">
+            <div class="text-primary-600 dark:text-primary-400 font-bold text-sm mb-1">{item.step}</div>
+            <div class="font-semibold mb-2">{item.title}</div>
+            <p class="text-sm text-gray-600 dark:text-gray-300">{item.body}</p>
+          </div>
+        ))}
+      </div>
+
+      <h2>Quick start</h2>
+      <p>
+        A grammar, its bindings, and an entry point — then compile it and parse. This is the
+        whole workflow:
+      </p>
+      <div class="not-prose grid lg:grid-cols-2 gap-4 my-6">
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">demo.parg</div>
+          <pre class="text-xs"><code>{demoParg}</code></pre>
+        </div>
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">compile once, parse anywhere</div>
+          <pre class="text-xs"><code>{demoRuby}</code></pre>
+        </div>
+      </div>
+      <p>
+        The same artifact parses the same input on the Rust side
+        (<code>PargArtifact</code>) and in the browser (<code>PargArtifactJs</code> from
+        <code>@parsanol/wasm</code>) — try the
+        <a href="/playground">playground</a>, which runs the shipped wasm binary.
+      </p>
+
+      <h2>What the artifact guarantees</h2>
+      <ul>
+        <li><strong>Integrity</strong> — the sha256 checksum over the canonicalized envelope is verified on load; a mismatch fails loudly, never silently mis-parses.</li>
+        <li><strong>Portability</strong> — the grammar section is the exact wire format every engine registers; one serialization, four runtimes.</li>
+        <li><strong>Self-containment</strong> — the original .parg text rides inside, so a runtime can rebuild atoms without the source file.</li>
+        <li><strong>Behavior pinned</strong> — the in-file tests travel with the artifact; consumers replay them (this site's playground badge does exactly that).</li>
+        <li><strong>Versioned</strong> — capture renames are major, new alternatives minor, literal fixes patch; model-side-only changes move a separate <code>binding_version</code>.</li>
+      </ul>
+
+      <h2>What the language has</h2>
+      <div class="not-prose grid md:grid-cols-2 gap-4 my-6">
+        {features.map((feature) => (
+          <a href={feature.anchor} class="card hover:border-primary-400 transition block">
+            <div class="font-semibold mb-2">{feature.title}</div>
+            <p class="text-sm text-gray-600 dark:text-gray-300">{feature.body}</p>
+          </a>
+        ))}
+      </div>
+
+      <h2>Runtime boundaries, stated plainly</h2>
+      <p>
+        Grammars using runtime state (<code>state</code>/<code>set</code>/<code>switch</code>
+        atoms or <code>custom</code> Ruby classes) are Ruby-tier by contract: the Rust and
+        wasm engines reject such artifacts loudly at the boundary instead of mis-parsing
+        them. Everything else on this page runs on every engine — and the
+        <a href="/feature-comparison">engine comparison</a> shows how that is enforced.
+      </p>
+
+      <h2>Normative documents</h2>
+      <ul>
+        <li><a href="https://github.com/parsanol/parsanol-ruby/blob/main/docs/parg-language-guide.md">parg-language-guide.md</a> — the friendly edition (this page distills it).</li>
+        <li><a href="https://github.com/parsanol/parsanol-ruby/blob/main/docs/parg-semantics.md">parg-semantics.md</a> — the normative match relation, flatten laws, trivia rewrite, and the corpus coverage matrix.</li>
+        <li><a href="/parg/language">The language tour</a> — the syntax on one page, with examples.</li>
+      </ul>
+    </div>
+  </div>
+</Layout>

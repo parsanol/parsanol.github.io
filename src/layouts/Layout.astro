@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css'
+import version from '../data/version.json'
 
 interface Props {
   title?: string
@@ -14,6 +15,7 @@ const {
 
 const nav = [
   { id: 'introduction', label: 'Introduction', href: '/introduction' },
+  { id: 'parg',         label: 'PARG',         href: '/parg' },
   { id: 'installation', label: 'Installation', href: '/installation' },
   { id: 'playground',   label: 'Playground',   href: '/playground' },
   { id: 'news',         label: 'News',         href: '/news' },
@@ -58,7 +60,7 @@ const nav = [
   </main>
   <footer class="border-t border-gray-200 dark:border-gray-700 mt-24 py-8 text-sm text-gray-500 dark:text-gray-400">
     <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
-      <span>Parsanol v0.8.8</span>
+      <span>Parsanol v{version.parsanolVersion}</span>
       <a href="https://github.com/parsanol/parsanol-ruby" class="hover:text-primary-600">Source</a>
     </div>
   </footer>
