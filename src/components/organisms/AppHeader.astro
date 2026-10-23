@@ -6,7 +6,7 @@ interface NavLink {
   label: string
 }
 
-const { pathname } = Astro.url
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/'
 
 const isActive = (to: string) => pathname === to || pathname.startsWith(to + '/')
 

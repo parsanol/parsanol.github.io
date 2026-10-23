@@ -6,7 +6,7 @@ interface Props {
 }
 
 const { showSections = ['introduction'] } = Astro.props
-const { pathname } = Astro.url
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/'
 const show = (s: string) => showSections.includes(s)
 
 const getShortTitle = (title: string): string =>
