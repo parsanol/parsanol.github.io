@@ -31,22 +31,54 @@
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">str() - Match Literal String</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match exact string "hello"
+let hello = str("hello");
+let result = hello.parse("hello");
+assert!(result.is_ok());</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match exact string "hello"
+hello = str("hello")
+result = hello.parse("hello")
+# =&gt; #&lt;Parslet::Slice:0x... @value="hello"&gt;</code></pre>
+                      </div>
           </div>
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">re() - Regular Expression</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match regex pattern [a-z]+ (one or more letters)
+let word = re(r"[a-z]+");
+let result = word.parse("hello");
+assert!(result.is_ok());</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match regex pattern [a-z]+ (one or more letters)
+word = re("[a-z]+")
+result = word.parse("hello")
+# =&gt; #&lt;Parslet::Slice:0x... @value="hello"&gt;</code></pre>
+                      </div>
           </div>
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">any() - Any Character</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match any single character
+let any_char = any();
+let result = any_char.parse("x");
+assert!(result.is_ok());</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match any single character
+any_char = any
+result = any_char.parse("x")
+# =&gt; #&lt;Parslet::Slice:0x... @value="x"&gt;</code></pre>
+                      </div>
           </div>
 
           <div class="card">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">match() - Character Class</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match character class [0-9]
+let digit = match("[0-9]");</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match character class [0-9]
+digit = match("[0-9]")</code></pre>
+                      </div>
           </div>
         </section>
 
@@ -64,7 +96,12 @@
             <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Match multiple patterns in order.
             </p>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Sequence: match "hello" then " " then "world"
+let greeting = str("hello") &gt;&gt; str(" ") &gt;&gt; str("world");</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Sequence: match "hello" then " " then "world"
+greeting = str("hello") &gt;&gt; str(" ") &gt;&gt; str("world")</code></pre>
+                      </div>
           </div>
 
           <div class="card mb-6">
@@ -72,7 +109,12 @@
             <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Try each alternative in order.
             </p>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Choice: match "yes" or "no"
+let yes_no = str("yes") | str("no");</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Choice: match "yes" or "no"
+yes_no = str("yes") | str("no")</code></pre>
+                      </div>
           </div>
 
           <div class="card mb-6">
@@ -80,7 +122,20 @@
             <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Match patterns zero or more times.
             </p>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Zero or more: match letters
+let letters = re(r"[a-z]+").repeat();
+// One or more: match digits
+let digits = re(r"[0-9]+").repeat(1);
+// Range: 1-3 times
+let few = re(r"[a-z]").repeat(1, 3);</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Zero or more: match letters
+letters = re("[a-z]+").repeat
+# One or more: match digits
+digits = re("[0-9]+").repeat(1)
+# Range: 1-3 times
+few = re("[a-z]").repeat(1, 3)</code></pre>
+                      </div>
           </div>
 
           <div class="card">
@@ -88,7 +143,12 @@
             <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Match a pattern zero or one time.
             </p>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Optional: match "Mr." or nothing
+let title = str("Mr.").maybe();</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Optional: match "Mr." or nothing
+title = str("Mr.").maybe</code></pre>
+                      </div>
           </div>
         </section>
 
@@ -101,7 +161,14 @@
             <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Attach names to matched content for the parse tree.
             </p>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Label captured content
+let word = re(r"[a-z]+").as("word");
+// Parse tree: {word: "hello"}</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Label captured content
+word = re("[a-z]+").as(:word)
+# Parse tree: {:word =&gt; "hello"}</code></pre>
+                      </div>
           </div>
 
           <div class="card">
@@ -109,7 +176,18 @@
             <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
               Check what's ahead without consuming input.
             </p>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Positive lookahead: must have "http" ahead
+let http_url = str("http").present() &gt;&gt; re(r".*");
+
+// Negative lookahead: not followed by "end"
+let safe_end = str("end").absent() &gt;&gt; re(r".+");</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Positive lookahead: must have "http" ahead
+http_url = str("http").present &gt;&gt; re(".*")
+
+# Negative lookahead: not followed by "end"
+safe_end = str("end").absent &gt;&gt; re(".+")</code></pre>
+                      </div>
           </div>
         </section>
 
@@ -124,22 +202,127 @@
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Step 1: Basic Structure</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// JSON Parser - Step 1: Basic structure
+
+let json = choice!(vec![
+    str("null").map(|_| JsonValue::Null),
+    str("true").map(|_| JsonValue::Bool(true)),
+    str("false").map(|_| JsonValue::Bool(false)),
+]);</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># JSON Parser - Step 1: Basic structure
+
+class JsonParser &lt; Parsanol::Parser
+  root :value
+
+  rule(:value) {
+    str("null").as(:null) |
+    str("true").as(:true) |
+    str("false").as(:false)
+  }
+end</code></pre>
+                      </div>
           </div>
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Step 2: Numbers and Strings</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// JSON Parser - Step 2: Numbers and Strings
+
+let number = re(r"-?[0-9]+(\.[0-9]+)?([eE][+-]?[0-9]+)?");
+let string = str("\"") &gt;&gt; re(r#"[^"\\]*(\\.[^"\\]*)*"#).as("string") &gt;&gt; str("\"");</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># JSON Parser - Step 2: Numbers and Strings
+
+rule(:number) {
+  match["0-9"].repeat(1).as(:num)
+}
+
+rule(:string) {
+  str('"') &gt;&gt; (match['^"\\\\'] | str('\\\\') &gt;&gt; any).repeat &gt;&gt; str('"')
+}</code></pre>
+                      </div>
           </div>
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Step 3: Arrays and Objects</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// JSON Parser - Step 3: Arrays and Objects
+
+let array = str("[") &gt;&gt; value.repeat(0) &gt;&gt; str("]");
+let object = str("{") &gt;&gt; (string &gt;&gt; str(":") &gt;&gt; value).repeat(0) &gt;&gt; str("}");</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># JSON Parser - Step 3: Arrays and Objects
+
+rule(:array) {
+  str("[") &gt;&gt; (value &gt;&gt; str(",") &gt;&gt; value).repeat &gt;&gt; str("]")
+}
+
+rule(:object) {
+  str("{") &gt;&gt; (string &gt;&gt; str(":") &gt;&gt; value).repeat &gt;&gt; str("}")
+}</code></pre>
+                      </div>
           </div>
 
           <div class="card">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Step 4: Complete Parser</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Complete JSON Parser
+
+require 'parsanol'
+
+class JsonParser &lt; Parsanol::Parser
+  root :value
+
+  rule(:spaces) { match['\\s'].repeat }
+
+  rule(:value) {
+    spaces &gt;&gt; (
+      object | array | string | number | literal
+    ) &gt;&gt; spaces
+  }
+
+  rule(:object) {
+    str('{') &gt;&gt; (
+      entry &gt;&gt; (str(',') &gt;&gt; entry).repeat
+    ).maybe &gt;&gt; str('}')
+  end
+
+  rule(:entry) {
+    string.as(:key) &gt;&gt; str(':') &gt;&gt; value.as(:val)
+  }
+
+  rule(:array) {
+    str('[') &gt;&gt; (
+      value &gt;&gt; (str(',') &gt;&gt; value).repeat
+    ).maybe &gt;&gt; str(']')
+  end
+
+  rule(:string) {
+    str('"') &gt;&gt; (
+      str('\\\\') &gt;&gt; any | str('"').absent? &gt;&gt; any
+    ).repeat.as(:string) &gt;&gt; str('"')
+  end
+
+  rule(:number) {
+    str('-').maybe &gt;&gt; (
+      str('0') | match['1-9'] &gt;&gt; match['0-9'].repeat
+    ) &gt;&gt; (
+      str('.') &gt;&gt; match['0-9'].repeat
+    ).maybe &gt;&gt; (
+      match['eE'] &gt;&gt; str('+-').maybe &gt;&gt; match['0-9'].repeat
+    ).maybe
+  end
+
+  rule(:literal) {
+    str('null').as(:null) |
+    str('true').as(:true) |
+    str('false').as(:false)
+  }
+end
+
+# Test
+parser = JsonParser.new
+puts parser.parse('{"name": "John", "age": 30}').inspect</code></pre>
+                      </div>
           </div>
         </section>
 
@@ -154,12 +337,65 @@
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Basic Transform</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Transform: Convert parse tree to typed value
+
+let transform = TransformBuilder::new()
+    .rule("num", |s: &amp;str| {
+        Ok(Value::Number(s.parse()?))
+    })
+    .build();</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Transform: Convert parse tree to typed value
+
+class JsonTransform &lt; Parsanol::Transform
+  rule(string: simple(:s)) { s.to_s }
+  rule(num: simple(:n)) { Integer(n) }
+  rule(null: simple(:n)) { nil }
+  rule(true: simple(:t)) { true }
+  rule(false: simple(:f)) { false }
+end</code></pre>
+                      </div>
           </div>
 
           <div class="card">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Recursive Transform</h3>
-            
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Recursive transform for nested structures
+
+let transform = TransformBuilder::new()
+    .rule("num", |s: &amp;str| {
+        Ok(Value::Number(s.parse()?))
+    })
+    .rule("array", |arr: Vec&lt;Value&gt;| {
+        Ok(Value::Array(arr))
+    })
+    .rule("object", |pairs: Vec&lt;(String, Value)&gt;| {
+        Ok(Value::Object(pairs.into_iter().collect()))
+    })
+    .build();</code></pre>
+                          <pre class="text-xs text-gray-100 overflow-x-auto"><code># Recursive transform for nested structures
+
+class JsonTransform &lt; Parsanol::Transform
+  rule(string: simple(:s)) { s.to_s }
+  rule(num: simple(:n)) { Integer(n) }
+  rule(null: simple(:n)) { nil }
+  rule(true: simple(:t)) { true }
+  rule(false: simple(:f)) { false }
+
+  # Recursive rules
+  rule(array: sequence(:arr)) {
+    arr.map { |v| transform_value(v) }
+  }
+
+  rule(object: sequence(:pairs)) {
+    Hash[pairs.map { |k, v| [k, transform_value(v)] }]
+  end
+
+  def transform_value(tree)
+    apply(tree)
+  end
+end</code></pre>
+                      </div>
           </div>
         </section>
 

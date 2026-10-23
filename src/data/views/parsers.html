@@ -16,7 +16,14 @@
               <p class="text-gray-600 dark:text-gray-400 mb-4">
                 Matches a literal string exactly.
               </p>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match the literal string "hello"
+let parser = str("hello");
+let result = parser.parse("hello world");  // Ok(("hello", " world"))</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match the literal string "hello"
+parser = str("hello")
+result = parser.parse("hello world")  # =&gt; #&lt;Parsanol::Success value="hello", rest=" world"&gt;</code></pre>
+                        </div>
             </div>
 
             <div>
@@ -26,7 +33,14 @@
               <p class="text-gray-600 dark:text-gray-400 mb-4">
                 Matches a regular expression pattern.
               </p>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match one or more digits
+let parser = re(r"[0-9]+");
+let result = parser.parse("123abc");  // Ok(("123", "abc"))</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match one or more digits
+parser = re("[0-9]+")
+result = parser.parse("123abc")  # =&gt; #&lt;Parsanol::Success value="123", rest="abc"&gt;</code></pre>
+                        </div>
             </div>
 
             <div>
@@ -36,7 +50,14 @@
               <p class="text-gray-600 dark:text-gray-400 mb-4">
                 Matches any single character.
               </p>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match any single character
+let parser = any();
+let result = parser.parse("a");  // Ok(('a', ""))</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match any single character
+parser = any()
+result = parser.parse("a")  # =&gt; #&lt;Parsanol::Success value="a", rest=""&gt;</code></pre>
+                        </div>
             </div>
           </div>
         </section>
@@ -53,28 +74,60 @@
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Sequence - <code>.then()</code> or <code>&gt;&gt;</code>
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match "hello" then " " then "world"
+let parser = str("hello").then(str(" ")).then(str("world"));
+let result = parser.parse("hello world");  // Ok((("hello", " "), "world"))</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match "hello" then " " then "world"
+parser = str("hello") &gt;&gt; str(" ") &gt;&gt; str("world")
+result = parser.parse("hello world")  # =&gt; #&lt;Parsanol::Success value=["hello", " ", "world"]&gt;</code></pre>
+                        </div>
             </div>
 
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Alternative - <code>.or()</code> or <code>|</code>
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match either "hello" or "goodbye"
+let parser = str("hello").or(str("goodbye"));
+let result = parser.parse("goodbye");  // Ok(("goodbye", ""))</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match either "hello" or "goodbye"
+parser = str("hello") | str("goodbye")
+result = parser.parse("goodbye")  # =&gt; #&lt;Parsanol::Success value="goodbye", rest=""&gt;</code></pre>
+                        </div>
             </div>
 
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Repetition - <code>.repeat(min, max)</code>
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Match one or more digits
+let parser = re(r"[0-9]+").repeat(1, None);
+// Or use shorthand: .one_or_more()
+// Match zero or more: .zero_or_more()
+
+let result = parser.parse("123abc");  // Ok((["1", "2", "3"], "abc"))</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Match one or more digits
+parser = re("[0-9]+").repeat(1)
+result = parser.parse("123abc")  # =&gt; #&lt;Parsanol::Success value=["123"], rest="abc"&gt;</code></pre>
+                        </div>
             </div>
 
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Optional - <code>.maybe()</code>
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Optionally match "!"
+let parser = str("hello").maybe().then(str("world"));
+let result1 = parser.parse("helloworld");  // Ok((None, "world"))
+let result2 = parser.parse("hello world");  // Ok((None, " world"))</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Optionally match "!"
+parser = str("hello").maybe() &gt;&gt; str("world")
+result1 = parser.parse("helloworld")  # =&gt; #&lt;Parsanol::Success value=[nil, "world"]&gt;</code></pre>
+                        </div>
             </div>
           </div>
         </section>
@@ -88,28 +141,77 @@
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Named Capture - <code>.as("name")</code>
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Capture with a name
+let parser = str("hello")
+    .then(str(" ").ignore())
+    .then(re(r"[A-Za-z]+").as("name"));
+
+let result = parser.parse("hello World");
+let tree = result.unwrap().1;
+// Access: tree["name"] =&gt; "World"</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Capture with a name
+parser = str("hello") &gt;&gt; str(" ").ignore &gt;&gt; re("[A-Za-z]+").as(:name)
+
+result = parser.parse("hello World")
+tree = result.value
+# Access: tree[:name] =&gt; "World"</code></pre>
+                        </div>
             </div>
 
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Lookahead - <code>.lookahead(bool)</code>
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Positive lookahead - match "hello" only if followed by "!"
+let parser = str("hello").lookahead(str("!"));
+let result1 = parser.parse("hello!");  // Ok(("hello", ""))
+let result2 = parser.parse("hello");  // Err(...)</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Positive lookahead
+parser = str("hello").lookahead(str("!"))
+result1 = parser.parse("hello!")  # =&gt; #&lt;Parsanol::Success value="hello", rest=""&gt;</code></pre>
+                        </div>
             </div>
 
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Ignore Results - <code>.ignore()</code>
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Ignore the whitespace
+let parser = str("hello").then(str(" ").ignore()).then(str("world"));
+let result = parser.parse("hello world");
+// Result: Ok(("hello", "world")) - no whitespace in output</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Ignore the whitespace
+parser = str("hello") &gt;&gt; str(" ").ignore &gt;&gt; str("world")
+result = parser.parse("hello world")
+# Result: ["hello", "world"] - no whitespace in output</code></pre>
+                        </div>
             </div>
 
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">
                 Dynamic Parser - <code>dynamic()</code>
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Dynamic parser based on input
+let parser = dynamic(|input| {
+    if input.starts_with("number") {
+        re(r"[0-9]+").parse(input.strip_prefix("number").unwrap())
+    } else {
+        str("word").parse(input)
+    }
+});</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Dynamic parser
+parser = dynamic { |input|
+  if input.start_with?("number")
+    re("[0-9]+").parse(input.sub(/^number/, ""))
+  else
+    str("word").parse(input)
+  end
+}</code></pre>
+                        </div>
             </div>
           </div>
         </section>
@@ -121,6 +223,31 @@
             Parsanol provides special support for parsing infix expressions like mathematical expressions with operator precedence.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::infix::*;
+
+let expr = infix(re(r"[0-9]+"), |lhs, op, rhs| {
+    // op is ("+", "+") or ("-", "-"), etc.
+    match op.0 {
+        "+" =&gt; lhs + rhs,
+        "-" =&gt; lhs - rhs,
+        _ =&gt; lhs * rhs,  // Default to multiplication
+    }
+});
+
+let result = expr.parse("1 + 2 * 3");  // Ok((7, ""))</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol/infix'
+
+expr = infix(re("[0-9]+")) do |lhs, op, rhs|
+  case op[0]
+  when "+" then lhs + rhs
+  when "-" then lhs - rhs
+  else lhs * rhs
+  end
+end
+
+result = expr.parse("1 + 2 * 3")
+puts result.value  # =&gt; 7</code></pre>
+                    </div>
         </section>
       

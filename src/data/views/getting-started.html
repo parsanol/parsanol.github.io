@@ -24,7 +24,11 @@
                 <Badge variant="rust" class="mr-2">Rust</Badge>
                 Add to your project
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Cargo.toml
+[dependencies]
+parsanol = "0.18"</code></pre>
+                        </div>
             </div>
 
             <!-- Ruby -->
@@ -33,7 +37,13 @@
                 <Badge variant="ruby" class="mr-2">Ruby</Badge>
                 Add to your Gemfile
               </h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code># Gemfile
+gem 'parsanol'
+
+# Or install directly
+$ gem install parsanol</code></pre>
+                        </div>
             </div>
           </div>
         </section>
@@ -188,7 +198,40 @@
             />
           </div>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::prelude::*;
+
+// Basic atoms
+let hello = str("hello");        // Match literal "hello"
+let space = str(" ");            // Match literal " "
+let name = re(r"[A-Za-z]+");     // Match letters
+let punct = any();               // Match any character
+
+// Combine with combinators
+let greeting = hello
+    .then(space)                  // Sequence: "hello "
+    .then(name.as("name"))        // Capture with label
+    .then(punct.maybe());         // Optional punctuation
+
+// Parse input
+let tree = greeting.parse("hello World!")?;</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Basic atoms
+hello = str("hello")        # Match literal "hello"
+space = str(" ")            # Match literal " "
+name = re("[A-Za-z]+")      # Match letters
+punct = any                 # Match any character
+
+# Combine with combinators
+greeting = hello &gt;&gt;
+  space &gt;&gt;                   # Sequence: "hello "
+  name.as(:name) &gt;&gt;          # Capture with label
+  punct.maybe                # Optional punctuation
+
+# Parse input
+tree = greeting.parse("hello World!")</code></pre>
+                    </div>
 
           <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
             <h4 class="font-medium text-amber-900 dark:text-amber-100 mb-2">Key Methods</h4>
@@ -243,7 +286,32 @@
             </div>
           </div>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::prelude::*;
+
+let parser = str("hello")
+    .then(str(" ").ignore())
+    .then(re(r"[0-9]+").as("num"));
+
+let tree = parser.parse("hello 42")?;
+
+// Access tree values
+tree[0]        // -&gt; "hello" (by index)
+tree["num"]    // -&gt; "42" (by label)
+tree.as_str()  // -&gt; "hello 42" (full match)</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+parser = str("hello") &gt;&gt;
+  str(" ").ignore &gt;&gt;
+  re("[0-9]+").as(:num)
+
+tree = parser.parse("hello 42")
+
+# Access tree values
+tree[0]        # =&gt; "hello" (by index)
+tree[:num]     # =&gt; "42" (by label)
+tree.to_s      # =&gt; "hello 42" (full match)</code></pre>
+                    </div>
         </section>
 
         <!-- Anatomy of a Transform -->
@@ -288,7 +356,48 @@
             </div>
           </div>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::prelude::*;
+
+// Define transform rules
+let transform = Transform::new()
+    // Match leaf values (strings, numbers)
+    .rule("int", |s: &amp;str| Ok(s.parse::&lt;i64&gt;()?))
+
+    // Match hash patterns with named captures
+    .rule(("left", "op", "right"), |h: &amp;Hash| {
+        Ok(Expr::BinOp {
+            left: Box::new(h.get("left")?),
+            op: h.get("op")?.parse()?,
+            right: Box::new(h.get("right")?),
+        })
+    })
+    .build();
+
+// Apply transform
+let expr: Expr = transform.apply(tree)?;</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Define transform rules
+class ExprTransform &lt; Parslet::Transform
+  # Match leaf values
+  rule(int: simple(:n)) { Integer(n) }
+
+  # Match hash patterns
+  rule(left: simple(:l), op: simple('+'), right: simple(:r)) {
+    l + r
+  }
+  rule(left: simple(:l), op: simple('-'), right: simple(:r)) {
+    l - r
+  }
+  rule(left: simple(:l), op: simple('*'), right: simple(:r)) {
+    l * r
+  }
+end
+
+# Apply transform
+expr = ExprTransform.new.apply(tree)</code></pre>
+                    </div>
         </section>
 
         <!-- Your First Complete Parser -->
@@ -311,7 +420,61 @@
             </p>
           </div>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::prelude::*;
+
+// Define the grammar
+let number = re(r"[0-9]+").as("int");
+let op = (str("+").or(str("-")).or(str("*")).or(str("/"))).as("op");
+
+let expr = number.clone()
+    .then(op)
+    .then(number.clone())
+    .as("expr");
+
+// Parse input
+let tree = expr.parse("1 + 2 * 3")?;
+
+// Define transform rules
+let transform = Transform::new()
+    .rule("int", |s: &amp;str| Ok(Expr::Num(s.parse()?)))
+    .rule(("left", "op", "right"), |h: &amp;Hash| {
+        Ok(Expr::BinOp {
+            left: Box::new(h.get("left")?),
+            op: h.get("op")?.to_string(),
+            right: Box::new(h.get("right")?),
+        })
+    })
+    .build();
+
+// Transform to typed AST
+let ast: Expr = transform.apply(tree)?;
+println!("{:?}", ast);  // BinOp { left: Num(1), op: "+", right: ... }</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Define the grammar
+number = re("[0-9]+").as(:int)
+op = (str("+") | str("-") | str("*") | str("/")).as(:op)
+
+expr = number &gt;&gt; op &gt;&gt; number
+
+# Parse input
+tree = expr.parse("1 + 2 * 3")
+
+# Define transform rules
+class CalcTransform &lt; Parslet::Transform
+  rule(int: simple(:n)) { n.to_i }
+
+  rule(left: simple(:l), op: simple('+'), right: simple(:r)) { l + r }
+  rule(left: simple(:l), op: simple('-'), right: simple(:r)) { l - r }
+  rule(left: simple(:l), op: simple('*'), right: simple(:r)) { l * r }
+  rule(left: simple(:l), op: simple('/'), right: simple(:r)) { l / r }
+end
+
+# Transform and evaluate
+result = CalcTransform.new.apply(tree)
+puts result  # =&gt; 7 (1 + (2 * 3))</code></pre>
+                    </div>
 
           <div class="mt-8 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
             <h4 class="font-medium text-green-900 dark:text-green-100 mb-2">How it works:</h4>
@@ -346,7 +509,52 @@
             />
           </div>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::prelude::*;
+
+// Use built-in infix expression parser
+let expr = infix(
+    re(r"[0-9]+").as("int"),       // Primary expression
+
+    // Operators with precedence (higher = binds tighter)
+    (str("*"), 2, Assoc::Left),    // Multiplication: precedence 2
+    (str("/"), 2, Assoc::Left),    // Division: precedence 2
+    (str("+"), 1, Assoc::Left),    // Addition: precedence 1
+    (str("-"), 1, Assoc::Left),    // Subtraction: precedence 1
+)
+.with_reducer(|left, op, right| {
+    Expr::BinOp {
+        left: Box::new(left),
+        op: op.to_string(),
+        right: Box::new(right),
+    }
+});
+
+// Correctly parses: 1 + 2 * 3 as 1 + (2 * 3)
+let tree = expr.parse("1 + 2 * 3")?;</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Define operators with precedence
+class InfixParser &lt; Parsanol::Parser
+  rule(:number) { match('[0-9]').repeat(1).as(:int) }
+  rule(:mul_op) { str('*') | str('/') }
+  rule(:add_op) { str('+') | str('-') }
+
+  # Higher precedence = evaluated first
+  rule(:mult) {
+    number.as(:left) &gt;&gt; mul_op.as(:op) &gt;&gt; number.as(:right)
+  }
+  rule(:add) {
+    (mult | number).as(:left) &gt;&gt; add_op.as(:op) &gt;&gt; (mult | number).as(:right)
+  }
+
+  root(:add)
+end
+
+# Correctly parses: 1 + 2 * 3 as 1 + (2 * 3)
+parser = InfixParser.new
+tree = parser.parse("1 + 2 * 3")</code></pre>
+                    </div>
         </section>
 
         <!-- Next Steps -->

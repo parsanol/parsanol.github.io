@@ -170,12 +170,29 @@ const bound = parg.parseAndBind("identifier", "iso 12345");
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Rust</h3>
-            
+            <pre><code>// src/main.rs
+use parsanol::portable::{GrammarBuilder, parser_dsl::*};
+
+fn main() {
+    let grammar = GrammarBuilder::new()
+        .rule("hello", str("hello"))
+        .build();
+
+    println!("Parsanol installed successfully!");
+    println!("Grammar: {:?}", grammar);
+}</code></pre>
           </div>
 
           <div class="card">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Ruby</h3>
-            
+            <pre><code># test.rb
+require 'parsanol'
+
+# Create a simple parser
+parser = Parsanol::Parser.new
+
+puts "Parsanol installed successfully!"
+puts "Version: #{Parsanol::VERSION}"</code></pre>
           </div>
         </section>
 
