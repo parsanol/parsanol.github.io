@@ -7,7 +7,11 @@ export function getStaticPaths() {
   return news.map((p: any) => ({ params: { id: p.id }, props: { post: p } }))
 }
 const { post } = Astro.props
-const html = marked.parse(post.body_md ?? '', { async: false }) as string
+
+// The manifest carries typed content blocks; inline markdown inside them
+// (bold, code, links) is rendered with marked.
+const inline = (text: string) => marked.parseInline(text ?? '', { async: false }) as string
+const blocks: any[] = post.content ?? []
 ---
 <Layout title={`${post.title} — Parsanol`} description={post.summary}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -15,7 +19,51 @@ const html = marked.parse(post.body_md ?? '', { async: false }) as string
       <div class="text-sm text-gray-500 mb-2">{post.date?.slice(0, 10)}</div>
       <h1>{post.title}</h1>
       <p>{post.summary}</p>
-      <Fragment set:html={html} />
+      {blocks.map((block) => {
+        if (block.type === 'paragraph') {
+          return <Fragment set:html={marked.parse(block.text, { async: false })} />
+        }
+        if (block.type === 'heading') {
+          return <h2 set:html={inline(block.text)} />
+        }
+        if (block.type === 'list') {
+          return (
+            <ul>
+              {block.items.map((item: string) => (
+                <li set:html={inline(item)} />
+              ))}
+            </ul>
+          )
+        }
+        if (block.type === 'code') {
+          return (
+            <pre><code class:list={[block.language ? `language-${block.language}` : '']}>{block.text}</code></pre>
+          )
+        }
+        if (block.type === 'table') {
+          return (
+            <table>
+              <thead>
+                <tr>
+                  {block.headers.map((h: string) => (
+                    <th set:html={inline(h)} />
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {block.rows.map((row: string[]) => (
+                  <tr>
+                    {row.map((cell: string) => (
+                      <td set:html={inline(cell)} />
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )
+        }
+        return null
+      })}
     </article>
   </div>
 </Layout>
