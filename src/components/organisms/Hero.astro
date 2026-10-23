@@ -3,25 +3,27 @@ import Button from '../atoms/Button.astro'
 import Icon from '../atoms/Icon.astro'
 import CodeTabs from '../molecules/CodeTabs.astro'
 
-const quickStartRust = `use parsanol::prelude::*;
+const demoParg = `# demo.parg
+grammar Demo version "1.0.0" {
+  digit = %x30-39
+  number = 1*digit
+  space = " "
+  publisher = %i"iso" / %i"ieee"
 
-let parser = str("hello")
-    .then(str(" "))
-    .then(re(r"[A-Za-z]+"))
-    .then(str("!"));
+  iso_identifier = publisher as publisher space number as number
+}
 
-let result = parser.parse("hello World!");
-assert!(result.is_ok());`
+entry identifier: iso_identifier`
 
-const quickStartRuby = `require 'parsanol'
+const demoRuby = `require "parsanol"
 
-parser = str("hello")
-  .then(str(" "))
-  .then(re("[A-Za-z]+"))
-  .then(str("!"))
+document = Parsanol::PARG::Parser.new(File.read("demo.parg")).parse
+result   = Parsanol::PARG::Compiler.compile(document)
+File.write("demo.artifact.json", JSON.generate(result.envelope))
 
-result = parser.parse("hello World!")
-puts result.value # => "hello World!"`
+artifact = Parsanol::PARG::Artifact.load("demo.artifact.json")
+artifact.parse_and_bind("identifier", "iso 12345")
+# => { publisher: "iso", number: 12345 }`
 ---
 <section class="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
   <!-- Background Pattern -->
@@ -41,7 +43,7 @@ puts result.value # => "hello World!"`
       <!-- Badge -->
       <div class="inline-flex items-center px-4 py-2 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium mb-8">
         <Icon name="lightning" class="w-4 h-4 mr-2" />
-        One grammar · Ruby, Rust, WebAssembly &amp; TypeScript
+        PARG: one grammar, every runtime
         <span class="mx-2 text-primary-300 dark:text-primary-700">|</span>
         <span class="text-primary-600 dark:text-primary-400 font-semibold">O(n) Guaranteed</span>
       </div>
@@ -66,15 +68,20 @@ puts result.value # => "hello World!"`
           Get Started
           <Icon name="chevron-right" class="ml-2" />
         </Button>
-        <Button href="https://github.com/parsanol/parsanol-rs" variant="secondary" size="lg">
-          <Icon name="github" class="mr-2" />
-          View on GitHub
+        <Button href="/parg" variant="secondary" size="lg">
+          <Icon name="book" class="mr-2" />
+          Meet PARG
         </Button>
       </div>
 
       <!-- Quick Code Example -->
       <div class="max-w-2xl mx-auto">
-        <CodeTabs rust={quickStartRust} ruby={quickStartRuby} />
+        <CodeTabs
+          tabs={[
+            { name: 'parg', label: 'demo.parg', lang: 'parg', code: demoParg },
+            { name: 'ruby', label: 'Ruby', lang: 'ruby', badge: 'ruby', code: demoRuby },
+          ]}
+        />
       </div>
     </div>
   </div>

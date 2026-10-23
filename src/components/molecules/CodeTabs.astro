@@ -6,7 +6,8 @@ interface TabDef {
   name: string
   label: string
   code: string
-  badge: 'rust' | 'ruby' | 'python' | 'js'
+  badge?: 'rust' | 'ruby' | 'python' | 'js'
+  lang?: string
 }
 
 interface Props {
@@ -14,19 +15,21 @@ interface Props {
   ruby?: string
   python?: string
   javascript?: string
+  tabs?: TabDef[]
 }
 
-const { rust, ruby, python, javascript } = Astro.props
+const { rust, ruby, python, javascript, tabs } = Astro.props
 
-const tabs: TabDef[] = []
-if (rust) tabs.push({ name: 'rust', label: 'Rust', code: rust, badge: 'rust' })
-if (ruby) tabs.push({ name: 'ruby', label: 'Ruby', code: ruby, badge: 'ruby' })
-if (python) tabs.push({ name: 'python', label: 'Python', code: python, badge: 'python' })
-if (javascript) tabs.push({ name: 'javascript', label: 'JavaScript', code: javascript, badge: 'js' })
+const tabList: TabDef[] = []
+if (rust) tabList.push({ name: 'rust', label: 'Rust', code: rust, badge: 'rust' })
+if (ruby) tabList.push({ name: 'ruby', label: 'Ruby', code: ruby, badge: 'ruby' })
+if (python) tabList.push({ name: 'python', label: 'Python', code: python, badge: 'python' })
+if (javascript) tabList.push({ name: 'javascript', label: 'JavaScript', code: javascript, badge: 'js' })
+if (tabs) tabList.push(...tabs)
 ---
 <div class="code-tabs" data-code-tabs>
   <div class="tabs">
-    {tabs.map((tab, i) => (
+    {tabList.map((tab, i) => (
       <button type="button" class:list={['tab-btn', { active: i === 0 }]} data-tab-name={tab.name}>
         {tab.label}
         {tab.badge && <Badge variant={tab.badge} class="ml-2">{tab.badge}</Badge>}
@@ -34,9 +37,9 @@ if (javascript) tabs.push({ name: 'javascript', label: 'JavaScript', code: javas
     ))}
   </div>
   <div class="code-content">
-    {tabs.map((tab, i) => (
+    {tabList.map((tab, i) => (
       <div data-panel-name={tab.name} style={i === 0 ? undefined : 'display:none'}>
-        <CodeBlock lang={tab.name} code={tab.code} />
+        <CodeBlock lang={tab.lang ?? tab.name} code={tab.code} />
       </div>
     ))}
   </div>
