@@ -1,0 +1,252 @@
+---
+import Layout from '../../layouts/Layout.astro'
+
+const skeleton = `grammar Demo version "1.0.0" {
+  # rules, one per line — a rule body ends at the newline
+  digit = %x30-39
+  number = 1*digit
+}
+
+entry identifier: number`
+
+const terminals = `"abc"      exact literal (case-sensitive)
+%i"abc"    case-insensitive literal
+%x41       one byte 0x41
+%x41-5A    one byte in the range 0x41-5A
+%x0D.0A    a byte sequence: 0x0D then 0x0A`
+
+const operators = `a b        sequence (juxtaposition)
+a / b      ordered choice — first match wins
+[ x ]      optional (maybe)
+( x )      grouping
+*x         zero or more          1*x   one or more
+2*4x       two to four           4x    exactly four
+!x         negative lookahead    &x    positive lookahead
+!<x        negative behind-guard &<x   positive behind-guard
+x as name  capture — names the parse result`
+
+const captureExample = `dash number as part    # captures "number" only
+*( item ) as items     # captures the whole repeated run
+*( ( item ) as each )  # names each iteration's item`
+
+const behindExample = `emph = ( !< ALPHA "*" 1*( !star ANY ) "*" ) as emph`
+
+const skipExample = `grammar Lml version "2.0.0" {
+  skip = trivia
+  trivia = 1*( ( 1*" " ) / line_comment / block_comment )
+  comment = "(*" *( comment / ( !"*)" ANY ) ) "*)"
+  ...
+}`
+
+const capturedTrivia = `skip = trivia capture: comments
+trivia = 1*( ( 1*" " ) / line_comment / block_comment )`
+
+const atomicExample = `atomic word = ( 1*( ALPHA ) )`
+
+const leftRecursion = `expr = expr "*" expr
+     / expr "+" expr
+     / number`
+
+const resyncParg = `grammar RecoveryResync version "1.0.0" {
+  pair = ( 1*( %x61-7A / %x30-39 ) ) as k "=" ( 1*( %x30-39 ) ) as v ";"
+  document = 1*( pair )
+
+  # recovery policy: junk is any run of non-";" bytes ending at a ";"
+  resync document = 1*( %x00-3A / %x3C-FF ) ";"
+  entry main: document
+}`
+
+const testsExample = `test main {
+  accept "AB2020"
+  reject "AB20"
+  capture "AB2020" { pub: "AB" }
+  shape "aab" [ { x: "a" }, { x: "a" }, { y: "b" } ]
+}`
+
+const bindingsExample = `bindings iso_identifier {
+  publisher -> publisher (string)
+  year -> year (integer, 0..1)
+  stage -> stage (string) preprocess: stage_code
+  supplement_no -> supplements[].number (integer, 0..*)
+}
+
+preprocess stage_code {
+  table_lookup stages abbr -> code
+}
+
+stage_abbr = alt from_table "stages" column "abbr"`
+
+const sections = [
+  { id: 'skeleton', label: 'Grammar skeleton' },
+  { id: 'terminals', label: 'Terminals' },
+  { id: 'operators', label: 'Operators' },
+  { id: 'captures', label: 'Captures' },
+  { id: 'behind-guards', label: 'Behind-guards' },
+  { id: 'classes', label: 'Character classes' },
+  { id: 'skip', label: 'Skip & trivia' },
+  { id: 'left-recursion', label: 'Left recursion' },
+  { id: 'resync', label: 'Resync (recovery)' },
+  { id: 'tests', label: 'In-file tests' },
+  { id: 'bindings', label: 'Bindings & tables' },
+  { id: 'lint', label: 'The lint' },
+]
+---
+<Layout
+  title="PARG language tour — Parsanol"
+  description="The PARG syntax on one page: terminals, operators, captures, skip and trivia, atomic rules, left recursion, declared resync, in-file tests, bindings and tables."
+  active="parg"
+>
+  <div class="flex gap-12">
+    <aside class="w-64 flex-shrink-0 hidden lg:block">
+      <div class="sticky top-20 text-sm space-y-1">
+        <a href="/parg" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">What is PARG?</a>
+        {sections.map((section) => (
+          <a href={`#` + section.id} class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">{section.label}</a>
+        ))}
+      </div>
+    </aside>
+
+    <div class="flex-1 min-w-0 prose max-w-none">
+      <h1>PARG language tour</h1>
+      <p class="text-lg">
+        The syntax on one page, with real examples. The friendly reference is the
+        <a href="https://github.com/parsanol/parsanol-ruby/blob/main/docs/parg-language-guide.md">language guide</a>;
+        the <a href="https://github.com/parsanol/parsanol-ruby/blob/main/docs/parg-semantics.md">normative semantics</a>
+        win where any summary disagrees.
+      </p>
+
+      <h2 id="skeleton">Grammar skeleton</h2>
+      <pre class="text-sm"><code>{skeleton}</code></pre>
+      <ul>
+        <li><code>#</code> starts a comment to end of line; one rule per line (newlines are significant).</li>
+        <li><code>grammar NAME version "X.Y.Z" {"{"}</code> wraps the rules; <code>entry NAME: rule</code> declares an artifact entry point — multiple entries share one rule set.</li>
+        <li>Keywords (<code>grammar version as bindings preprocess entry table_lookup from_table column</code>) cannot name or reference rules.</li>
+      </ul>
+
+      <h2 id="terminals">Terminals</h2>
+      <pre class="text-sm"><code>{terminals}</code></pre>
+      <p>String escapes: <code>\"</code>, <code>\\</code>, <code>\n</code>, <code>\t</code>, <code>\r</code>.</p>
+
+      <h2 id="operators">Operators</h2>
+      <pre class="text-sm"><code>{operators}</code></pre>
+      <p>
+        PEG semantics throughout: choice is <strong>ordered</strong>, repetition is greedy.
+        A repetition prefix binds one primary — <code>3*(a b)</code> is three-to-four
+        repetitions of the group; parenthesize composites.
+      </p>
+
+      <h2 id="captures">Captures</h2>
+      <pre class="text-sm"><code>{captureExample}</code></pre>
+      <p>
+        Flattening follows parslet's <code>CanFlatten</code> exactly (including its
+        data-loss rules for mixed repetitions) — verified byte-for-byte against parslet
+        2.0.0. The stable idiom: capture every structural rule so each iteration yields one
+        hash. The normative laws are V0–V4 in the semantics document.
+      </p>
+
+      <h2 id="behind-guards">Behind-guards</h2>
+      <pre class="text-sm"><code>{behindExample}</code></pre>
+      <p>
+        <code>!&lt;x</code> / <code>&amp;&lt;x</code> inspect the text <em>behind</em> the
+        position and consume nothing. A character-class body (or builtin class reference)
+        compiles to an end-anchored flanking match; a case-sensitive literal to a fixed
+        byte window; anything else is a compile error — an arbitrary rule has no bounded
+        behind-window.
+      </p>
+
+      <h2 id="classes">Character classes</h2>
+      <p>
+        A class is a hex range — <code>%x5f</code>, <code>%x21-2f</code> — or an
+        alternation of ranges:
+        <code>(%x21-2f / %x3a-40 / %x5b-60 / %x7b-7e)</code>.
+        <code>[ … ]</code> is <strong>not</strong> a class — it is the optional form, and
+        brackets whose elements are all classes fail compilation with the alternation
+        spelling in the message.
+      </p>
+
+      <h2 id="skip">Skip &amp; trivia</h2>
+      <pre class="text-sm"><code>{skipExample}</code></pre>
+      <p>
+        One declaration per grammar: an optional match of the skip rule is injected before
+        every terminal, and entries take leading and trailing skips. Trivia is
+        capture-free, and failures inside injected trivia never surface — deepest-failure
+        positions point at real content. The skip rule must be non-nullable and may only
+        reference rules; those rules (and everything they reference) build without
+        injection, so recursive trivia like nested block comments work.
+      </p>
+      <pre class="text-sm"><code>{capturedTrivia}</code></pre>
+      <p>
+        <code>capture: comments</code> attaches comment-shaped trivia to the capture it
+        precedes under <code>comments:</code> — comments become data without dedicated
+        capture rules. Whitespace is never recorded; trailing trivia attaches to the
+        enclosing entry capture.
+      </p>
+      <pre class="text-sm"><code>{atomicExample}</code></pre>
+      <p>
+        Injection happens inside repetition runs too, so <code>word = 1*( ALPHA )</code>
+        under a whitespace skip matches <code>"a b"</code> as one word. Token-shaped rules
+        opt out with <code>atomic</code>: the body builds without injection and matches
+        contiguously.
+      </p>
+
+      <h2 id="left-recursion">Left recursion</h2>
+      <pre class="text-sm"><code>{leftRecursion}</code></pre>
+      <p>
+        Direct left recursion is rewritten at compile time (the ANTLR 4 model) into
+        left-folding precedence tiers: alternatives in source order bind tightest-first,
+        non-recursive alternatives are the primary. The artifact carries ordinary atoms,
+        so every engine folds identically. Indirect left recursion is a compile error.
+      </p>
+
+      <h2 id="resync">Resync (recovery)</h2>
+      <pre class="text-sm"><code>{resyncParg}</code></pre>
+      <p>
+        A <code>resync</code> declaration is a recovery policy, not part of the match
+        relation: at a failure point under <code>document</code>, the engine consumes each
+        pattern match as one annotated error span and resumes iterations after it. On
+        <code>parse_recovering</code> the answer carries the deepest position, the partial
+        tree, and the exact spans — byte-identically on every engine. See it live in the
+        <a href="/playground">playground's error-recovery grammar</a>.
+      </p>
+
+      <h2 id="tests">In-file tests</h2>
+      <pre class="text-sm"><code>{testsExample}</code></pre>
+      <p>
+        <code>accept</code>/<code>reject</code> pin parseability; <code>capture</code> pins
+        the raw capture tree; <code>example</code> pins the bound attribute hash;
+        <code>shape</code> pins the canonical whole tree — the only phase that can observe
+        repetition flattening and sequence merge laws. Tests run at compile time (a
+        failing test fails the build) and ride the artifact, so every engine replays them.
+      </p>
+
+      <h2 id="bindings">Bindings &amp; tables</h2>
+      <pre class="text-sm"><code>{bindingsExample}</code></pre>
+      <p>
+        Bindings map captures to typed model fields (<code>string</code>,
+        <code>integer</code>, <code>float</code>, <code>boolean</code>; cardinalities
+        <code>1</code>, <code>0..1</code>, <code>1..*</code>, <code>0..*</code>) with one
+        array-grouping level. Preprocess steps are declarative data operations
+        (<code>table_lookup</code> in v1). <code>alt from_table</code> expands a table
+        column into literal alternatives, sorted longest-first.
+      </p>
+
+      <h2 id="lint">The lint</h2>
+      <p>
+        Under PEG semantics order is decisive, so the compiler runs first-set analysis on
+        every alternative: shadowed branches (<code>"iso" / "iso/iec"</code>), empty
+        shadowing, duplicates, and left recursion are <strong>build failures</strong>;
+        order-dependent branch pairs are warnings recorded in the artifact for consumer
+        CI. Foreign grammars can come in as PARG text:
+        <code>Parsanol::PARG::Import.import(:abnf | :ebnf | :pest, text)</code>.
+      </p>
+
+      <div class="not-prose mt-10 bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-900/40 rounded-xl p-5">
+        <p class="text-primary-900 dark:text-primary-200 font-medium">
+          Next: break an input on purpose in the
+          <a href="/playground" class="underline">playground</a>, or read the
+          <a href="https://github.com/parsanol/parsanol-ruby/blob/main/docs/parg-semantics.md" class="underline">normative semantics</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>

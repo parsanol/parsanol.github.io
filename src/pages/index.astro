@@ -14,8 +14,11 @@ const abilities = [
   },
   {
     title: 'One grammar, every runtime',
-    body: 'Compile PARG once into a checksummed parsanol-tree/v2 artifact; Ruby, Rust, WebAssembly, and the TypeScript runtime consume the same bytes and build the same tree.',
-    links: [{ href: '/architecture', label: 'Architecture' }],
+    body: 'PARG is the grammar language: write once, compile to a checksummed parsanol-tree/v2 artifact; Ruby, Rust, WebAssembly, and the TypeScript runtime consume the same bytes and build the same tree.',
+    links: [
+      { href: '/parg', label: 'Meet PARG' },
+      { href: '/architecture', label: 'Architecture' },
+    ],
   },
   {
     title: 'Verified identical, every day',
@@ -30,7 +33,7 @@ const abilities = [
   {
     title: 'Real-world grammar features',
     body: 'Skip/trivia injection with comment capture, atomic rules, compile-time left-recursion rewriting with precedence tiers, lookbehind guards, and runtime state atoms — the things real formats actually need.',
-    links: [{ href: '/parsers', label: 'Parsers guide' }],
+    links: [{ href: '/parg/language', label: 'Language tour' }],
   },
   {
     title: 'Tooling that meets you where you are',
