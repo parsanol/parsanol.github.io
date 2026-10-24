@@ -25,6 +25,16 @@ bindings iso_identifier {
 
 entry identifier: iso_identifier`
 
+const demoRust = `use parsanol::PargArtifact;
+
+// Checksum verified on load — a mismatch is a hard error
+let artifact = PargArtifact::from_path("demo.artifact.json")?;
+let grammar = artifact.grammar("identifier")?;
+
+// parse \`input\` with PortableParser::new(&grammar, input, &mut arena)
+let bound = artifact.apply_bindings("identifier", &shape)?;
+// => { publisher: "iso", number: 12345 }`
+
 const demoRuby = `require "parsanol"
 
 document = Parsanol::PARG::Parser.new(File.read("demo.parg")).parse
@@ -101,6 +111,7 @@ parg.runTests(); // replay the artifact's embedded tests`
           tabs={[
             { name: 'parg', label: 'demo.parg', lang: 'parg', code: demoParg },
             { name: 'ruby', label: 'Ruby', lang: 'ruby', badge: 'ruby', code: demoRuby },
+            { name: 'rust', label: 'Rust', lang: 'rust', badge: 'rust', code: demoRust },
             { name: 'typescript', label: 'TypeScript', lang: 'typescript', badge: 'js', code: demoTypeScript },
           ]}
         />
