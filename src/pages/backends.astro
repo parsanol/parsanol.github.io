@@ -1,7 +1,30 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import PrevNext from '../components/PrevNext.astro'
 import DocsNav from '../components/organisms/DocsNav.astro'
+import benchmarks from '../data/backend-benchmarks.json'
 import content from '../data/views/backends.html?raw'
+
+const results: any[] = benchmarks.results
+const categoryLabels: Record<string, string> = {
+  simple: 'Simple values',
+  json: 'JSON documents',
+  expression: 'Arithmetic expressions',
+  linear: 'Linear scans',
+  nested: 'Nested structures',
+  data: 'Data formats',
+}
+const categories = [...new Set(results.map((r: any) => r.category))]
+
+function categorySummary(cat: string) {
+  const rs = results.filter((r: any) => r.category === cat)
+  const avg = (side: 'packrat' | 'bytecode') => rs.reduce((s: number, r: any) => s + r[side].ns, 0) / rs.length
+  const avgPackrat = avg('packrat')
+  const avgBytecode = avg('bytecode')
+  const winner = avgBytecode < avgPackrat ? 'Bytecode' : 'Packrat'
+  const factor = (Math.max(avgPackrat, avgBytecode) / Math.min(avgPackrat, avgBytecode)).toFixed(1)
+  return { count: rs.length, avgPackrat, avgBytecode, winner, factor }
+}
 ---
 <Layout title="Backends — Parsanol" description="Parsanol parsing backends compared: Packrat, the bytecode VM, and streaming — how they work, when to use each, and known differences.">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -9,7 +32,63 @@ import content from '../data/views/backends.html?raw'
       <DocsNav showSections={['backends']} />
       <div class="flex-1 min-w-0 prose max-w-none">
         <Fragment set:html={content} />
+
+        <h2 id="performance-benchmarks">Performance Benchmarks</h2>
+        <p>
+          Measured from actual benchmark runs on the shipped
+          <code>parsanol v{benchmarks.version}</code> binaries — the same numbers the
+          conformance suites validate. Lower is better; the Packrat and bytecode
+          engines accept identical grammars and produce identical trees.
+        </p>
+
+        {categories.map((cat) => {
+          const summary = categorySummary(cat)
+          const rs = results.filter((r: any) => r.category === cat)
+          return (
+            <h3 class="capitalize">
+              {categoryLabels[cat] ?? cat}
+              <span class="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
+                {summary.winner} {summary.factor}× avg · {summary.count} tests
+              </span>
+            </h3>
+            <div class="not-prose space-y-3 mb-8">
+              {rs.map((r: any) => {
+                const total = r.packrat.ns + r.bytecode.ns
+                return (
+                  <div class="card p-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div>
+                        <h4 class="text-sm font-medium text-gray-900 dark:text-white">{r.name}</h4>
+                        <code class="text-xs text-gray-500 dark:text-gray-400">{r.input}</code>
+                      </div>
+                      <span class="px-2 py-1 text-xs font-medium rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+                        {r.speedup.winner === 'bytecode' ? 'Bytecode' : 'Packrat'} {r.speedup.factor}×
+                      </span>
+                    </div>
+                    <div class="space-y-2">
+                      {(['packrat', 'bytecode'] as const).map((side) => (
+                        <div>
+                          <div class="flex justify-between text-xs mb-1">
+                            <span class="capitalize text-gray-600 dark:text-gray-400">{side}</span>
+                            <span class="font-medium text-gray-900 dark:text-gray-100">{r[side].formatted}</span>
+                          </div>
+                          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              class:list={['h-2 rounded-full', side === 'packrat' ? 'bg-blue-500' : 'bg-green-500']}
+                              style={`width: ${Math.max(4, Math.round((r[side].ns / total) * 100))}%`}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )
+        })}
       </div>
     </div>
   </div>
+  <PrevNext />
 </Layout>

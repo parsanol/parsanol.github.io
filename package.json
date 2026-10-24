@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "generate": "node scripts/generate-news.cjs",
     "generate:news": "node scripts/generate-news.cjs",
@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/prismjs": "^1.26.6",
+    "pagefind": "^1.5.2",
     "typescript": "^5.6.3"
   }
 }

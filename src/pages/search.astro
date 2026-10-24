@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+<Layout title="Search — Parsanol" description="Search the Parsanol documentation: guides, references, PARG, and release notes.">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Search</h1>
+    <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+    <div id="search"></div>
+    <noscript>
+      <p class="text-gray-600 dark:text-gray-400 mt-4">Search requires JavaScript. Browse the documentation from the <a href="/introduction">Introduction</a> instead.</p>
+    </noscript>
+  </div>
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      new (window as any).PagefindUI({ element: '#search', showSubResults: true })
+    })
+  </script>
+</Layout>
