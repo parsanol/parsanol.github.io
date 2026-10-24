@@ -1,6 +1,25 @@
 ---
 import newsPosts from '../../data/news-manifest.json'
 
+const exModules = import.meta.glob<any>('../../data/examples-manifest.json', {
+  eager: true,
+  import: 'default',
+})
+const exManifest: any[] = Object.values(exModules)[0] ?? []
+const exOrder = ['expression-parsers', 'data-formats', 'urls-network', 'code-template', 'text-processing', 'error-handling', 'conceptual']
+const exLabels: Record<string, string> = {
+  'expression-parsers': 'Expression Parsers',
+  'data-formats': 'Data Formats',
+  'urls-network': 'URLs & Network',
+  'code-template': 'Code & Templates',
+  'text-processing': 'Text Processing',
+  'error-handling': 'Error Handling',
+  conceptual: 'Conceptual',
+}
+const exGroups = exOrder
+  .map((c) => ({ key: c, label: exLabels[c] ?? c, items: exManifest.filter((e: any) => e.category === c).sort((a: any, b: any) => a.title.localeCompare(b.title)) }))
+  .filter((g) => g.items.length > 0)
+
 interface Props {
   showSections?: string[]
 }
@@ -197,6 +216,28 @@ const getShortTitle = (title: string): string =>
             </a>
           </li>
         </ul>
+      </div>
+    )}
+
+    <!-- News -->
+    <!-- Examples -->
+    {show('examples') && exGroups.length > 0 && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Examples</h3>
+        {exGroups.map((group) => (
+          <div class="mb-4">
+            <p class="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-gray-400">{group.label}</p>
+            <ul class="space-y-1">
+              {group.items.map((item: any) => (
+                <li>
+                  <a href={item.path} class:list={['nav-link text-sm', { active: pathname === item.path }]}>
+                    {item.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     )}
 

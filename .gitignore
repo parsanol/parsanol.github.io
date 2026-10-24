@@ -44,3 +44,6 @@ pnpm-debug.log*
 *.tmp
 *.temp
 *.tsbuildinfo
+
+# Generated example page data (by scripts/generate-examples.cjs)
+src/data/examples/

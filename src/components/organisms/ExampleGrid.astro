@@ -151,6 +151,7 @@ const groups = categoryOrder
               difficulty={difficultyToNumber(example.difficulty)}
               concepts={example.concepts ?? example.tags}
               languages={example.hasRust && example.hasRuby ? ['rust', 'ruby'] : example.hasRuby ? ['ruby'] : ['rust']}
+              to={example.path}
             />
           </div>
         ))}

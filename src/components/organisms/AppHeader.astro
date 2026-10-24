@@ -344,8 +344,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
   mobileButton?.addEventListener('click', () => {
     if (!mobileMenu) return
     const isOpen = !mobileMenu.classList.toggle('hidden')
-    iconMenu.hidden = isOpen
-    iconClose.hidden = !isOpen
+    if (iconMenu) iconMenu.hidden = isOpen
+    if (iconClose) iconClose.hidden = !isOpen
     mobileButton.setAttribute('aria-expanded', String(isOpen))
   })
 
@@ -355,8 +355,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
 
   function updateThemeIcon() {
     const isDark = document.documentElement.classList.contains('dark')
-    themeIconSun.hidden = !isDark
-    themeIconMoon.hidden = isDark
+    if (themeIconSun) themeIconSun.hidden = !isDark
+    if (themeIconMoon) themeIconMoon.hidden = isDark
   }
   updateThemeIcon()
 

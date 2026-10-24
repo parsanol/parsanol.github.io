@@ -1,0 +1,191 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import CodeBlock from '../../components/atoms/CodeBlock.astro'
+
+export function getStaticPaths() {
+  const dataModules = import.meta.glob<any>('../../data/examples/*.json', {
+    eager: true,
+    import: 'default',
+  })
+  return Object.values(dataModules).map((example: any) => ({
+    params: { id: example.path.split('/').pop() },
+    props: { example },
+  }))
+}
+
+const example: any = Astro.props.example
+const {
+  title,
+  description,
+  category,
+  difficulty,
+  concepts,
+  hasRust,
+  hasRuby,
+  parsletCompatible,
+  hasDiagram,
+  diagram,
+  motivation,
+  inputFormat,
+  outputFormat,
+  walkthrough,
+  rustCode,
+  rubyCode,
+} = example
+
+const difficultyColors: Record<string, string> = {
+  beginner: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
+  intermediate: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300',
+  advanced: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+}
+const difficultyColor = difficultyColors[difficulty] || difficultyColors.intermediate
+---
+
+<Layout title={`${title} — Parsanol`} description={description}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <a href="/examples" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 text-sm inline-flex items-center gap-1 mb-6">
+      ← Back to Examples
+    </a>
+
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">{title}</h1>
+
+    <div class="flex flex-wrap gap-2 mb-8">
+      {hasRust && <span class="px-3 py-1 text-sm font-medium rounded-full bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300">Rust</span>}
+      {hasRuby && <span class="px-3 py-1 text-sm font-medium rounded-full bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300">Ruby</span>}
+      <span class="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 capitalize">{category.replace(/-/g, ' ')}</span>
+      <span class={`px-3 py-1 text-sm font-medium rounded-full ${difficultyColor}`}>{difficulty}</span>
+      {parsletCompatible && <span class="px-3 py-1 text-sm font-medium rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">Parslet-compatible</span>}
+    </div>
+
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-3xl">{description}</p>
+
+    {concepts?.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Key Concepts</h2>
+        <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1">
+          {concepts.map((c: string) => <li>{c}</li>)}
+        </ul>
+      </section>
+    )}
+
+    {motivation && (
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Why Parse This Format?</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">{motivation.why}</p>
+        {motivation.useCases?.length > 0 && (
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Use Cases</h3>
+            <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-1">
+              {motivation.useCases.map((uc: string) => <li>{uc}</li>)}
+            </ul>
+          </div>
+        )}
+      </section>
+    )}
+
+    {inputFormat && (
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Input Format</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">{inputFormat.description}</p>
+        {inputFormat.syntax && (
+          <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4">
+            <code class="text-sm font-mono">{inputFormat.syntax}</code>
+          </div>
+        )}
+        {inputFormat.examples?.length > 0 && (
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Examples</h3>
+            <div class="space-y-3">
+              {inputFormat.examples.map((ex: any) => (
+                <div class:list={['border rounded-lg p-4', ex.valid !== false ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800']}>
+                  <div class="flex items-center justify-between mb-2">
+                    <code class="text-sm font-mono bg-white dark:bg-gray-800 px-2 py-1 rounded">{ex.input}</code>
+                    {ex.valid !== false
+                      ? <span class="text-green-600 dark:text-green-400 text-xs font-medium">VALID</span>
+                      : <span class="text-red-600 dark:text-red-400 text-xs font-medium">INVALID</span>}
+                  </div>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">{ex.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </section>
+    )}
+
+    {outputFormat && (
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Output Format</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">{outputFormat.description}</p>
+        {outputFormat.structure && (
+          <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg mb-4">
+            <div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Structure</h3>
+            </div>
+            <div class="px-4 py-2">
+              {Object.entries(outputFormat.structure).map(([name, info]: [string, any]) => (
+                <div class="flex items-start gap-4 py-3 border-b border-gray-200 dark:border-gray-700 last:border-0">
+                  <code class="text-sm font-mono font-semibold text-primary-600 dark:text-primary-400 min-w-[100px]">{name}</code>
+                  <div class="flex-1">
+                    {info.type && <span class="text-xs font-medium px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300">{info.type}</span>}
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{info.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {outputFormat.example && (
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3 mt-6">Example Output</h3>
+            <div class="bg-gray-900 dark:bg-gray-950 rounded-lg p-4">
+              <p class="text-xs text-gray-400 mb-2">Input: <code class="text-green-400">{outputFormat.example.input}</code></p>
+              <pre class="text-sm text-gray-100 overflow-x-auto">{JSON.stringify(outputFormat.example.output, null, 2)}</pre>
+            </div>
+          </div>
+        )}
+      </section>
+    )}
+
+    {hasDiagram && diagram && (
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Visual Overview</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+          <img src={diagram} alt={`${title} diagram`} class="w-full max-w-2xl mx-auto" />
+        </div>
+      </section>
+    )}
+
+    {walkthrough?.length > 0 && (
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">How the Code Works</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">This section explains how the parsing rules map to the format semantics.</p>
+        <div class="space-y-4">
+          {walkthrough.map((item: any) => (
+            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+              <h4 class="font-semibold text-gray-900 dark:text-white mb-2">{item.section}</h4>
+              {item.code && <CodeBlock lang="rust" code={item.code} />}
+              {item.explanation && <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{item.explanation}</p>}
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Source Code</h2>
+      {rustCode && (
+        <div class="mb-6">
+          <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Rust</div>
+          <CodeBlock lang="rust" code={rustCode} />
+        </div>
+      )}
+      {rubyCode && (
+        <div>
+          <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Ruby</div>
+          <CodeBlock lang="ruby" code={rubyCode} />
+        </div>
+      )}
+    </section>
+  </div>
+</Layout>
