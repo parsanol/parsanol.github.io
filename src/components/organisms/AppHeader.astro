@@ -233,8 +233,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
           class="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
           aria-label="Toggle dark mode"
         >
-          <span id="theme-icon-sun" class="hidden"><Icon name="sun" /></span>
-          <span id="theme-icon-moon" class="hidden"><Icon name="moon" /></span>
+          <span id="theme-icon-sun" class="inline-flex" hidden><Icon name="sun" /></span>
+          <span id="theme-icon-moon" class="inline-flex" hidden><Icon name="moon" /></span>
         </button>
 
         <!-- Mobile Menu Button -->
@@ -245,8 +245,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
           aria-expanded="false"
           aria-controls="mobile-menu"
         >
-          <span id="icon-menu"><Icon name="menu" /></span>
-          <span id="icon-close" class="hidden"><Icon name="close" /></span>
+          <span id="icon-menu" class="inline-flex"><Icon name="menu" /></span>
+          <span id="icon-close" class="inline-flex" hidden><Icon name="close" /></span>
         </button>
       </div>
     </div>
@@ -344,8 +344,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
   mobileButton?.addEventListener('click', () => {
     if (!mobileMenu) return
     const isOpen = !mobileMenu.classList.toggle('hidden')
-    iconMenu?.classList.toggle('hidden', isOpen)
-    iconClose?.classList.toggle('hidden', !isOpen)
+    iconMenu.hidden = isOpen
+    iconClose.hidden = !isOpen
     mobileButton.setAttribute('aria-expanded', String(isOpen))
   })
 
@@ -355,8 +355,8 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
 
   function updateThemeIcon() {
     const isDark = document.documentElement.classList.contains('dark')
-    themeIconSun?.classList.toggle('hidden', !isDark)
-    themeIconMoon?.classList.toggle('hidden', isDark)
+    themeIconSun.hidden = !isDark
+    themeIconMoon.hidden = isDark
   }
   updateThemeIcon()
 

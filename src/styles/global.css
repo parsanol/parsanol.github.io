@@ -2,6 +2,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* The hidden ATTRIBUTE must always win over display utilities (icon slots
+   toggle via el.hidden; utilities like inline-flex would otherwise beat it) */
+[hidden] { display: none !important; }
+
 @theme {
   --color-primary-50:  #f5f7fb;
   --color-primary-100: #e6ecf5;
