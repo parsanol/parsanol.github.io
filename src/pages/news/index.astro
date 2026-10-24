@@ -3,13 +3,13 @@ import Layout from '../../layouts/Layout.astro'
 import news from '../../data/news-manifest.json'
 const sorted = news.slice().sort((a: any, b: any) => (a.date < b.date ? 1 : -1))
 ---
-<Layout title="News — Parsanol">
+<Layout title="News — Parsanol" description="Parsanol release notes and announcements: runtime releases, engine news, and PARG updates.">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <h1 class="text-4xl font-bold mb-8">News</h1>
     <div class="space-y-3">
       {sorted.map((p: any) => (
         <a href={`/news/${p.id}`} class="card block hover:border-primary-400 transition">
-          <div class="text-xs text-gray-500 mb-1">{p.date?.slice(0, 10)}</div>
+          <time class="text-xs text-gray-500 mb-1" datetime={p.date}>{p.date?.slice(0, 10)}</time>
           <div class="font-semibold">{p.title}</div>
           <div class="text-sm text-gray-600 dark:text-gray-300 mt-1">{p.summary}</div>
         </a>

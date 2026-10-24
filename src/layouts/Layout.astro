@@ -9,8 +9,17 @@ interface Props {
 }
 const {
   title = 'Parsanol',
-  description = 'Parsanol is a PEG parser generator with a Rust engine and Ruby bindings.',
+  description = 'Parsanol: write one grammar, compile it to a verified artifact, and parse identically on Ruby, Rust, WebAssembly, and TypeScript.',
 } = Astro.props
+
+const canonical = new URL(Astro.url.pathname, Astro.site)
+const ogImage = new URL('/web-app-manifest-512x512.png', Astro.site)
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Parsanol',
+  url: Astro.site,
+}
 ---
 <!doctype html>
 <html lang="en">
@@ -19,6 +28,16 @@ const {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta property="og:site_name" content="Parsanol" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta name="twitter:card" content="summary" />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />

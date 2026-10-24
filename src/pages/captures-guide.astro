@@ -7,6 +7,6 @@ import captures from '../data/views/captures.html?raw'
 // /examples/<name> detail pages only existed in the Vue SPA; point them at the examples index.
 const content = captures.replace(/href="\/examples\/(captures|dynamic|scopes|streaming-captures)"/g, 'href="/examples"')
 ---
-<Layout title="Captures & Scopes — Parsanol">
+<Layout title="Captures & Scopes — Parsanol" description="Captures, scopes, and dynamic atoms in Parsanol: named captures, scope discard, dynamic parser callbacks, and capture patterns.">
   <Fragment set:html={content} />
 </Layout>

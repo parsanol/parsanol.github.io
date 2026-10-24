@@ -12,7 +12,7 @@ const manifestModules = import.meta.glob<any>('../data/examples-manifest.json', 
 })
 const examplesManifest: any[] = Object.values(manifestModules)[0] ?? []
 ---
-<Layout title="Examples — Parsanol">
+<Layout title="Examples — Parsanol" description="Browse the Parsanol example catalog: parser examples with Rust and Ruby implementations, filterable by runtime and Parslet compatibility.">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="flex gap-12">
       <DocsNav showSections={['introduction']} />

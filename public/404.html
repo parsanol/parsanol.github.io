@@ -55,5 +55,23 @@
         <a class="btn secondary" href="/playground">Playground</a>
       </nav>
     </main>
+    <script>
+      // Legacy single-page-app routes → their current homes. Anything else stays a real 404.
+      (function () {
+        var map = {
+          '/rust': '/backends',
+          '/rust-migration': '/tutorial',
+          '/ruby': '/ruby-bindings',
+          '/ruby-comparison': '/feature-comparison',
+          '/comparison': '/feature-comparison',
+          '/migration': '/ruby-bindings#migration',
+          '/guides/captures': '/captures-guide',
+          '/guides/feature-comparison': '/feature-comparison'
+        };
+        var path = location.pathname.replace(/\/+$/, '') || '/';
+        if (map[path]) { location.replace(map[path]); return; }
+        if (path.toLowerCase().indexOf('/examples/') === 0) { location.replace('/examples'); }
+      })();
+    </script>
   </body>
 </html>
