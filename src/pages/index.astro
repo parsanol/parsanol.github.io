@@ -7,6 +7,15 @@ const recent = news.slice(0, 3)
 
 const abilities = [
   {
+    icon: 'target',
+    title: 'The mission: replace ABNF and ANTLR',
+    body: 'Parsanol is the modern grammar language — beyond parslet, beyond SOTA. One grammar replaces ABNF for specification and ANTLR for parser generation: importable from both (:abnf, :antlr), compiled to one checksummed artifact, byte-identical trees on every engine, typed bindings as the listener/visitor replacement, PEG predictability by construction. The parslet wire shape is a migration contract, not the ceiling.',
+    links: [
+      { href: '/parg', label: 'Meet PARG' },
+      { href: '/parg/language', label: 'Language tour' },
+    ],
+  },
+  {
     icon: 'exclamation',
     title: 'Error recovery, by design',
     body: 'A failed parse returns the deepest real-content position, the expected set, the best partial tree — and when the grammar declares a resync policy, the exact spans consumed so parsing resumed. Deterministic across engines.',
@@ -45,7 +54,7 @@ const abilities = [
   {
     icon: 'code',
     title: 'Tooling that meets you where you are',
-    body: 'A language server, a browser playground running the shipped wasm binary, and Ruby-DSL / PARG frontends feeding the same portable core.',
+    body: 'A language server, a browser playground running the shipped wasm binary, and Ruby-DSL / PARG frontends feeding the same portable core. Next milestone: the compiler itself as wasm — live grammar compilation in the browser (parsanol-rs#298).',
     links: [{ href: '/playground', label: 'Open the playground' }],
   },
 ]
