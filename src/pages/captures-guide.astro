@@ -8,5 +8,7 @@ import captures from '../data/views/captures.html?raw'
 const content = captures.replace(/href="\/examples\/(captures|dynamic|scopes|streaming-captures)"/g, 'href="/examples"')
 ---
 <Layout title="Captures & Scopes — Parsanol" description="Captures, scopes, and dynamic atoms in Parsanol: named captures, scope discard, dynamic parser callbacks, and capture patterns.">
-  <Fragment set:html={content} />
+  <div class="prose max-w-none">
+    <Fragment set:html={content} />
+  </div>
 </Layout>
