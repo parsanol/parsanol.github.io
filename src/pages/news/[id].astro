@@ -13,11 +13,18 @@ const { post } = Astro.props
 // (bold, code, links) is rendered with marked.
 const inline = (text: string) => marked.parseInline(text ?? '', { async: false }) as string
 const blocks: any[] = post.content ?? []
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: post.title,
+  description: post.summary,
+  datePublished: post.date,
+}
 ---
 <Layout title={`${post.title} — Parsanol`} description={post.summary}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <article class="prose max-w-none">
-      <div class="text-sm text-gray-500 mb-2">{post.date?.slice(0, 10)}</div>
+      <time class="text-sm text-gray-500 mb-2" datetime={post.date}>{post.date?.slice(0, 10)}</time>
       <h1>{post.title}</h1>
       <p>{post.summary}</p>
       {blocks.map((block) => {
@@ -65,4 +72,5 @@ const blocks: any[] = post.content ?? []
       })}
     </article>
   </div>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </Layout>

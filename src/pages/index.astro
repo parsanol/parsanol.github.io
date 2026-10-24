@@ -72,7 +72,7 @@ const abilities = [
       <div class="grid md:grid-cols-3 gap-4">
         {recent.map((p: any) => (
           <a href={`/news/${p.id}`} class="card hover:border-primary-400 transition">
-            <div class="text-xs text-gray-500 mb-1">{p.date?.slice(0, 10)}</div>
+            <time class="text-xs text-gray-500 mb-1" datetime={p.date}>{p.date?.slice(0, 10)}</time>
             <div class="font-semibold mb-1">{p.title}</div>
             <div class="text-sm text-gray-600 dark:text-gray-300">{p.summary}</div>
           </a>
