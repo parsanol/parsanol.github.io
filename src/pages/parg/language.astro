@@ -56,6 +56,43 @@ const resyncParg = `grammar RecoveryResync version "1.0.0" {
   entry main: document
 }`
 
+const braceExample = `## Publisher code: case-insensitive tag; raw input is captured.
+publisher = {
+  %i"iso" / %i"ieee"
+}
+
+## ISO-style identifier: publisher, one space, a number.
+iso_identifier = { publisher as publisher space number as number }`
+
+const coreRulesExample = `# RFC 5234 core rules are predeclared — no boilerplate:
+octet_number = 2*DIGIT "." 3*DIGIT      # DIGIT, ALPHA, DQUOTE, WSP, ...
+local_win = LWSP / CRLF                 # LWSP and CRLF inject as real rules
+digit7 = "7"                            # a local DIGIT shadows the core rule`
+
+const pinExamples = `accept "iso 12345"                      # the input parses
+reject "iso"                            # the input does not parse
+capture "ieee 42" { publisher: "ieee", number: "42" }
+example "iso 12345" { publisher: "iso", number: 12345 }
+shape "a b" [ { w: "a" }, { w: "b" } ]`
+
+const styleGuide = `# short named rules; the brace form for anything that wraps
+iso_identifier = { publisher space number }
+
+# tests beside the grammar they pin
+test identifier {
+  accept "iso 12345"
+  reject "iso"
+}
+
+# bindings beside the captures they consume
+bindings iso_identifier {
+  publisher -> publisher (string)
+}
+
+## doc comments ride the artifact as LSP hovers
+## Serial number: digits only, no separators.
+serial = 1*DIGIT`
+
 const testsExample = `test main {
   accept "AB2020"
   reject "AB20"
@@ -78,6 +115,7 @@ stage_abbr = alt from_table "stages" column "abbr"`
 
 const sections = [
   { id: 'skeleton', label: 'Grammar skeleton' },
+  { id: 'brace-form', label: 'Brace form & core rules' },
   { id: 'terminals', label: 'Terminals' },
   { id: 'operators', label: 'Operators' },
   { id: 'captures', label: 'Captures' },
@@ -88,6 +126,7 @@ const sections = [
   { id: 'resync', label: 'Resync (recovery)' },
   { id: 'tests', label: 'In-file tests' },
   { id: 'bindings', label: 'Bindings & tables' },
+  { id: 'style', label: 'Style guide' },
   { id: 'lint', label: 'The lint' },
 ]
 ---
@@ -118,7 +157,8 @@ const sections = [
       <h2 id="skeleton">Grammar skeleton</h2>
       <pre class="text-sm"><code>{skeleton}</code></pre>
       <ul>
-        <li><code>#</code> starts a comment to end of line; one rule per line (newlines are significant).</li>
+        <li><code>#</code> starts a comment to end of line; <code>##</code> is a <strong>doc comment</strong> that attaches to the following rule and ships in the artifact (LSP hovers). One rule per line (newlines are significant) — except in brace bodies, where newlines are whitespace.</li>
+        <li>A case-insensitive literal (<code>%i"iso"</code>) captures the <strong>raw input form</strong>: <code>IEEE 42</code> captures <code>"IEEE"</code>, not <code>"ieee"</code>.</li>
         <li><code>grammar NAME version "X.Y.Z" {"{"}</code> wraps the rules; <code>entry NAME: rule</code> declares an artifact entry point — multiple entries share one rule set.</li>
         <li>Keywords (<code>grammar version as bindings preprocess entry table_lookup from_table column</code>) cannot name or reference rules.</li>
       </ul>
@@ -152,6 +192,24 @@ const sections = [
         compiles to an end-anchored flanking match; a case-sensitive literal to a fixed
         byte window; anything else is a compile error — an arbitrary rule has no bounded
         behind-window.
+      </p>
+
+      <h2 id="brace-form">Rule bodies: the brace form</h2>
+      <pre class="text-sm"><code>{braceExample}</code></pre>
+      <p>
+        A rule body is normally newline-terminated — one line, one rule. The <strong>brace
+        form</strong> makes it self-delimiting: the body extends to the matching
+        <code>&#125;</code>, and inside the braces newlines and comments are whitespace. Both
+        forms compile to the same atom stream — engines never see the difference. Prefer
+        the brace form for anything that wraps; the opening brace may also sit on the
+        next line after the equals sign.
+      </p>
+      <pre class="text-sm"><code>{coreRulesExample}</code></pre>
+      <p>
+        The RFC 5234 core rules are predeclared in every grammar —
+        <code>ALPHA BIT CHAR CR CRLF CTL DIGIT DQUOTE HEXDIG HTAB LF OCTET SP VCHAR WSP</code>
+        — so grammars imported from ABNF keep their vocabulary. A local rule of the same
+        name deliberately shadows the core rule (the lint flags it as style guidance).
       </p>
 
       <h2 id="classes">Character classes</h2>
@@ -210,13 +268,17 @@ const sections = [
       </p>
 
       <h2 id="tests">In-file tests</h2>
+      <pre class="text-sm"><code>{pinExamples}</code></pre>
+      <ul>
+        <li><code>accept</code> / <code>reject</code> pin parseability.</li>
+        <li><code>capture</code> pins the raw capture tree (strings compare by text).</li>
+        <li><code>example</code> pins the bound attribute hash — bindings applied.</li>
+        <li><code>shape</code> pins the canonical whole tree — the only phase that can observe repetition flattening and sequence merge laws.</li>
+      </ul>
       <pre class="text-sm"><code>{testsExample}</code></pre>
       <p>
-        <code>accept</code>/<code>reject</code> pin parseability; <code>capture</code> pins
-        the raw capture tree; <code>example</code> pins the bound attribute hash;
-        <code>shape</code> pins the canonical whole tree — the only phase that can observe
-        repetition flattening and sequence merge laws. Tests run at compile time (a
-        failing test fails the build) and ride the artifact, so every engine replays them.
+        Tests run at compile time (a failing test fails the build) and ride the artifact,
+        so every engine replays them.
       </p>
 
       <h2 id="bindings">Bindings &amp; tables</h2>
@@ -230,6 +292,15 @@ const sections = [
         column into literal alternatives, sorted longest-first.
       </p>
 
+      <h2 id="style">Style guide</h2>
+      <pre class="text-sm"><code>{styleGuide}</code></pre>
+      <ul>
+        <li>Short named rules; the brace form for anything that wraps.</li>
+        <li>Tests live beside the grammar they pin; bindings beside the captures they consume.</li>
+        <li><code>##</code> doc comments on every entry-reachable rule — the artifact ships them.</li>
+        <li>Grammar-wide: one rule style per file; the lints flag heavy mixing.</li>
+      </ul>
+
       <h2 id="lint">The lint</h2>
       <p>
         Under PEG semantics order is decisive, so the compiler runs first-set analysis on
@@ -237,7 +308,7 @@ const sections = [
         shadowing, duplicates, and left recursion are <strong>build failures</strong>;
         order-dependent branch pairs are warnings recorded in the artifact for consumer
         CI. Foreign grammars can come in as PARG text:
-        <code>Parsanol::PARG::Import.import(:abnf | :ebnf | :pest, text)</code>.
+        <code>Parsanol::PARG::Import.import(:abnf | :antlr | :ebnf | :pest, text)</code> — ABNF and ANTLR grammars import into PARG text, with everything the scoped importers cannot express rejected with position instead of dropped.
       </p>
 
       <div class="not-prose mt-10 bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-900/40 rounded-xl p-5">
