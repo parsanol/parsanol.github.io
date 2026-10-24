@@ -15,7 +15,8 @@
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Add to Cargo.toml</h3>
-            
+            <pre><code>[dependencies]
+parsanol = "0.18"</code></pre>
           </div>
 
           <div class="card">
@@ -52,7 +53,17 @@
 
           <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg">
             <h4 class="font-medium text-amber-900 dark:text-amber-100 mb-2">Feature Flags</h4>
-            
+            <pre><code># With Ruby bindings
+[dependencies]
+parsanol = { version = "0.18", features = ["ruby"] }
+
+# With WASM bindings
+[dependencies]
+parsanol = { version = "0.18", features = ["wasm"] }
+
+# Minimal (no serialization)
+[dependencies]
+parsanol = { version = "0.18", default-features = false }</code></pre>
           </div>
         </section>
 
@@ -67,12 +78,17 @@
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Add to Gemfile</h3>
-            
+            <pre><code># Gemfile
+gem 'parsanol'</code></pre>
           </div>
 
           <div class="card">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Or Install Directly</h3>
-            
+            <pre><code># Install via RubyGems
+$ gem install parsanol
+
+# Or with Bundler
+$ bundle add parsanol</code></pre>
           </div>
 
           <div class="card mb-6">
@@ -116,12 +132,35 @@
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">NPM Package</h3>
-            
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              The wasm engine ships as <code>@parsanol/wasm</code> — the same verified binary
+              the Rust and Ruby conformance suites validate (~1.4 MB). Parsing runs locally in
+              the browser or in Node; nothing is uploaded.
+            </p>
+            <pre><code>npm install @parsanol/wasm</code></pre>
           </div>
 
           <div class="card">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Usage in Browser</h3>
-            
+            <p class="text-gray-600 dark:text-gray-300 mb-4">
+              Instantiate the engine and load the compiled artifact — the sha256 checksum is
+              verified before any parsing:
+            </p>
+            <pre><code>import init, { PargArtifactJs } from "@parsanol/wasm";
+
+await init();
+
+const parg = new PargArtifactJs(artifactJson);
+const bound = parg.parseAndBind("identifier", "iso 12345");
+// => { publisher: "iso", number: 12345 }</code></pre>
+            <p class="text-gray-600 dark:text-gray-300 mt-4">
+              The artifact also exposes <code>parseShapeRecovering</code> (recovery envelope:
+              deepest position, partial tree, declared resync spans), <code>runTests</code>
+              (replays the artifact's embedded tests), and <code>schemaTypescript</code>
+              (generated binding-requirements types for your model). See
+              <a href="/parg">PARG</a> for the full workflow, or try the
+              <a href="/playground">playground</a> — it runs this exact binary.
+            </p>
           </div>
         </section>
 
@@ -131,12 +170,29 @@
 
           <div class="card mb-6">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Rust</h3>
-            
+            <pre><code>// src/main.rs
+use parsanol::portable::{GrammarBuilder, parser_dsl::*};
+
+fn main() {
+    let grammar = GrammarBuilder::new()
+        .rule("hello", str("hello"))
+        .build();
+
+    println!("Parsanol installed successfully!");
+    println!("Grammar: {:?}", grammar);
+}</code></pre>
           </div>
 
           <div class="card">
             <h3 class="font-semibold text-gray-900 dark:text-white mb-4">Ruby</h3>
-            
+            <pre><code># test.rb
+require 'parsanol'
+
+# Create a simple parser
+parser = Parsanol::Parser.new
+
+puts "Parsanol installed successfully!"
+puts "Version: #{Parsanol::VERSION}"</code></pre>
           </div>
         </section>
 

@@ -1,18 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import DocsNav from '../components/organisms/DocsNav.astro'
 import content from '../data/views/api.html?raw'
 ---
-<Layout title="API — Parsanol" active="api">
-  <div class="flex gap-12">
-    <aside class="w-64 flex-shrink-0 hidden lg:block">
-      <div class="sticky top-20 text-sm">
-        <a href="/introduction" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Introduction</a>
-        <a href="/installation" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Installation</a>
-        <a href="/news" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">News</a>
+<Layout title="API — Parsanol">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex gap-12">
+      <DocsNav showSections={['docs']} />
+      <div class="flex-1 min-w-0 prose max-w-none">
+        <Fragment set:html={content} />
       </div>
-    </aside>
-    <div class="flex-1 min-w-0 prose max-w-none">
-      <Fragment set:html={content} />
     </div>
   </div>
 </Layout>

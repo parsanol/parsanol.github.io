@@ -1,0 +1,94 @@
+---
+import Icon from '../atoms/Icon.astro'
+import Badge from '../atoms/Badge.astro'
+
+interface Props {
+  title: string
+  description: string
+  difficulty?: 1 | 2 | 3
+  concepts?: string[]
+  languages?: ('rust' | 'ruby' | 'python' | 'js')[]
+  to?: string
+  href?: string
+}
+
+const {
+  title,
+  description,
+  difficulty = 1,
+  concepts = [],
+  languages = ['rust'],
+  to,
+  href,
+} = Astro.props
+
+const languageLabels: Record<string, string> = {
+  rust: 'Rust',
+  ruby: 'Ruby',
+  python: 'Python',
+  js: 'JS/WASM',
+}
+---
+<div class="card card-hover group">
+  <div class="flex items-start justify-between mb-3">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+      {title}
+    </h3>
+    {difficulty && (
+      <div class="flex gap-0.5" title={`Difficulty: ${difficulty}/3`}>
+        {[1, 2, 3].map((n) => (
+          <span
+            class:list={[
+              'w-2 h-2 rounded-full',
+              n <= difficulty ? 'bg-amber-400' : 'bg-gray-200 dark:bg-gray-700',
+            ]}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+  <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">
+    {description}
+  </p>
+  {concepts.length > 0 && (
+    <div class="flex flex-wrap gap-1.5 mb-4">
+      {concepts.slice(0, 3).map((concept) => (
+        <span class="px-2 py-0.5 text-xs font-medium rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+          {concept}
+        </span>
+      ))}
+      {concepts.length > 3 && (
+        <span class="px-2 py-0.5 text-xs font-medium rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500">
+          +{concepts.length - 3}
+        </span>
+      )}
+    </div>
+  )}
+  <div class="flex items-center justify-between">
+    <div class="flex flex-wrap gap-1.5">
+      {languages.map((lang) => (
+        <Badge variant={lang}>{languageLabels[lang] ?? lang}</Badge>
+      ))}
+    </div>
+    {to && (
+      <a
+        href={to}
+        class="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        View
+        <Icon name="chevron-right" class="ml-0.5 w-3.5 h-3.5" />
+      </a>
+    )}
+    {!to && href && (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        View
+        <Icon name="chevron-right" class="ml-0.5 w-3.5 h-3.5" />
+      </a>
+    )}
+  </div>
+</div>

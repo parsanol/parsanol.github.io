@@ -77,6 +77,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate examples manifest
+        run: node scripts/generate-examples.cjs
+        env:
+          PARSANOL_RS_DIR: ./parsanol-rs
+          PARSANOL_RUBY_DIR: ./parsanol-ruby
+
       - name: Build
         run: npm run build
         env:

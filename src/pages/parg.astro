@@ -18,6 +18,22 @@ bindings iso_identifier {
 
 entry identifier: iso_identifier`
 
+const demoTypeScript = `import init, { PargArtifactJs } from "@parsanol/wasm";
+
+await init();
+
+// Checksum verified before any parsing
+const parg = new PargArtifactJs(artifactJson);
+
+const bound = parg.parseAndBind("identifier", "iso 12345");
+// => { publisher: "iso", number: 12345 }
+
+// Recovery envelope: deepest position, partial tree, resync spans
+const envelope = JSON.parse(parg.parseShapeRecovering("identifier", input));
+
+// Generated binding-requirements types for your model
+const ts = parg.schemaTypescript();`
+
 const demoRuby = `require "parsanol"
 require "json"
 
@@ -88,8 +104,8 @@ const features = [
 <Layout
   title="PARG — the grammar language — Parsanol"
   description="PARG is parsanol's grammar language: write once, compile to a checksummed artifact, parse identically on Ruby, Rust, WebAssembly, and TypeScript."
-  active="parg"
 >
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
   <div class="flex gap-12">
     <aside class="w-64 flex-shrink-0 hidden lg:block">
       <div class="sticky top-20 text-sm space-y-1">
@@ -150,6 +166,28 @@ const features = [
         <a href="/playground">playground</a>, which runs the shipped wasm binary.
       </p>
 
+      <h2>TypeScript, JavaScript, and the browser</h2>
+      <p>
+        The compiled artifact runs natively in TypeScript and JavaScript through
+        <code>@parsanol/wasm</code> — the published wasm build this site's playground runs.
+        Load it, and the checksum is verified before any parsing:
+      </p>
+      <div class="not-prose my-6">
+        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">TypeScript / JavaScript</div>
+        <pre class="text-xs"><code>{demoTypeScript}</code></pre>
+      </div>
+      <p>
+        The artifact exposes its whole surface to JavaScript:
+        <code>parseAndBind</code> for one-step parsing and binding,
+        <code>parseShape</code> and <code>parseShapeRecovering</code> for the raw
+        parsanol-shape tree and the recovery envelope (deepest position, partial tree,
+        declared resync spans), <code>applyBindings</code> for two-step binding,
+        <code>runTests</code> for the embedded suite, and <code>schemaTypescript()</code>,
+        which generates the binding-requirements types for your model from the artifact.
+        The <a href="/playground">playground</a> is itself a TypeScript consumer of the same
+        binary — its recovery demo runs through <code>parseShapeRecovering</code>.
+      </p>
+
       <h2>What the artifact guarantees</h2>
       <ul>
         <li><strong>Integrity</strong> — the sha256 checksum over the canonicalized envelope is verified on load; a mismatch fails loudly, never silently mis-parses.</li>
@@ -185,5 +223,6 @@ const features = [
         <li><a href="/parg/language">The language tour</a> — the syntax on one page, with examples.</li>
       </ul>
     </div>
+  </div>
   </div>
 </Layout>

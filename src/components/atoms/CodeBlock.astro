@@ -1,0 +1,35 @@
+---
+import Prism from 'prismjs'
+import 'prismjs/components/prism-rust'
+import 'prismjs/components/prism-ruby'
+import 'prismjs/components/prism-python'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-toml'
+
+interface Props {
+  lang: string
+  code: string
+}
+
+const { lang, code } = Astro.props
+
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  }
+  return text.replace(/[&<>"']/g, (m) => map[m])
+}
+
+const grammar = Prism.languages[lang]
+const highlightedCode = grammar ? Prism.highlight(code, grammar, lang) : escapeHtml(code)
+---
+<div class="code-block-wrapper">
+  <pre class:list={['code-block', `language-${lang}`]}><code><Fragment set:html={highlightedCode} /></code></pre>
+</div>

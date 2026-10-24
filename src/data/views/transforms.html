@@ -8,7 +8,36 @@
             Parsers produce parse trees - nested structures that represent the matched input. Transforms convert these trees into meaningful data structures.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Without transform - you get a parse tree
+let parser = str("hello").then(str(" ")).then(re(r"[A-Za-z]+"));
+let result = parser.parse("hello World");
+// result: Ok((("hello", " "), "World"))
+
+// With transform - you get structured data
+let greeting = str("hello")
+    .then(str(" ").ignore())
+    .then(re(r"[A-Za-z]+").as("name"))
+    .transform(|node| {
+        format!("Hello, {}!", node["name"])
+    });
+
+let result = greeting.parse("hello World");
+// result: Ok("Hello, World!")</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code># Without transform - you get a parse tree
+parser = str("hello") &gt;&gt; str(" ") &gt;&gt; re("[A-Za-z]+")
+result = parser.parse("hello World")
+# result.value: ["hello", " ", "World"]
+
+# With transform - you get structured data
+greeting = str("hello") &gt;&gt;
+  str(" ").ignore &gt;&gt;
+  re("[A-Za-z]+").as(:name) &gt;&gt;
+  transform { |node| "Hello, #{node[:name]}!" }
+
+result = greeting.parse("hello World")
+# result.value: "Hello, World!"</code></pre>
+                    </div>
         </section>
 
         <!-- Pattern Matching -->
@@ -18,7 +47,32 @@
             The transform system uses pattern matching on parse tree nodes.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>// The Tree node has variants:
+// - Tree::Value(String) - leaf values
+// - - Tree::Sequence(Vec&lt;Tree&gt;) - sequences
+// - Tree::Named { name, tree } - named captures
+// - Tree::Error(err) - error nodes
+
+match tree {
+    Tree::Value(v) =&gt; parse_value(&amp;v),
+    Tree::Sequence(items) =&gt; process_sequence(items),
+    Tree::Named { name, tree } =&gt; process_named(name, *tree),
+    _ =&gt; default_processing(),
+}</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code># The node has a :type and :value
+# Access patterns:
+// node[:type] =&gt; :value, :sequence, :named, :error
+# node[:value] =&gt; the actual value
+# node[:name] =&gt; for named captures
+
+case node[:type]
+when :value then parse_value(node[:value])
+when :sequence then process_sequence(node[:value])
+when :named then process_named(node[:name], node[:value])
+else default_processing
+end</code></pre>
+                    </div>
         </section>
 
         <!-- Simple Transforms -->
@@ -28,7 +82,18 @@
             Transform individual leaf values.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Transform a single value
+let parser = re(r"[0-9]+").transform(|s| s.parse::&lt;i32&gt;().unwrap());
+
+let result = parser.parse("123");
+assert_eq!(result.unwrap(), 123);</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code># Transform a single value
+parser = re("[0-9]+").transform { |s| s.to_i }
+
+result = parser.parse("123")
+puts result.value  # =&gt; 123</code></pre>
+                    </div>
         </section>
 
         <!-- Sequence Transforms -->
@@ -38,7 +103,25 @@
             Transform sequences of values.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Transform a sequence into a Vec
+let parser = re(r"[0-9]+")
+    .repeat(1, None)
+    .transform(|nodes| {
+        nodes.iter()
+            .map(|s| s.parse::&lt;i32&gt;().unwrap())
+            .collect::&lt;Vec&lt;_&gt;&gt;()
+    });
+
+let result = parser.parse("1 2 3");</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code># Transform a sequence
+parser = re("[0-9]+").repeat(1).transform { |nodes|
+  nodes.map(&amp;:to_i)
+}
+
+result = parser.parse("1 2 3")
+puts result.value  # =&gt; [1, 2, 3]</code></pre>
+                    </div>
         </section>
 
         <!-- Subtree Transforms -->
@@ -48,7 +131,32 @@
             Transform nested tree structures.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Transform nested structures
+let pair = str("(")
+    .then(re(r"[0-9]+").as("first"))
+    .then(str(",").ignore())
+    .then(re(r"[0-9]+").as("second"))
+    .then(str(")"))
+    .transform(|node| {
+        let a = node["first"].string().parse::&lt;i32&gt;().unwrap();
+        let b = node["second"].string().parse::&lt;i32&gt;().unwrap();
+        (a, b)
+    });
+
+let result = pair.parse("(1,2)").unwrap();</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code># Transform nested structures
+pair = str("(") &gt;&gt;
+  re("[0-9]+").as(:first) &gt;&gt;
+  str(",").ignore &gt;&gt;
+  re("[0-9]+").as(:second) &gt;&gt;
+  str(")") &gt;&gt;
+  transform { |node|
+    [node[:first].to_i, node[:second].to_i]
+  }
+
+result = pair.parse("(1,2)").value  # =&gt; [1, 2]</code></pre>
+                    </div>
         </section>
 
         <!-- Custom Transformers -->
@@ -58,6 +166,24 @@
             Create reusable transformer functions.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>// Reusable transformer
+fn number_transform() -&gt; impl Parser&lt;Out = i32&gt; {
+    re(r"[0-9]+").transform(|s| s.parse().unwrap())
+}
+
+// Use it in multiple places
+let parser = number_transform().then(
+    str("+").ignore().then(number_transform())
+        .transform(|(a, b)| a + b)
+);</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code># Reusable transformer
+def number_transform
+  re("[0-9]+").transform(&amp;:to_i)
+end
+
+# Use it in multiple places
+parser = number_transform &gt;&gt; str("+").ignore &gt;&gt; number_transform &gt;&gt; transform { |(a, b)| a + b }</code></pre>
+                    </div>
         </section>
       

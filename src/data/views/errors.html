@@ -8,7 +8,43 @@
             Parsanol produces tree-structured errors that capture the full context of what went wrong.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::error::TreeError;
+
+// When parsing fails, you get a tree of errors
+let parser = str("hello").then(str(" ")).then(re(r"[0-9]+"));
+let result = parser.parse("hello world");
+
+// The error contains:
+// - What was expected
+// - What was found
+// - Position information
+// - Nested error context
+
+match result {
+    Ok(_) =&gt; println!("Success!"),
+    Err(e) =&gt; {
+        println!("Error: {:?}", e);
+    }
+}</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# When parsing fails, you get a tree of errors
+parser = str("hello") &gt;&gt; str(" ") &gt;&gt; re("[0-9]+")
+result = parser.parse("hello world")
+
+# The error contains:
+# - What was expected
+# - What was found
+# - Position information
+# - Nested error context
+
+if result.success?
+  puts "Success!"
+else
+  puts "Error: #{result.error}"
+end</code></pre>
+                    </div>
         </section>
 
         <!-- Error Reporters -->
@@ -21,17 +57,57 @@
           <div class="space-y-8">
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Tree Reporter</h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::error::{ParseError, reporter::TreeReporter};
+
+// Get the tree-formatted error
+let error = parser.parse("invalid input").unwrap_err();
+let formatted = TreeReporter::new().report(&amp;error);
+println!("{}", formatted);</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Get the tree-formatted error
+error = parser.parse("invalid input").error
+puts error.to_tree</code></pre>
+                        </div>
             </div>
 
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Deepest Reporter</h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::error::{ParseError, reporter::DeepestReporter};
+
+// Get only the deepest (most specific) error
+let error = parser.parse("invalid input").unwrap_err();
+let formatted = DeepestReporter::new().report(&amp;error);</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Get only the deepest (most specific) error
+error = parser.parse("invalid input").error
+puts error.to_deepest</code></pre>
+                        </div>
             </div>
 
             <div>
               <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Contextual Reporter</h3>
-              
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::error::{ParseError, reporter::ContextualReporter};
+
+// Get error with source context
+let error = parser.parse("invalid input").unwrap_err();
+let formatted = ContextualReporter::new()
+    .with_source("invalid input")
+    .report(&amp;error);
+// Shows:
+//   |
+// 1 | invalid input
+//   | ^~~~~~~~~~~~</code></pre>
+                            <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Get error with source context
+error = parser.parse("invalid input").error
+puts error.to_context("invalid input")</code></pre>
+                        </div>
             </div>
           </div>
         </section>
@@ -43,7 +119,23 @@
             Visualize parse trees and errors with ASCII art.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::tree::display::AsciiTree;
+
+// Display the parse tree as ASCII art
+let tree = parser.parse("hello 123").unwrap();
+println!("{}", AsciiTree::new(&amp;tree));
+// Output:
+// Sequence
+// ├── "hello"
+// ├── " "
+// └── "123"</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Display the parse tree as ASCII art
+tree = parser.parse("hello 123").value
+puts tree.to_ascii_tree</code></pre>
+                    </div>
         </section>
 
         <!-- Debug Mode -->
@@ -53,6 +145,29 @@
             Enable tracing to see exactly how your parser processes input.
           </p>
 
-          
+<div class="mt-3 bg-gray-900 dark:bg-gray-950 rounded p-3">
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>use parsanol::prelude::*;
+
+// Enable tracing
+let parser = str("hello")
+    .then(str(" "))
+    .then(re(r"[0-9]+"))
+    .trace();  // Enable debug output
+
+let result = parser.parse("hello world");
+// Prints:
+// [TRACE] str("hello") at 0: "hello world"
+// [TRACE] str(" ") at 5: " world"
+// [TRACE] re("[0-9]+") at 6: "world"
+// [ERROR] Expected [0-9]+ at 6: "world"</code></pre>
+                        <pre class="text-xs text-gray-100 overflow-x-auto"><code>require 'parsanol'
+
+# Enable tracing
+parser = str("hello") &gt;&gt; str(" ") &gt;&gt; re("[0-9]+")
+parser = parser.trace  # Enable debug output
+
+result = parser.parse("hello world")
+# Prints debug information</code></pre>
+                    </div>
         </section>
       

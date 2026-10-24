@@ -1,10 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import Hero from '../components/organisms/Hero.astro'
+import FeatureCard from '../components/molecules/FeatureCard.astro'
 import news from '../data/news-manifest.json'
 const recent = news.slice(0, 3)
 
 const abilities = [
   {
+    icon: 'exclamation',
     title: 'Error recovery, by design',
     body: 'A failed parse returns the deepest real-content position, the expected set, the best partial tree — and when the grammar declares a resync policy, the exact spans consumed so parsing resumed. Deterministic across engines.',
     links: [
@@ -13,6 +16,7 @@ const abilities = [
     ],
   },
   {
+    icon: 'layers',
     title: 'One grammar, every runtime',
     body: 'PARG is the grammar language: write once, compile to a checksummed parsanol-tree/v2 artifact; Ruby, Rust, WebAssembly, and the TypeScript runtime consume the same bytes and build the same tree.',
     links: [
@@ -21,70 +25,59 @@ const abilities = [
     ],
   },
   {
+    icon: 'check',
     title: 'Verified identical, every day',
     body: 'A 32-artifact conformance corpus, a nightly five-engine differential fuzz — including a reference walker with every optimization switched off — and shipped-artifact audits keep "identical everywhere" an enforced property.',
     links: [{ href: '/feature-comparison', label: 'Engine comparison' }],
   },
   {
+    icon: 'lightning',
     title: 'Fast where it counts',
     body: 'Packrat parsing with O(n) guarantees. On real documents the native engine parses the same grammar roughly 3.6× faster than parslet, with a bytecode VM and incremental sessions for editor-scale reparse.',
     links: [{ href: '/backends', label: 'Backends & benchmarks' }],
   },
   {
+    icon: 'puzzle',
     title: 'Real-world grammar features',
     body: 'Skip/trivia injection with comment capture, atomic rules, compile-time left-recursion rewriting with precedence tiers, lookbehind guards, and runtime state atoms — the things real formats actually need.',
     links: [{ href: '/parg/language', label: 'Language tour' }],
   },
   {
+    icon: 'code',
     title: 'Tooling that meets you where you are',
     body: 'A language server, a browser playground running the shipped wasm binary, and Ruby-DSL / PARG frontends feeding the same portable core.',
     links: [{ href: '/playground', label: 'Open the playground' }],
   },
 ]
 ---
-
 <Layout title="Parsanol">
-  <section class="text-center mb-16">
-    <h1 class="text-5xl font-bold mb-4">Parsanol</h1>
-    <p class="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-      Write a grammar once. Compile it to a verified, checksummed artifact. Get byte-identical
-      trees and IDE-grade error recovery on Ruby, Rust, WebAssembly, and TypeScript.
-    </p>
-    <div class="mt-6 flex items-center justify-center gap-3">
-      <a href="/getting-started" class="px-5 py-2.5 rounded-lg bg-primary-600 text-white font-medium hover:bg-primary-700">Get started</a>
-      <a href="/playground" class="px-5 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800">Open the playground</a>
-    </div>
-  </section>
+  <Hero />
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6">What Parsanol does today</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {abilities.map((ability) => (
+          <FeatureCard
+            title={ability.title}
+            description={ability.body}
+            icon={ability.icon}
+            links={ability.links}
+          />
+        ))}
+      </div>
+    </section>
 
-  <section class="mb-16">
-    <h2 class="text-2xl font-semibold mb-6">What Parsanol does today</h2>
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {abilities.map((ability) => (
-        <div class="card p-5 flex flex-col">
-          <div class="font-semibold mb-2">{ability.title}</div>
-          <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">{ability.body}</p>
-          <div class="mt-auto flex flex-wrap gap-x-4 gap-y-1 text-sm">
-            {ability.links.map((link) => (
-              <a href={link.href} class="text-primary-600 dark:text-primary-400 hover:underline">
-                {link.label} →
-              </a>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <section>
-    <h2 class="text-2xl font-semibold mb-4">Recent News</h2>
-    <div class="grid md:grid-cols-3 gap-4">
-      {recent.map((p: any) => (
-        <a href={`/news/${p.id}`} class="card hover:border-primary-400 transition">
-          <div class="text-xs text-gray-500 mb-1">{p.date?.slice(0, 10)}</div>
-          <div class="font-semibold mb-1">{p.title}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-300">{p.summary}</div>
-        </a>
-      ))}
-    </div>
-  </section>
+    <section>
+      <h2 class="text-2xl font-semibold mb-4">Recent News</h2>
+      <div class="grid md:grid-cols-3 gap-4">
+        {recent.map((p: any) => (
+          <a href={`/news/${p.id}`} class="card hover:border-primary-400 transition">
+            <div class="text-xs text-gray-500 mb-1">{p.date?.slice(0, 10)}</div>
+            <div class="font-semibold mb-1">{p.title}</div>
+            <div class="text-sm text-gray-600 dark:text-gray-300">{p.summary}</div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
 </Layout>
