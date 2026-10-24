@@ -5,12 +5,22 @@ import CodeTabs from '../molecules/CodeTabs.astro'
 
 const demoParg = `# demo.parg
 grammar Demo version "1.0.0" {
+  skip = trivia
+  trivia = 1*" "
+
   digit = %x30-39
   number = 1*digit
-  space = " "
   publisher = %i"iso" / %i"ieee"
 
-  iso_identifier = publisher as publisher space number as number
+  origin = publisher as publisher
+  serial = number as number
+
+  iso_identifier = origin serial
+}
+
+bindings iso_identifier {
+  publisher -> publisher (string)
+  number -> number (integer)
 }
 
 entry identifier: iso_identifier`

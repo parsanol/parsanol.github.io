@@ -27,7 +27,7 @@
       {
         "type": "code",
         "language": "parg",
-        "text": "# demo.parg\ngrammar Demo version \"1.0.0\" {\n  digit = %x30-39\n  number = 1*digit\n  space = \" \"\n  publisher = %i\"iso\" / %i\"ieee\"\n\n  iso_identifier = publisher as publisher space number as number\n}\n\nentry identifier: iso_identifier"
+        "text": "# demo.parg\ngrammar Demo version \"1.0.0\" {\n  skip = trivia\n  trivia = 1*\" \"\n\n  digit = %x30-39\n  number = 1*digit\n  publisher = %i\"iso\" / %i\"ieee\"\n\n  origin = publisher as publisher\n  serial = number as number\n\n  iso_identifier = origin serial\n}\n\nbindings iso_identifier {\n  publisher -> publisher (string)\n  number -> number (integer)\n}\n\ntest identifier {\n  accept \"iso 12345\"\n  accept \"IEEE 42\"\n  reject \"iso\"\n  capture \"ieee 42\" { publisher: \"ieee\", number: \"42\" }\n}\n\nentry identifier: iso_identifier"
       },
       {
         "type": "paragraph",

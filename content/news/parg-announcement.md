@@ -14,12 +14,29 @@ PARG is parsanol's grammar language, and it is now the recommended way to teach 
 ```parg
 # demo.parg
 grammar Demo version "1.0.0" {
+  skip = trivia
+  trivia = 1*" "
+
   digit = %x30-39
   number = 1*digit
-  space = " "
   publisher = %i"iso" / %i"ieee"
 
-  iso_identifier = publisher as publisher space number as number
+  origin = publisher as publisher
+  serial = number as number
+
+  iso_identifier = origin serial
+}
+
+bindings iso_identifier {
+  publisher -> publisher (string)
+  number -> number (integer)
+}
+
+test identifier {
+  accept "iso 12345"
+  accept "IEEE 42"
+  reject "iso"
+  capture "ieee 42" { publisher: "ieee", number: "42" }
 }
 
 entry identifier: iso_identifier
