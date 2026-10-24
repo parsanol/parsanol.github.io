@@ -1,0 +1,48 @@
+---
+// Ordered documentation path; renders prev/next links on matching pages.
+const order = [
+  { path: '/introduction', label: 'What is Parsanol?' },
+  { path: '/installation', label: 'Installation' },
+  { path: '/first-parser', label: 'Your First Parser' },
+  { path: '/getting-started', label: 'Getting Started' },
+  { path: '/parsers', label: 'Parsers' },
+  { path: '/transforms', label: 'Transforms' },
+  { path: '/errors', label: 'Error Handling' },
+  { path: '/captures-guide', label: 'Captures & Scopes' },
+  { path: '/examples', label: 'Examples' },
+  { path: '/api', label: 'API Reference' },
+  { path: '/architecture', label: 'Architecture' },
+  { path: '/backends', label: 'Parsing Backends' },
+  { path: '/feature-comparison', label: 'Engine Comparison' },
+  { path: '/tutorial', label: 'Tutorial' },
+  { path: '/ruby-bindings', label: 'Ruby Bindings' },
+  { path: '/parg', label: 'PARG' },
+  { path: '/parg/language', label: 'The Language Tour' },
+]
+
+const pathname = Astro.url.pathname.replace(/\/$/, '')
+const index = order.findIndex((s) => s.path === pathname)
+const prev = index > 0 ? order[index - 1] : null
+const next = index >= 0 && index < order.length - 1 ? order[index + 1] : null
+---
+{index >= 0 && (prev || next) && (
+  <nav
+    class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row justify-between gap-3 text-sm"
+    aria-label="Documentation pagination"
+  >
+    {prev ? (
+      <a href={prev.path} class="text-primary-600 dark:text-primary-400 hover:underline">
+        ← {prev.label}
+      </a>
+    ) : (
+      <span />
+    )}
+    {next ? (
+      <a href={next.path} class="text-primary-600 dark:text-primary-400 hover:underline sm:text-right">
+        {next.label} →
+      </a>
+    ) : (
+      <span />
+    )}
+  </nav>
+)}
