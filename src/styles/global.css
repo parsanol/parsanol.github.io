@@ -16,7 +16,10 @@
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 }
 
-html { font-family: ui-sans-serif, system-ui, sans-serif; scroll-behavior: smooth; }
+html { font-family: ui-sans-serif, system-ui, sans-serif; }
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
 code, pre, .font-mono { font-family: var(--font-mono); }
 
 @layer components {
@@ -78,6 +81,10 @@ code, pre, .font-mono { font-family: var(--font-mono); }
 .prose pre { @apply p-4 rounded-lg bg-gray-900 text-gray-100 text-sm overflow-x-auto my-4; }
 .prose pre code { @apply bg-transparent p-0; }
 .prose table { @apply w-full my-4 text-sm; }
+.prose thead { @apply text-left; }
+.prose tbody th { @apply text-left; }
+/* Wide tables scroll inside their box instead of stretching the page (GitHub pattern) */
+.prose table { display: block; width: max-content; max-width: 100%; overflow: auto; }
 .prose th { @apply text-left py-2 px-3 font-semibold border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white; }
 .prose td { @apply py-2 px-3 border-b border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-300; }
 .prose a  { @apply text-primary-600 underline; }
