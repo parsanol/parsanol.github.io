@@ -1,5 +1,5 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": ["src/**/*", ".astro/**/*"],
-  "exclude": ["dist", "src/main.ts", "src/App.vue"]
+  "exclude": ["dist"]
 }
