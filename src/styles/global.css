@@ -59,9 +59,9 @@ code, pre, .font-mono { font-family: var(--font-mono); }
 
   .feature-card { @apply p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700; }
 
-  .dd-panel { @apply absolute left-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 opacity-0 scale-95 pointer-events-none transition duration-150 ease-out; }
+  .dd-panel { @apply absolute left-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 hidden; }
   .dd-panel.dd-scroll { @apply w-64 max-h-[70vh] overflow-y-auto; }
-  .dd-wrap[data-open] .dd-panel { @apply opacity-100 scale-100 pointer-events-auto; }
+  .dd-wrap[data-open] .dd-panel { @apply block opacity-100 scale-100 pointer-events-auto; }
   .dd-wrap[data-open] .dd-chevron { @apply rotate-180; }
 
   .filter-btn { @apply flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-colors bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 ring-1 ring-gray-200 dark:ring-gray-700; }
