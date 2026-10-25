@@ -4,9 +4,6 @@ import PrevNext from '../components/PrevNext.astro'
 // captures-guide.html is an empty placeholder left by the migration; the real
 // guide content lives in captures.html, which carries its own sidebar container.
 import captures from '../data/views/captures.html?raw'
-
-// /examples/<name> detail pages only existed in the Vue SPA; point them at the examples index.
-const content = captures.replace(/href="\/examples\/(captures|dynamic|scopes|streaming-captures)"/g, 'href="/examples"')
 ---
 <Layout title="Captures & Scopes — Parsanol" description="Captures, scopes, and dynamic atoms in Parsanol: named captures, scope discard, dynamic parser callbacks, and capture patterns.">
   <div class="prose max-w-none">
