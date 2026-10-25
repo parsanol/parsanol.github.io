@@ -184,5 +184,33 @@ const difficultyColor = difficultyColors[difficulty] || difficultyColors.interme
         <CodeBlock lang={s.lang} code={s.code} />
       </section>
     ))}
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Use it from TypeScript (WebAssembly)</h2>
+      <p class="text-gray-600 dark:text-gray-400 mb-4">
+        The same grammar runs in the browser through the shipped wasm engine —
+        checksum-verified load, parse with recovery, typed bindings:
+      </p>
+      <CodeBlock
+        lang="typescript"
+        code={`import { initSync, PargArtifactJs } from "@parsanol/wasm";
+
+// Browser: await init() — Node: initSync(readFileSync(wasmPath))
+initSync(readFileSync(wasmPath));
+
+const artifact = new PargArtifactJs(artifactJson); // checksum verified on load
+
+// Parse with recovery: deepest position, partial tree, resync spans
+const envelope = JSON.parse(artifact.parseShapeRecovering(entry, input));
+
+// Bind captures to your model
+const bound = artifact.applyBindings(entry, JSON.stringify(envelope.shape));`}
+      />
+      <p class="text-gray-600 dark:text-gray-400 mt-4">
+        Compile the grammar with the Ruby compiler, load the artifact anywhere —
+        and see the <a href="/playground" class="text-primary-600 dark:text-primary-400 hover:underline">playground</a>
+        run the shipped wasm engine live. The artifact's embedded tests replay on
+        every engine, so the tree you get is the tree everyone gets.
+      </p>
+    </section>
   </div>
 </Layout>
