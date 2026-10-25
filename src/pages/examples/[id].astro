@@ -28,10 +28,10 @@ const {
   motivation,
   inputFormat,
   outputFormat,
-  walkthrough,
-  rustCode,
-  rubyCode,
+  sources,
 } = example
+
+const sourceLabels: Record<string, string> = { rust: 'Rust', ruby: 'Ruby' }
 
 const difficultyColors: Record<string, string> = {
   beginner: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
@@ -156,36 +156,61 @@ const difficultyColor = difficultyColors[difficulty] || difficultyColors.interme
       </section>
     )}
 
-    {walkthrough?.length > 0 && (
+    {sources.map((s: any) => (
       <section class="mb-12">
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">How the Code Works</h2>
-        <p class="text-gray-600 dark:text-gray-400 mb-4">This section explains how the parsing rules map to the format semantics.</p>
-        <div class="space-y-4">
-          {walkthrough.map((item: any) => (
-            <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-              <h4 class="font-semibold text-gray-900 dark:text-white mb-2">{item.section}</h4>
-              {item.code && <CodeBlock lang="rust" code={item.code} />}
-              {item.explanation && <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{item.explanation}</p>}
-            </div>
-          ))}
-        </div>
-      </section>
-    )}
+        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4 capitalize">
+          {sourceLabels[s.lang] ?? s.lang}
+          {s.name !== 'basic' && <span class="ml-2 text-base font-normal text-gray-500 dark:text-gray-400">({s.name})</span>}
+        </h2>
 
+        {s.walkthrough?.length > 0 && (
+          <div class="mb-8">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">How the Code Works</h3>
+            <div class="space-y-4">
+              {s.walkthrough.map((item: any) => (
+                <div class="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 class="font-semibold text-gray-900 dark:text-white mb-2">{item.section}</h4>
+                  {item.code && <CodeBlock lang={s.lang} code={item.code} />}
+                  {item.explanation && <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{item.explanation}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">
+          {s.name === 'basic' ? 'Complete implementation' : `Implementation: ${s.name}`}
+        </div>
+        <CodeBlock lang={s.lang} code={s.code} />
+      </section>
+    ))}
     <section class="mb-12">
-      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Source Code</h2>
-      {rustCode && (
-        <div class="mb-6">
-          <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Rust</div>
-          <CodeBlock lang="rust" code={rustCode} />
-        </div>
-      )}
-      {rubyCode && (
-        <div>
-          <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-1">Ruby</div>
-          <CodeBlock lang="ruby" code={rubyCode} />
-        </div>
-      )}
+      <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Use it from TypeScript (WebAssembly)</h2>
+      <p class="text-gray-600 dark:text-gray-400 mb-4">
+        The same grammar runs in the browser through the shipped wasm engine —
+        checksum-verified load, parse with recovery, typed bindings:
+      </p>
+      <CodeBlock
+        lang="typescript"
+        code={`import { initSync, PargArtifactJs } from "@parsanol/wasm";
+
+// Browser: await init() — Node: initSync(readFileSync(wasmPath))
+initSync(readFileSync(wasmPath));
+
+const artifact = new PargArtifactJs(artifactJson); // checksum verified on load
+
+// Parse with recovery: deepest position, partial tree, resync spans
+const envelope = JSON.parse(artifact.parseShapeRecovering(entry, input));
+
+// Bind captures to your model
+const bound = artifact.applyBindings(entry, JSON.stringify(envelope.shape));`}
+      />
+      <p class="text-gray-600 dark:text-gray-400 mt-4">
+        Compile the grammar with the Ruby compiler, load the artifact anywhere —
+        and see the <a href="/playground" class="text-primary-600 dark:text-primary-400 hover:underline">playground</a>
+        run the shipped wasm engine live. The artifact's embedded tests replay on
+        every engine, so the tree you get is the tree everyone gets.
+      </p>
     </section>
   </div>
 </Layout>

@@ -244,133 +244,94 @@ function findRubyFiles(exampleId) {
   return files;
 }
 
-// Scan for all examples by looking for example.json files
-function scanExamples() {
-  const examples = [];
-
-  if (!fs.existsSync(RUST_EXAMPLES_DIR)) {
-    console.error(`Rust examples directory not found: ${RUST_EXAMPLES_DIR}`);
-    return examples;
-  }
-
-  const dirs = fs.readdirSync(RUST_EXAMPLES_DIR, { withFileTypes: true });
-
-  for (const entry of dirs) {
-    if (!entry.isDirectory()) continue;
-    if (entry.name === 'SPEC.md') continue; // Skip spec file
-    if (entry.name === 'assets') continue; // Skip assets directory
-
-    const exampleDir = path.join(RUST_EXAMPLES_DIR, entry.name);
-    const metadataPath = path.join(exampleDir, 'example.json');
-
-    // Check if example.json exists
-    if (fs.existsSync(metadataPath)) {
-      examples.push({
-        id: entry.name,
-        dir: exampleDir,
-        metadataPath: metadataPath,
-        type: 'rust-ruby'
-      });
+// Scan both example roots; the rs checkout is the canonical source on collisions
+function scanAllExamples() {
+  const found = new Map();
+  const scan = (rootDir, source) => {
+    if (!fs.existsSync(rootDir)) {
+      console.error(`Examples directory not found: ${rootDir}`);
+      return;
     }
-  }
-
-  return examples;
+    for (const entry of fs.readdirSync(rootDir, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue;
+      if (['SPEC.md', 'assets', 'readme', 'output', 'documentation'].includes(entry.name)) continue;
+      const dir = path.join(rootDir, entry.name);
+      const metadataPath = path.join(dir, 'example.json');
+      const kebab = `/examples/${toKebabCase(entry.name)}`;
+      if (found.has(kebab)) continue; // rs is the canonical source
+      if (fs.existsSync(metadataPath)) {
+        found.set(kebab, { id: entry.name, dir, metadataPath, source });
+      }
+    }
+  };
+  scan(RUST_EXAMPLES_DIR, 'rs');
+  scan(RUBY_EXAMPLES_DIR, 'ruby');
+  return [...found.values()];
 }
 
-// Scan for Ruby-only examples (Parslet-specific features)
-function scanRubyOnlyExamples() {
-  const examples = [];
-
-  if (!fs.existsSync(RUBY_EXAMPLES_DIR)) {
-    console.error(`Ruby examples directory not found: ${RUBY_EXAMPLES_DIR}`);
-    return examples;
+// Collect every implementation (rs and ruby) for an example id
+function collectSources(id) {
+  const sources = [];
+  for (const f of findRustFiles(id)) {
+    const code = readFile(f.path);
+    if (!code) continue;
+    const walkthrough = f.mdPath ? parseCodeWalkthrough(readFile(f.mdPath) || '') : [];
+    sources.push({ lang: 'rust', name: f.name, code, walkthrough });
   }
-
-  // Ruby-only example IDs (Parslet-specific features)
-  const rubyOnlyIds = ['capture', 'scopes', 'local', 'empty', 'mathn', 'seasons'];
-
-  for (const id of rubyOnlyIds) {
-    const dir = path.join(RUBY_EXAMPLES_DIR, id);
-    if (fs.existsSync(dir)) {
-      examples.push({
-        id: id,
-        dir: dir,
-        type: 'ruby-only'
-      });
-    }
+  for (const f of findRubyFiles(id)) {
+    let code = readFile(f.path);
+    code = code ? cleanRubyCode(code) : null;
+    if (!code) continue;
+    const walkthrough = f.mdPath ? parseCodeWalkthrough(readFile(f.mdPath) || '') : [];
+    sources.push({ lang: 'ruby', name: f.name, code, walkthrough });
   }
-
-  return examples;
+  return sources;
 }
 
 // Main function
 function main() {
-  console.log('Generating example documentation pages...\n');
-  console.log('Reading from:', RUST_EXAMPLES_DIR);
+  console.log('Generating example documentation data...\n');
+  console.log('Reading from:', RUST_EXAMPLES_DIR, 'and', RUBY_EXAMPLES_DIR);
   console.log('');
 
-  // Ensure output directory exists
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
 
-  // Scan for examples
-  const examples = scanExamples();
-  console.log(`Found ${examples.length} examples with example.json\n`);
+  const examples = scanAllExamples();
+  console.log(`Found ${examples.length} unique examples\n`);
 
   const examplesManifest = [];
   const emittedPaths = new Set();
   let generatedCount = 0;
 
   for (const example of examples) {
-    const { id, dir, metadataPath } = example;
-
-    // Read metadata from example directory
+    const { id, dir, metadataPath, source } = example;
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
-
-    // Find code files
-    const rustFiles = findRustFiles(id);
-    const rubyFiles = findRubyFiles(id);
-
-    // Get the first available implementation for each language
-    const rustFile = rustFiles.length > 0 ? rustFiles[0] : null;
-    const rubyFile = rubyFiles.length > 0 ? rubyFiles[0] : null;
-
-    const rustCode = rustFile ? readFile(rustFile.path) : null;
-    const rubyCode = rubyFile ? cleanRubyCode(readFile(rubyFile.path)) : null;
-
-    const hasRust = !!rustCode;
-    const hasRuby = !!rubyCode;
-
-    // Skip if no code at all
-    if (!hasRust && !hasRuby) {
-      console.log(`⚠️  Skipping ${id}: No code found`);
-      continue;
-    }
+    const sources = collectSources(id);
 
     const kebabPath = `/examples/${toKebabCase(id)}`;
     if (emittedPaths.has(kebabPath)) {
       console.log(`⚠️  Skipping ${id}: duplicate path ${kebabPath}`);
       continue;
     }
-    emittedPaths.add(kebabPath);
 
-    // Parse code walkthrough from .md file
-    let codeWalkthrough = [];
-    if (rustFile && rustFile.mdPath) {
-      const mdContent = readFile(rustFile.mdPath);
-      if (mdContent) {
-        codeWalkthrough = parseCodeWalkthrough(mdContent);
-      }
+    if (sources.length === 0) {
+      console.log(`⚠️  Skipping ${id}: no implementation files found`);
+      continue;
     }
+    emittedPaths.add(kebabPath);
 
     // Copy diagram if available
     const hasDiagram = copyDiagram(id);
 
+    const hasRust = sources.some((s) => s.lang === 'rust');
+    const hasRuby = sources.some((s) => s.lang === 'ruby');
+
     // Emit Astro page data
     const exampleData = {
       id: id,
-      path: `/examples/${toKebabCase(id)}`,
+      path: kebabPath,
       title: metadata.title,
       description: metadata.description,
       category: metadata.category,
@@ -385,23 +346,18 @@ function main() {
       motivation: metadata.motivation || null,
       inputFormat: metadata.inputFormat || null,
       outputFormat: metadata.outputFormat || null,
-      walkthrough: codeWalkthrough,
-      rustCode: rustCode,
-      rubyCode: rubyCode,
+      sources: sources.map((s) => ({ lang: s.lang, name: s.name, code: s.code, walkthrough: s.walkthrough })),
     };
     const dataPath = path.join(DATA_DIR, `${id}.json`);
     fs.writeFileSync(dataPath, JSON.stringify(exampleData, null, 2));
-    emittedPaths.add(kebabPath);
 
-    // Status indicators
-    const status = hasRust && hasRuby ? '✓' : (hasRust ? '◐' : '◑');
+    const status = hasRust && hasRuby ? '✓' : (hasRust || hasRuby ? '◐' : '◑');
     const diagramStatus = hasDiagram ? '📄' : '';
-    const walkthroughStatus = codeWalkthrough.length > 0 ? '📝' : '';
-    console.log(`${status} Generated data: ${id}.json (Rust: ${hasRust ? 'Y' : 'n'}, Ruby: ${hasRuby ? 'Y' : 'n'}) ${diagramStatus}${walkthroughStatus}`);
+    const walkthroughStatus = sources.some((s) => s.walkthrough.length > 0) ? '📝' : '';
+    console.log(`${status} Generated data: ${id}.json (${sources.map((s) => s.lang).join(' + ')}) ${diagramStatus}${walkthroughStatus}`);
 
-    // Add to manifest
     examplesManifest.push({
-      path: `/examples/${toKebabCase(id)}`,
+      path: kebabPath,
       name: toPascalCase(id) + 'Example',
       title: metadata.title,
       description: metadata.description,
@@ -412,117 +368,22 @@ function main() {
       hasRust: hasRust,
       hasRuby: hasRuby,
       hasDiagram: hasDiagram,
-      hasWalkthrough: codeWalkthrough.length > 0,
+      hasWalkthrough: sources.some((s) => s.walkthrough.length > 0),
       parsletCompatible: metadata.parsletCompatible || false,
+      rubyOnly: source === 'ruby' && !hasRust,
     });
 
     generatedCount++;
   }
 
-  // Process Ruby-only examples (Parslet-specific features)
-  console.log('\n📚 Processing Ruby-only examples...\n');
-  const rubyOnlyExamples = scanRubyOnlyExamples();
-  console.log(`Found ${rubyOnlyExamples.length} Ruby-only examples\n`);
-
-  for (const example of rubyOnlyExamples) {
-    const { id, dir } = example;
-
-    // Find Ruby code file
-    const rubyFiles = findRubyFiles(id);
-    const rubyFile = rubyFiles.length > 0 ? rubyFiles[0] : null;
-
-    const rubyKebabPath = `/examples/${toKebabCase(id)}`;
-    if (emittedPaths.has(rubyKebabPath)) {
-      console.log(`⚠️  Skipping ${id}: duplicate path ${rubyKebabPath}`);
-      continue;
-    }
-    if (!rubyFile) {
-      console.log(`⚠️  Skipping ${id}: No Ruby code found`);
-      continue;
-    }
-
-    const rubyCode = cleanRubyCode(readFile(rubyFile.path));
-    if (!rubyCode) {
-      console.log(`⚠️  Skipping ${id}: Could not read Ruby code`);
-      continue;
-    }
-
-    // Parse code walkthrough from .md file
-    let codeWalkthrough = [];
-    if (rubyFile.mdPath) {
-      const mdContent = readFile(rubyFile.mdPath);
-      if (mdContent) {
-        codeWalkthrough = parseCodeWalkthrough(mdContent);
-      }
-    }
-
-    // Emit Astro page data (Ruby-only example)
-    const rubyOnlyMetadata = {
-      'capture': { title: 'Capture DSL', description: 'Parslet capture DSL for variable binding', category: 'conceptual', difficulty: 'intermediate' },
-      'scopes': { title: 'Scope DSL', description: 'Parslet scope DSL for context management', category: 'conceptual', difficulty: 'intermediate' },
-      'local': { title: 'Local Variable Parsing', description: 'Non-greedy parsing with local bindings', category: 'conceptual', difficulty: 'intermediate' },
-      'empty': { title: 'Empty Rule Stub', description: 'Empty rule pattern for prototyping', category: 'conceptual', difficulty: 'beginner' },
-      'mathn': { title: 'Mathn Compatibility', description: 'Ruby mathn library compatibility', category: 'conceptual', difficulty: 'beginner' },
-      'seasons': { title: 'Transform Patterns', description: 'Transform DSL patterns demonstration', category: 'conceptual', difficulty: 'intermediate' },
-    };
-    const metadata = rubyOnlyMetadata[id] || { title: toPascalCase(id), description: 'Ruby-only example demonstrating Parslet-specific features.', category: 'conceptual', difficulty: 'intermediate' };
-
-    const exampleData = {
-      id: id,
-      path: `/examples/${toKebabCase(id)}`,
-      title: metadata.title,
-      description: metadata.description,
-      category: metadata.category,
-      tags: ['ruby-only', 'parslet'],
-      difficulty: metadata.difficulty,
-      concepts: [],
-      hasRust: false,
-      hasRuby: true,
-      parsletCompatible: true,
-      hasDiagram: false,
-      diagram: null,
-      motivation: metadata.motivation || null,
-      inputFormat: null,
-      outputFormat: null,
-      walkthrough: codeWalkthrough,
-      rustCode: null,
-      rubyCode: rubyCode,
-    };
-    const dataPath = path.join(DATA_DIR, `${id}.json`);
-    fs.writeFileSync(dataPath, JSON.stringify(exampleData, null, 2));
-    emittedPaths.add(`/examples/${toKebabCase(id)}`);
-
-    // Add to manifest
-    examplesManifest.push({
-      path: `/examples/${toKebabCase(id)}`,
-      name: toPascalCase(id) + 'Example',
-      title: metadata.title,
-      description: metadata.description,
-      category: metadata.category,
-      tags: ['ruby-only', 'parslet'],
-      difficulty: metadata.difficulty,
-      concepts: [],
-      hasRust: false,
-      hasRuby: true,
-      hasDiagram: false,
-      hasWalkthrough: codeWalkthrough.length > 0,
-      parsletCompatible: true,
-      rubyOnly: true,
-    });
-
-    generatedCount++;
-  }
-
-  // Write manifest JSON (ensure directory exists)
   const manifestDir = path.join(__dirname, '../src/data');
   if (!fs.existsSync(manifestDir)) {
     fs.mkdirSync(manifestDir, { recursive: true });
   }
-  const manifestPath = path.join(manifestDir, 'examples-manifest.json');
-  fs.writeFileSync(manifestPath, JSON.stringify(examplesManifest, null, 2));
-  console.log(`\n✓ Generated manifest: examples-manifest.json`);
+  fs.writeFileSync(path.join(manifestDir, 'examples-manifest.json'), JSON.stringify(examplesManifest, null, 2));
+  console.log(`\n✓ Generated manifest: examples-manifest.json (${examplesManifest.length} examples)`);
 
-  console.log(`\n✅ Generated ${generatedCount} example pages`);
+  console.log(`\n✅ Generated data for ${generatedCount} examples`);
 }
 
 main();
