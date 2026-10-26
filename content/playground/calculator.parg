@@ -1,0 +1,23 @@
+## Arithmetic with precedence: * binds tighter than +, both
+## left-associative. The grammar is WRITTEN left-recursively — the
+## compiler rewrites it into tier rules at compile time (the ANTLR 4
+## model), so the artifact carries plain atoms every engine runs
+## identically.
+grammar Calculator version "1.0.0" {
+  ## digit runs are the numbers; spaces allowed between tokens.
+  number = ( 1*( %x30-39 ) ) as num
+  ws = *( %x20 )
+  expr = expr ( ws "*" ws expr ) as mul / expr ( ws "+" ws expr ) as add / number
+  ## The capture wrapper: binds the whole tree as `expr`.
+  top = ( expr ) as expr
+
+  entry main: top
+
+  test {
+    accept "1+2*3"
+    accept "10*20+30"
+    shape "1+2*3" { expr: [ { num: "1" },
+      { add: [ { num: "2" }, { mul: { num: "3" } } ] } ] }
+    reject "+1"
+  }
+}
