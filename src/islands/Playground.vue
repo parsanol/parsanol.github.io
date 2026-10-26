@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { EditorState } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
 import { json } from '@codemirror/lang-json'
+import csvArtifact from '../assets/playground/csv.artifact.json?raw'
 import jsonArtifact from '../assets/playground/json.artifact.json?raw'
 import isoArtifact from '../assets/playground/iso.artifact.json?raw'
 import recoveryArtifact from '../assets/playground/recovery.artifact.json?raw'
@@ -17,6 +18,14 @@ interface Demo {
 }
 
 const demos: Demo[] = [
+  {
+    id: 'csv',
+    name: 'CSV rows (quoted fields)',
+    entry: 'main',
+    artifactRaw: csvArtifact,
+    artifact: JSON.parse(csvArtifact),
+    input: '"x,y",z\n1,2\n',
+  },
   {
     id: 'recovery',
     name: 'Error recovery (key = value)',
