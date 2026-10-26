@@ -1,0 +1,24 @@
+## CSV rows: quoted or bare fields, comma-separated, newline-terminated.
+## Quoting: "" escapes a quote inside a quoted field.
+grammar Csv version "1.0.0" {
+  quote = %x22
+  qchar = quote quote / ( %x01-21 / %x23-FF )
+  dstring = quote 1*qchar quote
+  bare = 1*( %x20-21 / %x23-2B / %x2D-FF )
+  ## One row of fields.
+  field = ( dstring / bare ) as value
+  row = field *( "," field ) [ %x0A ]
+  document = *( row )
+
+  cr = %x0D
+  skip = cr
+
+  entry main: document
+
+  test {
+    accept "a,b,c\n"
+    accept "\"x,y\",z\n"
+    accept "1,2\n3,4\n"
+    capture "hello,csv\n" { value: "hello" }
+  }
+}
