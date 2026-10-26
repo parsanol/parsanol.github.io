@@ -6,6 +6,7 @@ on:
     paths:
       - 'src/**'
       - 'scripts/**'
+      - 'content/**'
       - 'package.json'
 
 permissions:
@@ -44,6 +45,22 @@ jobs:
         run: |
           VERSION=$(grep -m1 'version\s*=' parsanol-rs/Cargo.toml | sed 's/.*version\s*=\s*"\([^"]*\)".*/\1/')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Setup Ruby (playground artifact bake)
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+
+      - name: Install the parsanol gem
+        run: gem install parsanol
+
+      - name: Bake playground artifacts (freshness gate)
+        run: |
+          node scripts/bake-playground-artifacts.cjs
+          git diff --exit-code -- src/assets/playground || {
+            echo "::error::playground artifacts are stale against content/playground — run scripts/bake-playground-artifacts.cjs and commit"
+            exit 1
+          }
 
       - name: Setup Node
         uses: actions/setup-node@v4
