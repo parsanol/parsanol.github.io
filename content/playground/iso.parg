@@ -1,0 +1,14 @@
+grammar PlayIso version "1.0.0" {
+  ## An ISO/IEC identifier: publisher, space, number.
+  publisher = %i"iso" / %i"ieee" / %i"iec"
+  main = publisher " " ( 1*%x30-39 ) as number
+
+  entry main: main
+
+  test main {
+    accept "ISO 12345"
+    accept "IEC 42"
+    reject "ISO"
+    capture "ieee 7" { number: "7" }
+  }
+}
