@@ -6,6 +6,36 @@
    toggle via el.hidden; utilities like inline-flex would otherwise beat it) */
 [hidden] { display: none !important; }
 
+/* Pagefind search UI — light theme tokens + dark override */
+:root {
+  --pagefind-ui-scale: 1;
+  --pagefind-ui-primary: #3d5bab;
+  --pagefind-ui-text: #111827;
+  --pagefind-ui-background: #ffffff;
+  --pagefind-ui-bordered: #e5e7eb;
+  --pagefind-ui-tag: #f3f4f6;
+  --pagefind-ui-border-radius: 8px;
+  --pagefind-ui-image-border-radius: 8px;
+  --pagefind-ui-font: ui-sans-serif, system-ui, sans-serif;
+}
+.dark {
+  --pagefind-ui-primary: #7a9bd4;
+  --pagefind-ui-text: #f3f4f6;
+  --pagefind-ui-background: #111827;
+  --pagefind-ui-bordered: #374151;
+  --pagefind-ui-tag: #1f2937;
+}
+
+/* Pagefind bakes its theme into INLINE styles at init — these scoped !important
+   overrides make the live theme toggle restyle the search UI */
+.dark .pagefind-ui__search-input { background: #111827 !important; color: #f3f4f6 !important; border-color: #374151 !important; }
+.dark .pagefind-ui__search-input::placeholder { color: #9ca3af !important; }
+.dark .pagefind-ui__search-clear { background: transparent !important; color: #9ca3af !important; border-color: #374151 !important; }
+.dark .pagefind-ui__message, .dark .pagefind-ui__result, .dark .pagefind-ui__result-excerpt { color: #e5e7eb !important; }
+.dark .pagefind-ui__result-title .pagefind-ui__result-link { color: #7a9bd4 !important; }
+.dark .pagefind-ui__highlight, .dark mark.pagefind-ui__highlight { background: #7a9bd4 !important; color: #111827 !important; }
+.dark .pagefind-ui__button { background: #3d5bab !important; color: #ffffff !important; }
+
 @theme {
   --color-primary-50:  #f5f7fb;
   --color-primary-100: #e6ecf5;
