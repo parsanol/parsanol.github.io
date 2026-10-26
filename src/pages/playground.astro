@@ -46,9 +46,12 @@ import Playground from '../islands/Playground.vue'
       </li>
     </ul>
     <p>
-      Grammar source is shown read-only in this release: compiling PARG text in the browser
-      needs the compiler as a wasm module, which is tracked as the next playground milestone.
-      The shipped artifact is the contract the runtime consumes.
+      <strong>Author a grammar</strong> compiles PARG text in your browser — the wasm build
+      now carries the compiler (rs#298's Rust frontend, shipped in 0.19.2). Compile errors
+      and lint rejections surface inline, order-dependence warnings come back with the
+      artifact, and the in-file <code>test</code> section replays as the badge. The compiled
+      artifact is checksummed and loads through the same verified path as the demos; its
+      compiler stamp is the wasm build's version.
     </p>
   </section>
   </div>
