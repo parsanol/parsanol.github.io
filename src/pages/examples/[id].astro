@@ -99,7 +99,7 @@ const difficultyColor = difficultyColors[difficulty] || difficultyColors.interme
               {inputFormat.examples.map((ex: any) => (
                 <div class:list={['border rounded-lg p-4', ex.valid !== false ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800']}>
                   <div class="flex items-center justify-between mb-2">
-                    <code class="text-sm font-mono bg-white dark:bg-gray-800 px-2 py-1 rounded">{ex.input}</code>
+                    <code class="text-sm font-mono bg-white dark:bg-gray-800 px-2 py-1 rounded break-all">{ex.input}</code>
                     {ex.valid !== false
                       ? <span class="text-green-600 dark:text-green-400 text-xs font-medium">VALID</span>
                       : <span class="text-red-600 dark:text-red-400 text-xs font-medium">INVALID</span>}
