@@ -3,6 +3,8 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { EditorState } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
 import { json } from '@codemirror/lang-json'
+import balancedArtifact from '../assets/playground/balanced-parens.artifact.json?raw'
+import calculatorArtifact from '../assets/playground/calculator.artifact.json?raw'
 import csvArtifact from '../assets/playground/csv.artifact.json?raw'
 import jsonArtifact from '../assets/playground/json.artifact.json?raw'
 import isoArtifact from '../assets/playground/iso.artifact.json?raw'
@@ -18,6 +20,22 @@ interface Demo {
 }
 
 const demos: Demo[] = [
+  {
+    id: 'calculator',
+    name: 'Calculator (left-recursion tiers)',
+    entry: 'main',
+    artifactRaw: calculatorArtifact,
+    artifact: JSON.parse(calculatorArtifact),
+    input: '1+2*3',
+  },
+  {
+    id: 'balanced',
+    name: 'Balanced parentheses',
+    entry: 'main',
+    artifactRaw: balancedArtifact,
+    artifact: JSON.parse(balancedArtifact),
+    input: '((()())())',
+  },
   {
     id: 'csv',
     name: 'CSV rows (quoted fields)',
