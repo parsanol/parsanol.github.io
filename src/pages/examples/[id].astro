@@ -51,9 +51,13 @@ const difficultyColor = difficultyColors[difficulty] || difficultyColors.interme
 
     <div class="flex flex-wrap gap-2 mb-8">
       {hasRust && <span class="px-3 py-1 text-sm font-medium rounded-full bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300">Rust</span>}
+      {' '}
       {hasRuby && <span class="px-3 py-1 text-sm font-medium rounded-full bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300">Ruby</span>}
+      {' '}
       <span class="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 capitalize">{category.replace(/-/g, ' ')}</span>
+      {' '}
       <span class={`px-3 py-1 text-sm font-medium rounded-full ${difficultyColor}`}>{difficulty}</span>
+      {' '}
       {parsletCompatible && <span class="px-3 py-1 text-sm font-medium rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">Parslet-compatible</span>}
     </div>
 
@@ -151,7 +155,7 @@ const difficultyColor = difficultyColors[difficulty] || difficultyColors.interme
       <section class="mb-12">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Visual Overview</h2>
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-          <img src={diagram} alt={`${title} diagram`} class="w-full max-w-2xl mx-auto" />
+          <img src={diagram} alt={`${title} diagram`} loading="lazy" class="w-full max-w-2xl mx-auto" />
         </div>
       </section>
     )}
