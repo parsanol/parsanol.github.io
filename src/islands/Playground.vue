@@ -53,9 +53,35 @@ const selfTest = ref<{ ok: boolean; text: string } | null>(null)
 const loading = ref(true)
 const shareState = ref('')
 
+// Author mode (site#19): paste PARG source, compile it in the browser
+// with the wasm compiler, and parse against the result — the same
+// artifact contract as the demos.
+const STARTER_GRAMMAR = `grammar Notes version "1.0.0" {
+  ## key = value pairs, with a declared resync policy: try breaking a
+  ## pair and watch the recovery span that lets parsing resume.
+  pair = ( 1*( %x61-7A / %x30-39 ) ) as k "=" ( 1*( %x30-39 ) ) as v ";"
+  document = 1*( pair )
+  resync document = 1*( %x00-3A / %x3C-FF ) ";"
+  entry main: document
+
+  test {
+    accept "a=1;b=2;"
+    capture "a=42;" { k: "a", v: "42" }
+  }
+}`
+const mode = ref<'demo' | 'author'>('demo')
+const authorSource = ref(STARTER_GRAMMAR)
+const compileState = ref<{ ok: boolean; text: string; warnings: string[] } | null>(null)
+const authorEntry = ref('main')
+const authorArtifactRaw = ref('')
+let authorEditor: EditorView | null = null
+let compileTimer: ReturnType<typeof setTimeout> | null = null
+
 let PargArtifactJs: any = null
+let wasmModule: any = null
 let artifactInstance: any = null
 let editor: EditorView | null = null
+let inputEditor: EditorView | null = null
 let parseTimer: ReturnType<typeof setTimeout> | null = null
 let initialised = false
 
@@ -66,6 +92,86 @@ async function initWasm() {
   const mod: any = await import('@parsanol/wasm')
   await mod.default()
   PargArtifactJs = mod.PargArtifactJs
+  wasmModule = mod
+}
+
+// The wasm compiler: PARG source -> checksummed artifact, entirely in
+// the browser. Compile errors (parse failures, lint rejections) throw
+// with the compiler's message; order warnings ride the envelope.
+function compileAuthor() {
+  if (!wasmModule) return
+  try {
+    const artifact = JSON.parse(wasmModule.compileSource(authorSource.value))
+    const entries: string[] = artifact.entries ? Object.keys(artifact.entries) : []
+    const entry = artifact.default_entry || entries[0] || 'main'
+    authorArtifactRaw.value = JSON.stringify(artifact)
+    authorEntry.value = entry
+    const warnings: string[] = Array.isArray(artifact.lint?.order_warnings)
+      ? artifact.lint.order_warnings
+      : []
+    compileState.value = { ok: true, text: `compiled \u2713 entry: ${entry}`, warnings }
+    const demo: Demo = {
+      id: 'author',
+      name: 'Your grammar',
+      entry,
+      artifactRaw: authorArtifactRaw.value,
+      artifact,
+      input: input.value || suggestInput(artifact),
+    }
+    current.value = demo
+    artifactInstance = new PargArtifactJs(demo.artifactRaw)
+    if (input.value !== demo.input) {
+      input.value = demo.input
+      if (inputEditor) {
+        inputEditor.dispatch({
+          changes: { from: 0, to: inputEditor.state.doc.length, insert: demo.input },
+        })
+      }
+    }
+    runSelfTest()
+    parse()
+  } catch (error) {
+    compileState.value = {
+      ok: false,
+      text: String(error),
+      warnings: [],
+    }
+  }
+}
+
+function suggestInput(artifact: any): string {
+  const tests: any[] = Array.isArray(artifact.tests) ? artifact.tests : []
+  const accept = tests.find((test) => test.kind === 'accept' || test.kind === 'shape')
+  return accept ? accept.input : ''
+}
+
+function scheduleCompile() {
+  if (compileTimer) clearTimeout(compileTimer)
+  compileTimer = setTimeout(compileAuthor, 250)
+}
+
+function setMode(next: 'demo' | 'author') {
+  mode.value = next
+  if (next === 'author') {
+    // Parse against the author artifact (or compile it first).
+    if (authorArtifactRaw.value) {
+      current.value = {
+        id: 'author',
+        name: 'Your grammar',
+        entry: authorEntry.value,
+        artifactRaw: authorArtifactRaw.value,
+        artifact: JSON.parse(authorArtifactRaw.value),
+        input: input.value,
+      }
+      artifactInstance = new PargArtifactJs(authorArtifactRaw.value)
+      runSelfTest()
+      parse()
+    } else {
+      compileAuthor()
+    }
+  } else {
+    loadDemo(demos.find((candidate) => candidate.id === current.value.id) ?? demos[0])
+  }
 }
 
 function loadDemo(demo: Demo) {
@@ -127,11 +233,12 @@ function parse() {
   if (!artifactInstance) return
   errorText.value = ''
   recovery.value = null
+  const entry = mode.value === 'author' ? authorEntry.value : current.value.entry
   try {
     // One wasm call serves both paths: a clean parse carries `shape`,
     // a failed one carries the full recovery envelope (never throws).
     const envelope = JSON.parse(
-      artifactInstance.parseShapeRecovering(current.value.entry, input.value),
+      artifactInstance.parseShapeRecovering(entry, input.value),
     ) as RecoveryEnvelope
     if (!envelope.ok) {
       treeText.value = ''
@@ -146,7 +253,7 @@ function parse() {
         : shapeText
     try {
       boundText.value = artifactInstance.applyBindings(
-        current.value.entry,
+        entry,
         JSON.stringify(envelope.shape),
       )
     } catch {
@@ -220,26 +327,44 @@ function countPartialItems(partial: any): number {
 }
 
 function setupEditor(element: HTMLElement) {
-  editor = new EditorView({
+  inputEditor = setupEditorView(element, input.value, (text) => {
+    input.value = text
+    scheduleParse()
+  })
+  editor = inputEditor
+  if (!initialised) {
+    initialised = true
+    loadDemo(current.value)
+  }
+}
+
+function setupGrammarEditor(element: HTMLElement) {
+  authorEditor = setupEditorView(element, authorSource.value, (text) => {
+    authorSource.value = text
+    scheduleCompile()
+  })
+}
+
+function setupEditorView(
+  element: HTMLElement,
+  doc: string,
+  onChange: (text: string) => void,
+): EditorView {
+  return new EditorView({
     state: EditorState.create({
-      doc: input.value,
+      doc,
       extensions: [
         basicSetup,
         json(),
         EditorView.updateListener.of((update) => {
           if (!update.docChanged) return
-          input.value = update.state.doc.toString()
-          scheduleParse()
+          onChange(update.state.doc.toString())
         }),
         EditorView.theme({ '&': { minHeight: '10rem', fontSize: '13px' } }),
       ],
     }),
     parent: element,
   })
-  if (!initialised) {
-    initialised = true
-    loadDemo(current.value)
-  }
 }
 
 function onDemoChange(event: Event) {
@@ -323,6 +448,8 @@ async function applyHash() {
 onMounted(async () => {
   const element = document.getElementById('playground-editor')
   if (element) setupEditor(element)
+  const grammarElement = document.getElementById('playground-grammar-editor')
+  if (grammarElement) setupGrammarEditor(grammarElement)
   await initWasm()
   loading.value = false
   await applyHash()
@@ -331,7 +458,9 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   if (parseTimer) clearTimeout(parseTimer)
+  if (compileTimer) clearTimeout(compileTimer)
   editor?.destroy()
+  authorEditor?.destroy()
   artifactInstance?.free?.()
 })
 </script>
@@ -367,8 +496,90 @@ onBeforeUnmount(() => {
       >
     </div>
 
+    <div class="flex flex-wrap items-center gap-2">
+      <button
+        :class="[
+          'rounded px-3 py-1 text-sm font-medium',
+          mode === 'demo'
+            ? 'bg-primary-600 text-white hover:bg-primary-700'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
+        ]"
+        @click="setMode('demo')"
+      >
+        Try a demo
+      </button>
+      <button
+        :class="[
+          'rounded px-3 py-1 text-sm font-medium',
+          mode === 'author'
+            ? 'bg-primary-600 text-white hover:bg-primary-700'
+            : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600',
+        ]"
+        @click="setMode('author')"
+      >
+        Author a grammar
+      </button>
+      <span class="text-xs text-gray-500 dark:text-gray-400">
+        {{
+          mode === 'author'
+            ? 'compiles in your browser with the wasm compiler — diagnostics below, parse on the right'
+            : 'pick a compiled artifact and probe it'
+        }}
+      </span>
+    </div>
+
+    <div
+      v-if="mode === 'author' && compileState"
+      :class="[
+        'rounded-lg border px-4 py-3 text-sm',
+        compileState.ok
+          ? 'border-green-300 bg-green-50 dark:border-green-700/60 dark:bg-green-900/20'
+          : 'border-red-300 bg-red-50 dark:border-red-700/60 dark:bg-red-900/20',
+      ]"
+    >
+      <div
+        :class="[
+          'font-medium',
+          compileState.ok ? 'text-green-900 dark:text-green-200' : 'text-red-900 dark:text-red-200',
+        ]"
+      >
+        {{ compileState.text }}
+      </div>
+      <ul
+        v-if="compileState.warnings.length"
+        class="mt-2 list-disc space-y-1 pl-5 text-xs text-amber-800 dark:text-amber-300"
+      >
+        <li v-for="warning in compileState.warnings" :key="warning">{{ warning }}</li>
+      </ul>
+      <p v-if="compileState.ok && compileState.warnings.length" class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+        Order-dependence warnings ride the artifact — the grammar compiles, and these pairs are
+        where ordered choice decides the match.
+      </p>
+    </div>
+
+    <div v-show="mode === 'author'" class="space-y-2">
+      <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+        Grammar (PARG)
+      </h2>
+      <div
+        id="playground-grammar-editor"
+        class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+      ></div>
+    </div>
+
     <div class="grid gap-6 lg:grid-cols-2">
       <section>
+        <div v-show="mode === 'demo'" class="mb-3 flex items-center gap-3">
+          <label class="text-sm font-medium" for="demo-select">Grammar</label>
+          <select
+            id="demo-select"
+            class="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2 py-1 text-sm"
+            :value="current.id"
+            @change="onDemoChange"
+          >
+            <option v-for="demo in demos" :key="demo.id" :value="demo.id">{{ demo.name }}</option>
+          </select>
+        </div>
         <h2 class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
           Input
         </h2>
@@ -377,8 +588,9 @@ onBeforeUnmount(() => {
           class="overflow-hidden rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
         ></div>
         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          Entry point: <code class="font-mono">{{ current.entry }}</code> · parsed live by the
-          parsanol wasm engine
+          Entry point:
+          <code class="font-mono">{{ mode === 'author' ? authorEntry : current.entry }}</code>
+          · parsed live by the parsanol wasm engine
         </p>
       </section>
 
