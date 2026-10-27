@@ -47,10 +47,14 @@ const { headings } = Astro.props
     const byId = new Map(links.map((l) => [decodeURIComponent(l.hash.slice(1)), l]))
 
     const activate = (id: string) => {
-      links.forEach((l) => l.classList.remove('toc-link-active'))
+      links.forEach((l) => {
+        l.classList.remove('toc-link-active')
+        l.removeAttribute('aria-current')
+      })
       const link = byId.get(id)
       if (link) {
         link.classList.add('toc-link-active')
+        link.setAttribute('aria-current', 'true')
         link.scrollIntoView({ block: 'nearest' })
       }
     }

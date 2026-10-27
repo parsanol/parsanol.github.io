@@ -100,6 +100,14 @@ function copyDiagram(exampleId) {
       fs.mkdirSync(DIAGRAMS_OUTPUT_DIR, { recursive: true });
     }
     fs.copyFileSync(sourcePath, destPath);
+    // Intrinsic size from the viewBox so the <img> can reserve space (no CLS)
+    const svg = fs.readFileSync(sourcePath, 'utf-8');
+    const viewBox = svg.match(/viewBox="([\d.\-]+)\s+([\d.\-]+)\s+([\d.\-]+)\s+([\d.\-]+)"/);
+    if (viewBox) {
+      const w = Math.round(parseFloat(viewBox[3]));
+      const h = Math.round(parseFloat(viewBox[4]));
+      if (w > 0 && h > 0) return { width: w, height: h };
+    }
     return true;
   }
   return false;
@@ -349,8 +357,10 @@ function main() {
       hasRust: hasRust,
       hasRuby: hasRuby,
       parsletCompatible: metadata.parsletCompatible || false,
-      hasDiagram: hasDiagram,
+      hasDiagram: !!hasDiagram,
       diagram: hasDiagram ? `/diagrams/examples/${id}.svg` : null,
+      diagramWidth: hasDiagram && hasDiagram.width ? hasDiagram.width : null,
+      diagramHeight: hasDiagram && hasDiagram.height ? hasDiagram.height : null,
       motivation: metadata.motivation || null,
       inputFormat: metadata.inputFormat || null,
       outputFormat: metadata.outputFormat || null,
@@ -376,7 +386,7 @@ function main() {
       concepts: metadata.concepts || [],
       hasRust: hasRust,
       hasRuby: hasRuby,
-      hasDiagram: hasDiagram,
+      hasDiagram: !!hasDiagram,
       hasWalkthrough: sources.some((s) => s.walkthrough.length > 0),
       sourceUrl: (source === 'rs' ? RS_TREE_URL : RUBY_TREE_URL) + '/' + id,
       parsletCompatible: metadata.parsletCompatible || false,

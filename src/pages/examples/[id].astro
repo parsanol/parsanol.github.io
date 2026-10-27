@@ -155,7 +155,14 @@ const difficultyColor = difficultyColors[difficulty] || difficultyColors.interme
       <section class="mb-12">
         <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Visual Overview</h2>
         <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-          <img src={diagram} alt={`${title} diagram`} loading="lazy" class="w-full max-w-2xl mx-auto" />
+          <img
+            src={diagram}
+            alt={`${title} diagram`}
+            loading="lazy"
+            width={example.diagramWidth || undefined}
+            height={example.diagramHeight || undefined}
+            class="w-full h-auto max-w-2xl mx-auto"
+          />
         </div>
       </section>
     )}

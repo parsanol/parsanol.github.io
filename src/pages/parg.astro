@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro'
+import ProseWithToc from '../components/ProseWithToc.astro'
 
 const demoParg = `# demo.parg
 grammar Demo version "1.0.0" {
@@ -128,7 +129,7 @@ const features = [
       </div>
     </aside>
 
-    <div class="flex-1 min-w-0 prose max-w-none">
+    <ProseWithToc>
       <h1>PARG — the grammar language</h1>
 
       <p class="text-lg">
@@ -234,7 +235,7 @@ const features = [
         <li><a href="https://github.com/parsanol/parsanol-ruby/blob/main/docs/parg-semantics.md">parg-semantics.md</a> — the normative match relation, flatten laws, trivia rewrite, and the corpus coverage matrix.</li>
         <li><a href="/parg/language">The language tour</a> — the syntax on one page, with examples.</li>
       </ul>
-    </div>
+  </ProseWithToc>
   </div>
   </div>
 </Layout>

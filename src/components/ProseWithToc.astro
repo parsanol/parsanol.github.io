@@ -1,0 +1,19 @@
+---
+import Toc from './atoms/Toc.astro'
+import { withHeadingIds, extractHeadings } from '../lib/headings'
+
+interface Props {
+  // false when the page already renders its own section nav (scrollspy only)
+  rail?: boolean
+}
+
+const { rail = true } = Astro.props
+const html = await Astro.slots.render('default')
+const processed = withHeadingIds(html)
+const headings = rail ? extractHeadings(processed) : []
+---
+
+<div class="flex-1 min-w-0 prose max-w-none">
+  <Fragment set:html={processed} />
+</div>
+<Toc headings={headings} />
