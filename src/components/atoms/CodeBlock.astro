@@ -32,4 +32,5 @@ const highlightedCode = grammar ? Prism.highlight(code, grammar, lang) : escapeH
 ---
 <div class="code-block-wrapper">
   <pre class:list={['code-block', `language-${lang}`]}><code><Fragment set:html={highlightedCode} /></code></pre>
+  <button type="button" class="copy-btn" data-copy-code aria-label="Copy code to clipboard">Copy</button>
 </div>

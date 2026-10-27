@@ -1,0 +1,41 @@
+---
+import Layout from '../layouts/Layout.astro'
+
+const popular = [
+  { label: 'Get Started', to: '/introduction', desc: 'Install Parsanol and parse your first format' },
+  { label: 'PARG — the grammar language', to: '/parg', desc: 'One grammar, bindings on every runtime' },
+  { label: 'Playground', to: '/playground', desc: 'Edit a grammar and watch it parse live' },
+  { label: 'Examples', to: '/examples', desc: '42 worked parsers with full source' },
+  { label: 'Tutorial', to: '/tutorial', desc: 'Build a real parser step by step' },
+  { label: 'News', to: '/news', desc: 'Releases and announcements' },
+]
+---
+
+<Layout title="Page Not Found — Parsanol" description="That page doesn't exist. Search the Parsanol docs or jump to a popular section.">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+    <p class="text-sm font-semibold text-primary-600 dark:text-primary-400 uppercase tracking-wider mb-2">404</p>
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">This page doesn't exist</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+      The address may be old or mistyped. Try the{' '}
+      <a href="/search/" class="text-primary-600 dark:text-primary-400 hover:underline">site search</a>,
+      or one of these:
+    </p>
+    <div class="grid sm:grid-cols-2 gap-4 text-left">
+      {popular.map((p) => (
+        <a
+          href={p.to}
+          class="card card-hover group"
+        >
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400">{p.label}</span>
+            <span aria-hidden="true" class="text-gray-400 group-hover:text-primary-500 group-hover:translate-x-0.5 transition-all">→</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400">{p.desc}</p>
+        </a>
+      ))}
+    </div>
+    <p class="mt-10 text-sm text-gray-500 dark:text-gray-400">
+      Or head <a href="/" class="text-primary-600 dark:text-primary-400 hover:underline">back home</a>.
+    </p>
+  </div>
+</Layout>

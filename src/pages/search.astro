@@ -14,6 +14,7 @@ import Layout from '../layouts/Layout.astro'
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       new (window as any).PagefindUI({ element: '#search', showSubResults: true })
+      ;(document.querySelector('.pagefind-ui__search-input') as HTMLInputElement | null)?.focus()
     })
   </script>
 </Layout>

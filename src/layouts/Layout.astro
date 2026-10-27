@@ -57,3 +57,48 @@ const jsonLd = {
   <AppFooter />
 </body>
 </html>
+
+<script>
+  // Give every bare <pre> in prose content a copy button (CodeBlock ships its
+  // own statically); the click handler below serves both kinds.
+  function enhancePreBlock(pre: Element) {
+    if (pre.parentElement?.classList.contains('code-block-wrapper')) return
+    const wrap = document.createElement('div')
+    wrap.className = 'code-block-wrapper'
+    pre.replaceWith(wrap)
+    wrap.appendChild(pre)
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = 'copy-btn'
+    btn.setAttribute('data-copy-code', '')
+    btn.setAttribute('aria-label', 'Copy code to clipboard')
+    btn.textContent = 'Copy'
+    wrap.appendChild(btn)
+  }
+
+  function enhanceAll() {
+    document.querySelectorAll('.prose pre').forEach(enhancePreBlock)
+  }
+
+  let revertTimer: ReturnType<typeof setTimeout> | undefined
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-copy-code]')
+    if (!btn) return
+    const code = btn.parentElement?.querySelector('pre')?.textContent ?? ''
+    navigator.clipboard.writeText(code).then(() => {
+      btn.classList.add('copied')
+      btn.textContent = 'Copied!'
+      clearTimeout(revertTimer)
+      revertTimer = setTimeout(() => {
+        btn.classList.remove('copied')
+        btn.textContent = 'Copy'
+      }, 1600)
+    })
+  })
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', enhanceAll)
+  } else {
+    enhanceAll()
+  }
+</script>
