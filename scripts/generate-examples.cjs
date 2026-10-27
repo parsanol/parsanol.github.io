@@ -32,6 +32,10 @@ const RUBY_EXAMPLES_DIR = process.env.PARSANOL_RUBY_DIR
   ? path.join(process.env.PARSANOL_RUBY_DIR, 'example')
   : path.join(__dirname, '../../parsanol-ruby/example');
 const DATA_DIR = path.join(__dirname, '../src/data/examples');
+const RS_BLOB_URL = 'https://github.com/parsanol/parsanol-rs/blob/main/examples';
+const RUBY_BLOB_URL = 'https://github.com/parsanol/parsanol-ruby/blob/main/example';
+const RS_TREE_URL = 'https://github.com/parsanol/parsanol-rs/tree/main/examples';
+const RUBY_TREE_URL = 'https://github.com/parsanol/parsanol-ruby/tree/main/example';
 const DIAGRAMS_OUTPUT_DIR = path.join(__dirname, '../public/diagrams/examples');
 
 // Read a file safely
@@ -194,7 +198,8 @@ function findRustFiles(exampleId) {
         files.push({
           name: entry.replace('.rs', ''),
           path: path.join(dir, entry),
-          mdPath: path.join(dir, entry + '.md')
+          mdPath: path.join(dir, entry + '.md'),
+          url: `${RS_BLOB_URL}/${exampleId}/${entry}`
         });
       }
     }
@@ -206,7 +211,8 @@ function findRustFiles(exampleId) {
     files.push({
       name: 'basic',
       path: flatFile,
-      mdPath: flatFile + '.md'
+      mdPath: flatFile + '.md',
+      url: `${RS_BLOB_URL}/${exampleId}.rs`
     });
   }
 
@@ -225,7 +231,8 @@ function findRubyFiles(exampleId) {
         files.push({
           name: entry.replace('.rb', ''),
           path: path.join(dir, entry),
-          mdPath: path.join(dir, entry + '.md')
+          mdPath: path.join(dir, entry + '.md'),
+          url: `${RUBY_BLOB_URL}/${exampleId}/${entry}`
         });
       }
     }
@@ -237,7 +244,8 @@ function findRubyFiles(exampleId) {
     files.push({
       name: 'basic',
       path: flatFile,
-      mdPath: flatFile + '.md'
+      mdPath: flatFile + '.md',
+      url: `${RUBY_BLOB_URL}/${exampleId}.rb`
     });
   }
 
@@ -276,14 +284,14 @@ function collectSources(id) {
     const code = readFile(f.path);
     if (!code) continue;
     const walkthrough = f.mdPath ? parseCodeWalkthrough(readFile(f.mdPath) || '') : [];
-    sources.push({ lang: 'rust', name: f.name, code, walkthrough });
+    sources.push({ lang: 'rust', name: f.name, code, walkthrough, url: f.url });
   }
   for (const f of findRubyFiles(id)) {
     let code = readFile(f.path);
     code = code ? cleanRubyCode(code) : null;
     if (!code) continue;
     const walkthrough = f.mdPath ? parseCodeWalkthrough(readFile(f.mdPath) || '') : [];
-    sources.push({ lang: 'ruby', name: f.name, code, walkthrough });
+    sources.push({ lang: 'ruby', name: f.name, code, walkthrough, url: f.url });
   }
   return sources;
 }
@@ -346,7 +354,8 @@ function main() {
       motivation: metadata.motivation || null,
       inputFormat: metadata.inputFormat || null,
       outputFormat: metadata.outputFormat || null,
-      sources: sources.map((s) => ({ lang: s.lang, name: s.name, code: s.code, walkthrough: s.walkthrough })),
+      sourceUrl: (source === 'rs' ? RS_TREE_URL : RUBY_TREE_URL) + '/' + id,
+      sources: sources.map((s) => ({ lang: s.lang, name: s.name, code: s.code, walkthrough: s.walkthrough, url: s.url })),
     };
     const dataPath = path.join(DATA_DIR, `${id}.json`);
     fs.writeFileSync(dataPath, JSON.stringify(exampleData, null, 2));
@@ -369,6 +378,7 @@ function main() {
       hasRuby: hasRuby,
       hasDiagram: hasDiagram,
       hasWalkthrough: sources.some((s) => s.walkthrough.length > 0),
+      sourceUrl: (source === 'rs' ? RS_TREE_URL : RUBY_TREE_URL) + '/' + id,
       parsletCompatible: metadata.parsletCompatible || false,
       rubyOnly: source === 'ruby' && !hasRust,
     });

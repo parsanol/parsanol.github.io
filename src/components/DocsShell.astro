@@ -1,0 +1,24 @@
+---
+import DocsNav from './organisms/DocsNav.astro'
+import Toc from './atoms/Toc.astro'
+import { withHeadingIds, extractHeadings } from '../lib/headings'
+
+interface Props {
+  showSections?: string[]
+  content: string
+}
+
+const { showSections = ['introduction'], content } = Astro.props
+const processed = withHeadingIds(content)
+const headings = extractHeadings(processed)
+---
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="flex gap-12">
+    <DocsNav showSections={showSections} />
+    <div class="flex-1 min-w-0 prose max-w-none">
+      <Fragment set:html={processed} />
+    </div>
+    <Toc headings={headings} />
+  </div>
+</div>

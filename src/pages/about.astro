@@ -1,15 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro'
-import DocsNav from '../components/organisms/DocsNav.astro'
+import DocsShell from '../components/DocsShell.astro'
 import content from '../data/views/about.html?raw'
 ---
 <Layout title="About Parsanol — Parsanol" description="About Parsanol — a Ribose project building a grammar language and parser runtime with verified, identical behavior across every engine.">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="flex gap-12">
-      <DocsNav showSections={['about']} />
-      <div class="flex-1 min-w-0 prose max-w-none">
-        <Fragment set:html={content} />
-      </div>
-    </div>
-  </div>
+  <DocsShell showSections={['about']} content={content} />
 </Layout>

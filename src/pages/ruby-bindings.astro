@@ -1,17 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import PrevNext from '../components/PrevNext.astro'
-import DocsNav from '../components/organisms/DocsNav.astro'
+import DocsShell from '../components/DocsShell.astro'
 import content from '../data/views/ruby-bindings.html?raw'
 ---
 <Layout title="Ruby Bindings — Parsanol" description="Parsanol Ruby bindings: three parsing modes, zero-copy slices, streaming, cause-tree errors, benchmarks, and migration from Parslet.">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="flex gap-12">
-      <DocsNav showSections={['ruby']} />
-      <div class="flex-1 min-w-0 prose max-w-none">
-        <Fragment set:html={content} />
-      </div>
-    </div>
-  </div>
+  <DocsShell showSections={['ruby']} content={content} />
   <PrevNext />
 </Layout>

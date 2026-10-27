@@ -78,16 +78,16 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
 
       <!-- Desktop Navigation -->
       <nav class="hidden md:flex items-center space-x-1">
-        <a href="/introduction" class:list={['nav-link', { active: isActive('/introduction') }]}>
+        <a href="/introduction" class:list={['nav-link', { active: isActive('/introduction') }]} aria-current={isActive('/introduction') ? 'page' : undefined}>
           Get Started
         </a>
 
-        <a href="/news" class:list={['nav-link', { active: isActive('/news') }]}>
+        <a href="/news" class:list={['nav-link', { active: isActive('/news') }]} aria-current={isActive('/news') ? 'page' : undefined}>
           News
         </a>
 
         <!-- Playground -->
-        <a href="/playground" class:list={['nav-link', { active: isActive('/playground') }]}>
+        <a href="/playground" class:list={['nav-link', { active: isActive('/playground') }]} aria-current={isActive('/playground') ? 'page' : undefined}>
           Playground
         </a>
 
@@ -97,7 +97,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
             type="button"
             aria-haspopup="true"
             aria-expanded="false"
-            class:list={['nav-link flex items-center gap-1', { active: pargActive }]}
+            class:list={['nav-link flex items-center gap-1', { active: pargActive }]} aria-current={pargActive ? 'true' : undefined}
           >
             PARG
             <Icon name="chevron-down" class="w-3 h-3 transition-transform dd-chevron" />
@@ -106,6 +106,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
             {pargLinks.map((link) => (
               <a
                 href={link.to}
+                aria-current={isActive(link.to) ? 'page' : undefined}
                 class:list={[
                   'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
                   { 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400': isActive(link.to) },
@@ -123,7 +124,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
             type="button"
             aria-haspopup="true"
             aria-expanded="false"
-            class:list={['nav-link flex items-center gap-1', { active: docsActive }]}
+            class:list={['nav-link flex items-center gap-1', { active: docsActive }]} aria-current={docsActive ? 'true' : undefined}
           >
             Learn
             <Icon name="chevron-down" class="w-3 h-3 transition-transform dd-chevron" />
@@ -137,6 +138,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
                 {group.links.map((link) => (
                   <a
                     href={link.to}
+                    aria-current={isActive(link.to) ? 'page' : undefined}
                     class:list={[
                       'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
                       { 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400': isActive(link.to) },
@@ -156,7 +158,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
             type="button"
             aria-haspopup="true"
             aria-expanded="false"
-            class:list={['nav-link flex items-center gap-1', { active: rustActive }]}
+            class:list={['nav-link flex items-center gap-1', { active: rustActive }]} aria-current={rustActive ? 'true' : undefined}
           >
             Rust
             <Icon name="chevron-down" class="w-3 h-3 transition-transform dd-chevron" />
@@ -165,6 +167,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
             {rustLinks.map((link) => (
               <a
                 href={link.to}
+                aria-current={isActive(link.to) ? 'page' : undefined}
                 class:list={[
                   'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
                   { 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400': isActive(link.to) },
@@ -182,7 +185,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
             type="button"
             aria-haspopup="true"
             aria-expanded="false"
-            class:list={['nav-link flex items-center gap-1', { active: rubyActive }]}
+            class:list={['nav-link flex items-center gap-1', { active: rubyActive }]} aria-current={rubyActive ? 'true' : undefined}
           >
             Ruby
             <Icon name="chevron-down" class="w-3 h-3 transition-transform dd-chevron" />
@@ -191,6 +194,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
             {rubyLinks.map((link) => (
               <a
                 href={link.to}
+                aria-current={isActive(link.to) ? 'page' : undefined}
                 class:list={[
                   'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700',
                   { 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400': isActive(link.to) },
@@ -204,7 +208,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
 
         <!-- Simple Links -->
         {simpleLinks.map((link) => (
-          <a href={link.to} class:list={['nav-link', { active: isActive(link.to) }]}>
+          <a href={link.to} class:list={['nav-link', { active: isActive(link.to) }]} aria-current={isActive(link.to) ? 'page' : undefined}>
             {link.label}
           </a>
         ))}

@@ -41,7 +41,7 @@ const getShortTitle = (title: string): string =>
         <h3 class="font-semibold text-gray-900 dark:text-white mb-3">About</h3>
         <ul class="space-y-1">
           <li>
-            <a href="/about" class:list={['nav-link text-sm', { active: pathname === '/about' }]}>
+            <a href="/about" class:list={['nav-link text-sm', { active: pathname === '/about' }]} aria-current={pathname === '/about' ? 'page' : undefined}>
               About Parsanol
             </a>
           </li>
@@ -55,17 +55,17 @@ const getShortTitle = (title: string): string =>
         <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Getting Started</h3>
         <ul class="space-y-1">
           <li>
-            <a href="/introduction" class:list={['nav-link text-sm', { active: pathname === '/introduction' }]}>
+            <a href="/introduction" class:list={['nav-link text-sm', { active: pathname === '/introduction' }]} aria-current={pathname === '/introduction' ? 'page' : undefined}>
               What is Parsanol?
             </a>
           </li>
           <li>
-            <a href="/installation" class:list={['nav-link text-sm', { active: pathname === '/installation' }]}>
+            <a href="/installation" class:list={['nav-link text-sm', { active: pathname === '/installation' }]} aria-current={pathname === '/installation' ? 'page' : undefined}>
               Installation
             </a>
           </li>
           <li>
-            <a href="/first-parser" class:list={['nav-link text-sm', { active: pathname === '/first-parser' }]}>
+            <a href="/first-parser" class:list={['nav-link text-sm', { active: pathname === '/first-parser' }]} aria-current={pathname === '/first-parser' ? 'page' : undefined}>
               Your First Parser
             </a>
           </li>
@@ -155,12 +155,12 @@ const getShortTitle = (title: string): string =>
         <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Documentation</h3>
         <ul class="space-y-1">
           <li>
-            <a href="/architecture" class:list={['nav-link text-sm', { active: pathname === '/architecture' }]}>
+            <a href="/architecture" class:list={['nav-link text-sm', { active: pathname === '/architecture' }]} aria-current={pathname === '/architecture' ? 'page' : undefined}>
               Architecture
             </a>
           </li>
           <li>
-            <a href="/feature-comparison" class:list={['nav-link text-sm', { active: pathname === '/feature-comparison' }]}>
+            <a href="/feature-comparison" class:list={['nav-link text-sm', { active: pathname === '/feature-comparison' }]} aria-current={pathname === '/feature-comparison' ? 'page' : undefined}>
               Engine Comparison
             </a>
           </li>
@@ -211,7 +211,7 @@ const getShortTitle = (title: string): string =>
         <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Guides</h3>
         <ul class="space-y-1">
           <li>
-            <a href="/captures-guide" class:list={['nav-link text-sm', { active: pathname === '/captures-guide' }]}>
+            <a href="/captures-guide" class:list={['nav-link text-sm', { active: pathname === '/captures-guide' }]} aria-current={pathname === '/captures-guide' ? 'page' : undefined}>
               Captures, Scopes & Dynamic
             </a>
           </li>
@@ -230,7 +230,7 @@ const getShortTitle = (title: string): string =>
             <ul class="space-y-1">
               {group.items.map((item: any) => (
                 <li>
-                  <a href={item.path} class:list={['nav-link text-sm', { active: pathname === item.path }]}>
+                  <a href={item.path} class:list={['nav-link text-sm', { active: pathname === item.path }]} aria-current={pathname === item.path ? 'page' : undefined}>
                     {item.title}
                   </a>
                 </li>
@@ -250,7 +250,7 @@ const getShortTitle = (title: string): string =>
             <li>
               <a
                 href={`/news/${post.id}`}
-                class:list={['nav-link text-sm flex items-center gap-2', { active: pathname === `/news/${post.id}` }]}
+                class:list={['nav-link text-sm flex items-center gap-2', { active: pathname === `/news/${post.id}` }]} aria-current={pathname === `/news/${post.id}` ? 'page' : undefined}
               >
                 <span class="text-xs text-gray-500 dark:text-gray-400">{post.id}</span>
                 <span class="truncate">{getShortTitle(post.title)}</span>
