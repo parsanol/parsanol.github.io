@@ -1,0 +1,25 @@
+## S-expressions: atoms and parenthesized lists, arbitrarily nested,
+## whitespace between elements. The recursion is sexp -> list -> sexp —
+## no left recursion, pure nesting.
+grammar Sexp version "1.0.0" {
+  ws = %x20 / %x09 / %x0A
+  pq = *ws
+  ## printable minus space, parens and quote: an atom's characters.
+  achar = %x21 / %x23-27 / %x2A-5B / %x5D-7E
+  atom = 1*achar as symbol
+  list = "(" pq *( sexp pq ) ")" as forms
+  sexp = atom / list
+  top = pq sexp pq
+
+  entry main: top
+
+  test {
+    accept "atom"
+    accept "(a b c)"
+    accept "(define (square x) (* x x))"
+    accept "(a (b (c) d) e)"
+    reject "(unclosed"
+    reject ")leading"
+    reject "(a b"
+  }
+}
