@@ -76,6 +76,12 @@ code, pre, .font-mono { font-family: var(--font-mono); }
   .code-block-wrapper { @apply relative; }
   .code-block-wrapper pre code { @apply block; }
   .code-block { @apply font-mono text-sm text-left bg-gray-900 text-gray-100 rounded-lg p-4 overflow-x-auto; }
+  .copy-btn { @apply absolute top-2 right-2 px-2 py-1 text-xs font-medium rounded-md bg-gray-700 text-gray-200 hover:bg-gray-600 opacity-0 transition-opacity duration-150; }
+  .code-block-wrapper:hover .copy-btn, .copy-btn:focus-visible, .copy-btn.copied { @apply opacity-100; }
+  .copy-btn.copied { @apply text-green-400; }
+  @media (hover: none) {
+    .copy-btn { @apply opacity-100; }
+  }
 
   .code-tabs { @apply rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 text-left; }
   .code-tabs .tabs { @apply flex bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700; }

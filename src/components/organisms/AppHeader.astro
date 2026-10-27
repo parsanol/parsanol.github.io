@@ -215,6 +215,7 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
         <a
           href="/search"
           aria-label="Search"
+          title="Search (press /)"
           class="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
         >
           <Icon name="search" />
@@ -367,5 +368,20 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
       document.documentElement.classList.contains('dark') ? 'dark' : 'light'
     )
     updateThemeIcon()
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllDropdowns()
+      if (mobileMenu && !mobileMenu.classList.contains('hidden')) mobileButton?.click()
+      return
+    }
+    const isCmdK = (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'
+    if (e.key !== '/' && !isCmdK) return
+    if (e.metaKey || e.ctrlKey || e.altKey) return
+    const t = e.target as HTMLElement | null
+    if (t && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName))) return
+    e.preventDefault()
+    window.location.href = '/search/'
   })
 </script>
