@@ -1,0 +1,29 @@
+## ERB templates: text runs interleaved with <% %> action tags —
+## expression (<%=), code (<%), and comment (<%#) forms. The pragmatic
+## subset keeps % out of code bodies (a literal % needs the tag's
+## closing to be visible).
+grammar Erb version "1.0.0" {
+  ## anything but "<": a text run.
+  tchar = %x01-3B / %x3D-10FFFF
+  text = 1*tchar
+  ## anything but "%": a code body.
+  cchar = %x01-24 / %x26-10FFFF
+  ## comment and code bodies may be empty; an expression may not.
+  comment_tag = "<%" "#" *cchar "%>"
+  code_tag = "<%" *cchar "%>"
+  expr_tag = "<%" "=" 1*cchar "%>"
+  tag = comment_tag / expr_tag / code_tag
+  template = *( text / tag )
+
+  entry main: template
+
+  test {
+    accept "plain text"
+    accept "<%= name %>"
+    accept "Hello <%= user.name %>!"
+    accept "<% if x %>yes<% else %>no<% end %>"
+    accept "<%# a comment %>"
+    reject "<% unterminated"
+    reject "text <%"
+  }
+}

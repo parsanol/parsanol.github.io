@@ -1,0 +1,28 @@
+## Precedence, as a shape: additive over multiplicative over unary
+## minus. Each layer's repetition consumes its operator between
+## operands, so precedence falls out of the layering — no tables, no
+## rewriting. (This is the companion to expression-evaluator with the
+## modulo operator and signed primaries added.)
+grammar PrecCalc version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  digit = %x30-39
+  number = 1*digit as number
+  primary = number / ( "-" primary ) as negated / ( "(" pq expr pq ")" )
+  term = primary *( pq ( "*" / "/" / "%" ) pq primary )
+  expr = term *( pq ( "+" / "-" ) pq term )
+  top = pq expr pq
+
+  entry main: top
+
+  test {
+    accept "1 + 2 * 3"
+    accept "10 % 3 + 1"
+    accept "-(1 + 2) * 4"
+    accept "-5 % 2"
+    accept "2"
+    reject "+ 1"
+    reject "(1 + 2"
+    reject "(1 2)"
+  }
+}

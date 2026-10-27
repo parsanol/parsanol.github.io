@@ -1,0 +1,30 @@
+## Simplified XML: nested elements with attributes and text. The shape
+## guarantees well-formedness (every open has a close); matching tag
+## NAMES are a semantic check the AST layer adds.
+grammar SimpleXml version "1.0.0" {
+  ws = %x20 / %x09 / %x0A
+  pq = *ws
+  nchar = %x41-5A / %x61-7A / %x30-39 / %x5F / %x2D
+  name = 1*nchar as tag
+  aqchar = %x01-21 / %x23-10FFFF
+  attr = pq name pq "=" pq %x22 *aqchar %x22
+  open = "<" name *attr pq ">"
+  close = "</" pq name pq ">"
+  ## anything but "<": element text.
+  tchar = %x01-3B / %x3D-10FFFF
+  text = 1*tchar as text
+  elem = open pq *( elem / text ) pq close
+  doc = pq elem pq
+
+  entry main: doc
+
+  test {
+    accept "<a>text</a>"
+    accept "<a href=\"x\">link</a>"
+    accept "<outer><inner a=\"1\">deep</inner></outer>"
+    accept "<list><item>1</item><item>2</item></list>"
+    reject "<a>unclosed"
+    reject "plain text"
+    reject "</a>leading-close"
+  }
+}

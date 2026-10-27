@@ -1,0 +1,32 @@
+## Mini Lisp: s-expressions with integers, strings and symbols. The
+## atom alternation is ordered number / string / symbol — same-length
+## shapes, so the order only expresses intent, and the recursion stays
+## sexp -> list -> sexp.
+grammar MiniLisp version "1.0.0" {
+  ws = %x20 / %x09 / %x0A
+  pq = *ws
+  digit = %x30-39
+  number = [ %x2D ] 1*digit as number
+  schar = %x01-21 / %x23-5B / %x5D-10FFFF
+  string = %x22 *schar %x22 as string
+  ## printable minus space, parens, quote and semicolon.
+  ychar = %x21 / %x23-27 / %x2A-5B / %x5D-7E
+  symbol = 1*ychar as symbol
+  atom = number / string / symbol
+  list = "(" pq *( sexp pq ) ")" as forms
+  sexp = atom / list
+  top = pq sexp pq
+
+  entry main: top
+
+  test {
+    accept "42"
+    accept "(define x 1)"
+    accept "(+ 1 (* 2 3))"
+    accept "(print \"hello\" (list a b))"
+    accept "(neg -5)"
+    reject "(unclosed"
+    reject "\"unterminated"
+    accept "()"   # the empty list is a value
+  }
+}

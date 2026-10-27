@@ -1,0 +1,41 @@
+## TOML, the pragmatic core: tables in brackets, key = value with
+## strings, integers, floats and booleans; blank lines and comments.
+## Demonstrates the value-level alternation (longest forms first) and
+## comment trivia threaded past every line shape.
+grammar Toml version "1.0.0" {
+  nl = %x0A
+  ws = %x20 / %x09
+  pq = *ws
+  comment = "#" *( %x01-09 / %x0B-10FFFF )
+  nchar = %x41-5A / %x61-7A / %x30-39 / %x5F / %x2D
+  name = 1*nchar as key
+  sign = %x2B / %x2D
+  digit = %x30-39
+  int = [ sign ] 1*digit as integer
+  frac = "." 1*digit
+  exp = ( %x65 / %x45 ) [ sign ] 1*digit
+  float = [ sign ] 1*digit [ frac ] exp as float / [ sign ] 1*digit frac as float
+  boolean = "true" as flag / "false" as flag
+  schar = %x01-21 / %x23-5B / %x5D-10FFFF
+  str = %x22 *schar %x22 as text
+  value = float / str / int / boolean
+  pair = name pq "=" pq value pq [ comment ] nl
+  table = "[" pq name pq "]" pq [ comment ] nl
+  blank = pq [ comment ] nl
+  file = *( blank / table / pair ) [ table_last / pair_last ]
+  table_last = "[" pq name pq "]" pq [ comment ]
+  pair_last = name pq "=" pq value pq [ comment ]
+
+  entry main: file
+
+  test {
+    accept "name = \"parsanol\"\ncount = 3\n"
+    accept "[server]\nhost = \"localhost\"\nport = 8080\n"
+    accept "ratio = 0.5\nflag = true\n"
+    accept "sci = 1.5e10\n"
+    accept "# just a comment\nx = 1 # tail\n"
+    reject "= no key"
+    reject "x = "
+    reject "[unclosed\n"
+  }
+}
