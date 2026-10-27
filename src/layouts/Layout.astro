@@ -6,10 +6,12 @@ import AppFooter from '../components/organisms/AppFooter.astro'
 interface Props {
   title?: string
   description?: string
+  noindex?: boolean
 }
 const {
   title = 'Parsanol',
   description = 'Parsanol: write one grammar, compile it to a verified artifact, and parse identically on Ruby, Rust, WebAssembly, and TypeScript.',
+  noindex = false,
 } = Astro.props
 
 const canonical = new URL(Astro.url.pathname, Astro.site)
@@ -28,6 +30,7 @@ const jsonLd = {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  {noindex && <meta name="robots" content="noindex" />}
   <link rel="canonical" href={canonical} />
   <link rel="manifest" href="/site.webmanifest" />
   <link rel="alternate" type="application/rss+xml" title="Parsanol News" href={new URL('rss.xml', Astro.site)} />
