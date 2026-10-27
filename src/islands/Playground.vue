@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { decodeSharePayload as decodePayload, encodeSharePayload as encodePayload } from '../lib/share-payload'
 import { EditorState } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
 import { json } from '@codemirror/lang-json'
@@ -412,40 +413,6 @@ async function copyShareLink() {
     shareState.value = 'Link is in the address bar'
   }
   setTimeout(() => (shareState.value = ''), 2500)
-}
-
-async function encodePayload(text: string): Promise<string> {
-  const bytes = new TextEncoder().encode(text)
-  if ('CompressionStream' in window) {
-    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'))
-    const buffer = await new Response(stream).arrayBuffer()
-    return `z${toBase64Url(new Uint8Array(buffer))}`
-  }
-  return `p${toBase64Url(bytes)}`
-}
-
-async function decodePayload(token: string): Promise<string | null> {
-  try {
-    const compressed = token.startsWith('z')
-    const bytes = fromBase64Url(token.slice(1))
-    if (!compressed) return new TextDecoder().decode(bytes)
-    const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'))
-    return new TextDecoder().decode(await new Response(stream).arrayBuffer())
-  } catch {
-    return null
-  }
-}
-
-function toBase64Url(bytes: Uint8Array): string {
-  let binary = ''
-  bytes.forEach((byte) => (binary += String.fromCharCode(byte)))
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-}
-
-function fromBase64Url(text: string): Uint8Array {
-  const padded = text.replace(/-/g, '+').replace(/_/g, '/')
-  const binary = atob(padded + '='.repeat((4 - (padded.length % 4)) % 4))
-  return Uint8Array.from(binary, (char) => char.charCodeAt(0))
 }
 
 async function applyHash() {
