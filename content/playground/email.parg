@@ -1,0 +1,27 @@
+## Email addresses, the pragmatic subset: dot-separated atoms locally,
+## dotted labels with a 2-6 letter TLD in the domain. Label edge
+## hyphens are tolerated here (real registries reject them; the demo
+## keeps the shape simple).
+grammar Email version "1.0.0" {
+  alpha = %x41-5A / %x61-7A
+  digit = %x30-39
+  ## atext without the dot (dots separate atoms).
+  lchar = alpha / digit / %x21 / %x23-27 / %x2A / %x2B / %x2D / %x3D / %x3F / %x5E-7E
+  local = 1*lchar *( "." 1*lchar )
+  ## Pragmatic domain: at least two dotted labels; the TLD's 2-6
+  ## letter shape is not enforced (a registry concern, not a syntax one).
+  label = 1*( alpha / digit / %x2D )
+  domain = label 1*( "." label )
+  address = local "@" domain as host
+
+  entry main: address
+
+  test {
+    accept "person@example.com"
+    accept "first.last+tag@sub.example.org"
+    accept "a_b-c@d-1.io"
+    reject "no-at-sign.com"
+    reject "@empty-local.com"
+    reject "person@host."
+  }
+}

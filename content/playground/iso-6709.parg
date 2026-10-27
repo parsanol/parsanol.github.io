@@ -1,0 +1,26 @@
+## ISO 6709 coordinates, the decimal-degree profile: a latitude
+## (±DD.DDDD) and longitude (±DDD.DDDD), optional altitude and the
+## terminating slash. Demonstrates fixed-count repetition and signed
+## fields.
+grammar Iso6709 version "1.0.0" {
+  sign = %x2B / %x2D
+  digit = %x30-39
+  ## ±DD.DDDD — degrees latitude.
+  lat = sign 2digit "." 1*4digit as latitude
+  ## ±DDD.DDDD — degrees longitude.
+  lon = sign 3digit "." 1*4digit as longitude
+  altitude = sign 1*5digit "." 1*2digit as height
+  ## /Wnnn — the world-geodetic code suffix.
+  crs = "/" %x57 1*3digit
+  point = lat lon [ altitude ] [ crs ] [ "/" ]
+
+  entry main: point
+
+  test {
+    accept "+40.1234-075.5678"
+    accept "+27.4716-070.1234/"
+    accept "-33.8688+151.2093+000.00/"
+    reject "40.1234-075.5678"
+    reject "+401234-075.5678"
+  }
+}

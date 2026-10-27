@@ -13,7 +13,7 @@ const artifactModules = import.meta.glob<string>('../../assets/playground/*.arti
 })
 const artifactsByName: Record<string, string> = {}
 for (const [path, raw] of Object.entries(artifactModules)) {
-  const name = path.split('/').pop()!.replace('.artifact.json', '')
+  const name = path.split('/').pop()!.replace('.artifact.json', '').replace(/_/g, '-')
   artifactsByName[name] = raw
 }
 
@@ -48,11 +48,12 @@ const {
 
 const sourceLabels: Record<string, string> = { rust: 'Rust', ruby: 'Ruby' }
 
-const artifactRaw = artifactsByName[example.path.split('/').pop()] || null
+const exampleId = example.path.split('/').pop()
+const artifactRaw = artifactsByName[exampleId] || null
 // A grammar that is also a playground demo deep-links with the demo
 // preselected (the share-link hash format).
 const demoIds = new Set(['balanced-parens', 'calculator', 'csv', 'json', 'iso', 'recovery'])
-const demoId = demoIds.has(example.path.split('/').pop()) ? example.path.split('/').pop() : undefined
+const demoId = demoIds.has(exampleId) ? exampleId : undefined
 
 const difficultyColors: Record<string, string> = {
   beginner: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',

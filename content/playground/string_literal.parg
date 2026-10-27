@@ -1,0 +1,22 @@
+## String literals: double-quoted with backslash escapes. The plain
+## body excludes quote and backslash; the escapes cover the classic
+## five (\" \\ \n \t \r). Demonstrates alternation of escapes.
+grammar StringLit version "1.0.0" {
+  dquote = %x22
+  bslash = %x5C
+  ## \" \\ \n \t \r
+  escape = bslash ( dquote / bslash / %x6E / %x74 / %x72 )
+  plain = %x20-21 / %x23-5B / %x5D-10FFFF
+  body = *( escape / plain )
+  string = dquote body dquote as text
+
+  entry main: string
+
+  test {
+    accept "\"plain\""
+    accept "\"with \\\"quote\\\" inside\""
+    accept "\"tab\\tnl\\nbs\\\\\""
+    reject "\"unterminated"
+    reject "\"bad \\x escape\""
+  }
+}

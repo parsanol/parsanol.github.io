@@ -1,0 +1,25 @@
+## Comments: a line of text with an optional trailing '#' comment. The
+## text part is printable runs without '#'; the comment runs to end of
+## line. Demonstrates exclusion classes and optionality.
+grammar Comments version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  nl = %x0A
+  ## any non-newline byte: the comment's body.
+  nonl = %x01-09 / %x0B-10FFFF
+  comment = "#" *nonl
+  ## printable, no space, no '#': text atoms.
+  text_char = %x21-22 / %x24-7E
+  text = 1*text_char *( 1*ws 1*text_char )
+  line = text pq [comment]
+
+  entry main: line
+
+  test {
+    accept "hello world"
+    accept "x = 1 # trailing note"
+    accept "a#not-a-comment-boundary"
+    reject ""
+    reject "# comment-only is not text"
+  }
+}

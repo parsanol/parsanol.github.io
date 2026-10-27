@@ -1,0 +1,30 @@
+## INI files: sections in brackets, key = value pairs, blank lines.
+## The grammar is line-oriented: every construct consumes its newline
+## (the last line may omit it).
+grammar Ini version "1.0.0" {
+  nl = %x0A
+  ws = %x20 / %x09
+  pq = *ws
+  ident = 1*( %x41-5A / %x61-7A / %x30-39 / %x5F / %x2D )
+  ## anything but newline: the value tail.
+  value = *( %x09 / %x20-10FFFF )
+  section = "[" pq ident pq "]" pq nl
+  pair = key pq "=" pq value nl
+  blank = pq nl
+  key = ident
+  ## The final line may omit its newline, so the tail forms repeat the
+  ## constructs without consuming one.
+  section_last = "[" pq ident pq "]" pq
+  pair_last = key pq "=" pq value
+  file = *( blank / section / pair ) [ ( section_last / pair_last ) ]
+
+  entry main: file
+
+  test {
+    accept "[core]\nname = parsanol\n"
+    accept "key = value"
+    accept "[a]\n\nx = 1\n[b]\ny = 2"
+    reject "= no key"
+    reject "[unclosed\n"
+  }
+}

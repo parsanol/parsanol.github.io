@@ -1,0 +1,26 @@
+## Arithmetic expressions with precedence encoded as LAYERS: expr
+## (additive) -> term (multiplicative) -> factor (atoms and groups).
+## Each layer's repetition consumes its operator between operands, so
+## precedence falls out of the shape — no tables, no rewriting.
+grammar Arith version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  digit = %x30-39
+  number = 1*digit as number
+  factor = number / ( "(" pq expr pq ")" )
+  term = factor *( pq ( "*" / "/" ) pq factor )
+  expr = term *( pq ( "+" / "-" ) pq term )
+  top = pq expr pq
+
+  entry main: top
+
+  test {
+    accept "1 + 2"
+    accept "2*3+4"
+    accept "(1 + 2) * (3 - 4) / 5"
+    accept "42"
+    reject "+ 1"
+    reject "1 +"
+    reject "(1 + 2"
+  }
+}

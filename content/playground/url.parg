@@ -1,0 +1,27 @@
+## URLs, the common shape: scheme://host[:port][/path][?query]. The
+## classes keep each segment's terminators out of the next, so the
+## segments split deterministically.
+grammar Url version "1.0.0" {
+  alpha = %x41-5A / %x61-7A
+  digit = %x30-39
+  scheme = alpha *( alpha / digit / %x2B / %x2D / %x2E )
+  hchar = alpha / digit / %x2D / %x2E
+  host = 1*hchar
+  port = 1*digit
+  ## printable, no '?' (0x3F): the path segment.
+  pchar = %x21-3E / %x40-10FFFF
+  path = *pchar
+  query = *( %x21-10FFFF )
+  url = scheme as scheme "://" host as host [ ":" port as port ] [ "/" path ] [ "?" query as query ]
+
+  entry main: url
+
+  test {
+    accept "https://parsanol.org"
+    accept "http://localhost:4321/examples/csv"
+    accept "https://a.b.c/search?q=parg&page=2"
+    accept "ftp://files.example.org/pub/readme.txt"
+    reject "parsanol.org"
+    reject "https:///no-host"
+  }
+}

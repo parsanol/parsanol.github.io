@@ -1,0 +1,21 @@
+## Sentences: capitalized words separated by spaces, ending in a
+## period. Demonstrates word repetition with whitespace threading.
+grammar Sentence version "1.0.0" {
+  ws = 1*( %x20 )
+  alpha = %x41-5A / %x61-7A
+  word = 1*alpha
+  cap = %x41-5A
+  head = cap *alpha
+  tail = word
+  sentence = head *( ws tail ) "."
+
+  entry main: sentence
+
+  test {
+    accept "Hello world."
+    accept "A."
+    accept "The quick brown fox jumps."
+    reject "lowercase start."
+    reject "no final period"
+  }
+}
