@@ -1,7 +1,7 @@
 ## INI files: sections in brackets, key = value pairs, blank lines.
 ## The grammar is line-oriented: every construct consumes its newline
 ## (the last line may omit it).
-grammar Ini version "1.0.0" {
+grammar Ini version "1.0.0" mode "v1" {
   nl = %x0A
   ws = %x20 / %x09
   pq = *ws

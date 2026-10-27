@@ -3,7 +3,7 @@
 ## compiler rewrites it into tier rules at compile time (the ANTLR 4
 ## model), so the artifact carries plain atoms every engine runs
 ## identically.
-grammar Calculator version "1.0.0" {
+grammar Calculator version "1.0.0" mode "v1" {
   ## digit runs are the numbers; spaces allowed between tokens.
   number = ( 1*( %x30-39 ) ) as num
   ws = *( %x20 )

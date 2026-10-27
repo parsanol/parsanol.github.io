@@ -2,7 +2,7 @@
 ## (additive) -> term (multiplicative) -> factor (atoms and groups).
 ## Each layer's repetition consumes its operator between operands, so
 ## precedence falls out of the shape — no tables, no rewriting.
-grammar Arith version "1.0.0" {
+grammar Arith version "1.0.0" mode "v1" {
   ws = %x20 / %x09
   pq = *ws
   digit = %x30-39

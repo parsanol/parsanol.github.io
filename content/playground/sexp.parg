@@ -1,7 +1,7 @@
 ## S-expressions: atoms and parenthesized lists, arbitrarily nested,
 ## whitespace between elements. The recursion is sexp -> list -> sexp —
 ## no left recursion, pure nesting.
-grammar Sexp version "1.0.0" {
+grammar Sexp version "1.0.0" mode "v1" {
   ws = %x20 / %x09 / %x0A
   pq = *ws
   ## printable minus space, parens and quote: an atom's characters.

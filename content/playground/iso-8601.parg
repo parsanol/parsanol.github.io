@@ -1,7 +1,7 @@
 ## ISO 8601, the calendar profile: dates (YYYY-MM-DD), times
 ## (HH:MM:SS with optional fraction and offset), and the combined
 ## datetime. Demonstrates fixed-count fields composed three ways.
-grammar Iso8601 version "1.0.0" {
+grammar Iso8601 version "1.0.0" mode "v1" {
   d = %x30-39
   four = 4d
   two = 2d
