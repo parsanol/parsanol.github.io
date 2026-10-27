@@ -14,7 +14,27 @@ import Layout from '../layouts/Layout.astro'
   <script>
     window.addEventListener('DOMContentLoaded', () => {
       new (window as any).PagefindUI({ element: '#search', showSubResults: true })
-      ;(document.querySelector('.pagefind-ui__search-input') as HTMLInputElement | null)?.focus()
+      const input = document.querySelector('.pagefind-ui__search-input') as HTMLInputElement | null
+      input?.focus()
+
+      // Shareable queries: /search/?q=foo prefills and runs; typing mirrors
+      // the query into the URL (replaceState, no history spam).
+      const params = new URLSearchParams(window.location.search)
+      const q = params.get('q')
+      if (q && input) {
+        input.value = q
+        input.dispatchEvent(new Event('input', { bubbles: true }))
+      }
+      let t: ReturnType<typeof setTimeout> | undefined
+      input?.addEventListener('input', () => {
+        clearTimeout(t)
+        t = setTimeout(() => {
+          const url = new URL(window.location.href)
+          if (input.value) url.searchParams.set('q', input.value)
+          else url.searchParams.delete('q')
+          window.history.replaceState(null, '', url)
+        }, 400)
+      })
     })
   </script>
 </Layout>
