@@ -372,6 +372,10 @@ const rubyActive = rubyLinks.some((l) => isActive(l.to))
       document.documentElement.classList.contains('dark') ? 'dark' : 'light'
     )
     updateThemeIcon()
+    document.getElementById('meta-theme-color')?.setAttribute(
+      'content',
+      document.documentElement.classList.contains('dark') ? '#111827' : '#f9fafb'
+    )
   })
 
   document.addEventListener('keydown', (e) => {

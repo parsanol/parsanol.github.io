@@ -14,9 +14,11 @@ export interface Heading {
 }
 
 // The baked docs HTML has untyped h2/h3 without ids; give each a stable slug.
+// Headings that already carry an id are left untouched.
 export function withHeadingIds(html: string): string {
   const seen = new Map<string, number>()
   return html.replace(/<h([23])(\s[^>]*)?>([\s\S]*?)<\/h\1>/g, (match, level, attrs, inner) => {
+    if (attrs && /\sid="[^"]+"/.test(attrs)) return match
     const text = inner.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim()
     let slug = slugify(text)
     const n = (seen.get(slug) ?? 0) + 1
