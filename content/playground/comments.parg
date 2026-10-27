@@ -1,7 +1,7 @@
 ## Comments: a line of text with an optional trailing '#' comment. The
 ## text part is printable runs without '#'; the comment runs to end of
 ## line. Demonstrates exclusion classes and optionality.
-grammar Comments version "1.0.0" {
+grammar Comments version "1.0.0" mode "v1" {
   ws = %x20 / %x09
   pq = *ws
   nl = %x0A

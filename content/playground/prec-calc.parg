@@ -3,7 +3,7 @@
 ## operands, so precedence falls out of the layering — no tables, no
 ## rewriting. (This is the companion to expression-evaluator with the
 ## modulo operator and signed primaries added.)
-grammar PrecCalc version "1.0.0" {
+grammar PrecCalc version "1.0.0" mode "v1" {
   ws = %x20 / %x09
   pq = *ws
   digit = %x30-39

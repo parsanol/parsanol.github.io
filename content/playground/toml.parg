@@ -2,7 +2,7 @@
 ## strings, integers, floats and booleans; blank lines and comments.
 ## Demonstrates the value-level alternation (longest forms first) and
 ## comment trivia threaded past every line shape.
-grammar Toml version "1.0.0" {
+grammar Toml version "1.0.0" mode "v1" {
   nl = %x0A
   ws = %x20 / %x09
   pq = *ws

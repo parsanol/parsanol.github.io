@@ -2,7 +2,7 @@
 ## (±DD.DDDD) and longitude (±DDD.DDDD), optional altitude and the
 ## terminating slash. Demonstrates fixed-count repetition and signed
 ## fields.
-grammar Iso6709 version "1.0.0" {
+grammar Iso6709 version "1.0.0" mode "v1" {
   sign = %x2B / %x2D
   digit = %x30-39
   ## ±DD.DDDD — degrees latitude.

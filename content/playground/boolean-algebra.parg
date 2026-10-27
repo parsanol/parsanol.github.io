@@ -1,6 +1,6 @@
 ## Boolean expressions: OR is the top layer, AND beneath it, NOT binds
 ## tightest. Keywords are case-insensitive; variables are alphanumerics.
-grammar Boolean version "1.0.0" {
+grammar Boolean version "1.0.0" mode "v1" {
   ws = 1*( %x20 / %x09 )
   pq = *ws
   alpha = %x41-5A / %x61-7A
