@@ -1,0 +1,19 @@
+## Grammar modularity: this file `use`s the shared lexical module
+## (words.parg) instead of restating its rules — one vocabulary,
+## many consumers. The merge happens at compile time; the artifact
+## carries the composed grammar.
+use words
+
+grammar Modular version "1.0.0" {
+  ## Qualified reference into the module (the #208 surface).
+  pair = words.pair as assignment
+  entry main: pair
+
+  test {
+    accept "name = parsanol"
+    accept "key = VALUE1"
+    reject "= novalue"
+    reject "a = "
+    reject "novalue"
+  }
+}

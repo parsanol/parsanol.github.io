@@ -1,0 +1,24 @@
+## Transform fuel: season names with their months, shaped so a tree
+## transform has real structure to walk — a season captures its name
+## and each month capture sits inside it.
+grammar Seasons version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  nl = %x0A
+  alpha = %x41-5A / %x61-7A
+  season = ( %i"spring" / %i"summer" / %i"autumn" / %i"winter" ) as season
+  month = 1*alpha as month
+  ## comma-or-space separated: the comma form leads the choice.
+  line = pq season pq ":" pq month *( ( pq "," pq / pq ) month ) pq nl
+  year = *( line )
+
+  entry main: year
+
+  test {
+    accept "spring: March April May\n"
+    accept "winter: December\n"
+    accept "autumn: September, October, November\n"
+    reject "sprint: March\n"
+    reject "spring March\n"
+  }
+}

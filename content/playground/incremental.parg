@@ -1,0 +1,23 @@
+## Incremental fuel: sectioned documents — the shape an editor
+## re-parses region-by-region after an edit. Sections are
+## self-delimiting, so a change inside one never invalidates the
+## parse of its siblings.
+grammar Sectioned version "1.0.0" {
+  nl = %x0A
+  ws = %x20 / %x09
+  pq = *ws
+  name = 1*( %x41-5A / %x61-7A / %x30-39 / %x2D ) as section
+  line = pq *( %x01-09 / %x0B-10FFFF ) pq nl
+  block = "[" pq name pq "]" nl *( line )
+  doc = *( block )
+
+  entry main: doc
+
+  test {
+    accept "[alpha]\ntext here\n"
+    accept "[alpha]\na\n[beta]\nb\n"
+    accept "[a-1]\n\n\n"
+    reject "alpha]\n"
+    reject "[unclosed\n"
+  }
+}

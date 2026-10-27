@@ -1,0 +1,22 @@
+## Scopes: block structure isolates captures — a binding made inside a
+## block is visible while the block parses and gone when it exits, so
+## outer captures never see inner iteration noise.
+grammar Scopes version "1.0.0" {
+  ws = %x20 / %x09
+  nl = %x0A
+  pq = *ws
+  name = 1*( %x41-5A / %x61-7A / %x5F ) as name
+  item = pq name pq nl
+  block = name pq "{" nl *( item ) pq "}" nl as block
+  file = *( block )
+
+  entry main: file
+
+  test {
+    accept "outer {\n  alpha\n  beta\n}\n"
+    accept "a {\n  x\n}\nb {\n  y\n}\n"
+    accept "empty {\n}\n"
+    reject "outer {"
+    reject "outer\n}"
+  }
+}

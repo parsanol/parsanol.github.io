@@ -1,0 +1,25 @@
+## Streaming with captures: the record grammar from the streaming
+## example, with `as` bindings — chunked readers get typed fields per
+## record without buffering the file.
+grammar StreamedFields version "1.0.0" {
+  nl = %x0A
+  ws = %x20 / %x09
+  pq = *ws
+  digit = %x30-39
+  hh = %x30-31 digit / "2" %x30-33
+  ms = %x30-35 digit
+  ts = hh ":" ms ":" ms as timestamp
+  tag = ( %i"IN" / %i"OUT" / %i"ERR" ) as direction
+  body = *( %x01-09 / %x0B-10FFFF ) as payload
+  record = pq ts pq tag pq body
+  file = *( record nl ) [ record ]
+
+  entry main: file
+
+  test {
+    accept "12:00:01 IN connect 1\n"
+    accept "00:00:00 ERR start\n23:59:59 OUT done"
+    reject "12:00:61 IN x"
+    reject "IN x"
+  }
+}

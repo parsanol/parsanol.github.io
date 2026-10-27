@@ -1,0 +1,19 @@
+## The capture DSL: `as` binds a name at each level, and the bound
+## hash is the parse output. One line, three bindings.
+grammar CaptureDsl version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  key = 1*( %x41-5A / %x61-7A ) as k
+  value = 1*( %x30-39 ) as v
+  pair = key pq "=" pq value
+  top = pq pair pq
+
+  entry main: top
+
+  test {
+    accept "answer=42"
+    accept " x = 7 "
+    reject "answer="
+    reject "=42"
+  }
+}

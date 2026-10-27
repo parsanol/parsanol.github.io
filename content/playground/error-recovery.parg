@@ -1,0 +1,22 @@
+## Error recovery: key = value; pairs where corrupted lines become
+## resync junk. The `resync` declaration owns the skip — the parser
+## replays it deterministically instead of trial-scanning, so the
+## spans of every discarded byte are exact.
+grammar RecoveryDemo version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  nl = %x0A
+  pair = ( 1*( %x61-7A / %x30-39 ) ) as k "=" ( 1*( %x30-39 ) ) as v ";"
+  document = *( pair pq )
+  ## deterministic junk: any run of non-";" bytes ending at a ";".
+  resync document = *( %x00-3A / %x3C-10FFFF ) ";"
+
+  entry main: document
+
+  test {
+    accept "a=1;b=2;"
+    accept "a=1;"
+    reject "a=1"
+    reject "=;"
+  }
+}

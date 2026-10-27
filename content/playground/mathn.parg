@@ -1,0 +1,23 @@
+## Rational-friendly arithmetic: integer division that stays exact and
+## the operator soup around it. The tree keeps the operator captures
+## so the evaluator can pick per-operator semantics.
+grammar Mathn version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  digit = %x30-39
+  number = 1*digit as number
+  primary = number / ( "(" pq expr pq ")" )
+  term = primary *( pq ( "*" / "/" ) pq primary )
+  expr = term *( pq ( "+" / "-" ) pq term )
+  top = pq expr pq
+
+  entry main: top
+
+  test {
+    accept "1 / 2"
+    accept "(1 + 2) / 3"
+    accept "4 * 2 - 1"
+    reject "/ 2"
+    reject "(1 + 2"
+  }
+}

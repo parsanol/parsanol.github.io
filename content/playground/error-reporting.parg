@@ -1,0 +1,22 @@
+## Rich error positions: when a nested structure fails, the failure
+## wire carries offset/line/column and the expected-set — the raw
+## material for "expected `}` at 3:14, inside `body`" messages.
+grammar NestedDoc version "1.0.0" {
+  ws = %x20 / %x09
+  nl = %x0A
+  pq = *ws
+  name = 1*( %x41-5A / %x61-7A / %x5F ) as name
+  value = 1*( %x30-39 / %x41-5A / %x61-7A ) as value
+  setting = pq name pq "=" pq value pq nl
+  section = name pq "{" nl *( setting ) pq "}" nl as section
+  doc = *( section )
+
+  entry main: doc
+
+  test {
+    accept "a {\nx=1\n}\n"
+    accept "a {\nx=1\ny=2\n}\nb {\nz=3\n}\n"
+    reject "a {\nx=\n}\n"
+    reject "a {"
+  }
+}

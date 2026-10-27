@@ -1,0 +1,26 @@
+## Inline markup: bold, italic and code inside plain text. The
+## alternation orders the longer delimiters first (** before *), and
+## code's body excludes backticks — so the spans split deterministically.
+grammar Markup version "1.0.0" {
+  nl = %x0A
+  ## printable minus the three delimiters, per position.
+  tchar = %x01-09 / %x0B-2A / %x2C-5E / %x60-10FFFF
+  plain = *tchar
+  bold = "**" 1*( %x01-09 / %x0B-29 / %x2B-5E / %x60-10FFFF ) "**" as bold
+  italic = "*" 1*( %x01-09 / %x0B-29 / %x2B-5E / %x60-10FFFF ) "*" as italic
+  code = "`" 1*( %x01-09 / %x0B-5F / %x61-10FFFF ) "`" as code
+  inline = *( bold / italic / code / tchar )
+  ws = %x20 / %x09
+  pq = *ws
+  line = pq inline pq nl
+  doc = *( line )
+
+  entry main: doc
+
+  test {
+    accept "plain text\n"
+    accept "this is **bold** and *italic* and `code`\n"
+    accept "**a *nested-looking* b**\n"
+    accept "no markup here\n"
+  }
+}

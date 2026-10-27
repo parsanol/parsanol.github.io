@@ -1,0 +1,17 @@
+## The empty-rule stub: a zero-width match is not expressible bare —
+## the compiler says so — but a CAPTURED empty literal is the marker:
+## `"" as name` parses nothing and binds the empty string. That is the
+## prototyping stub: a rule that compiles, matches, and awaits a body.
+grammar EmptyStub version "1.0.0" {
+  ws = %x20
+  pq = *ws
+  stub = "" as marker
+  top = pq stub pq
+
+  entry main: top
+
+  test {
+    accept ""
+    accept "   "
+  }
+}
