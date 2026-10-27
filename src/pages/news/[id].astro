@@ -13,6 +13,10 @@ const { post } = Astro.props
 // (bold, code, links) is rendered with marked.
 const inline = (text: string) => marked.parseInline(text ?? '', { async: false }) as string
 const blocks: any[] = post.content ?? []
+const sorted = news.slice().sort((a: any, b: any) => (a.date < b.date ? 1 : -1))
+const idx = sorted.findIndex((n: any) => n.id === post.id)
+const newer = idx > 0 ? sorted[idx - 1] : null
+const older = idx >= 0 && idx < sorted.length - 1 ? sorted[idx + 1] : null
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'NewsArticle',
@@ -72,5 +76,27 @@ const jsonLd = {
       })}
     </article>
   </div>
+  {(newer || older) && (
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 text-sm">
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-6 flex flex-col sm:flex-row justify-between gap-4">
+        {newer ? (
+          <a href={`/news/${newer.id}`} class="group">
+            <span class="block text-gray-500 dark:text-gray-400 mb-0.5">← Newer post</span>
+            <span class="font-medium text-primary-600 dark:text-primary-400 group-hover:underline">{newer.title}</span>
+          </a>
+        ) : (
+          <span />
+        )}
+        {older ? (
+          <a href={`/news/${older.id}`} class="group sm:text-right">
+            <span class="block text-gray-500 dark:text-gray-400 mb-0.5">Older post →</span>
+            <span class="font-medium text-primary-600 dark:text-primary-400 group-hover:underline">{older.title}</span>
+          </a>
+        ) : (
+          <span />
+        )}
+      </div>
+    </nav>
+  )}
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 </Layout>

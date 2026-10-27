@@ -162,10 +162,17 @@ const difficultyColor = difficultyColors[difficulty] || difficultyColors.interme
 
     {sources.map((s: any) => (
       <section class="mb-12">
-        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4 capitalize">
-          {sourceLabels[s.lang] ?? s.lang}
-          {s.name !== 'basic' && <span class="ml-2 text-base font-normal text-gray-500 dark:text-gray-400">({s.name})</span>}
-        </h2>
+        <div class="flex items-center gap-3 mb-4 flex-wrap">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white capitalize">
+            {sourceLabels[s.lang] ?? s.lang}
+            {s.name !== 'basic' && <span class="ml-2 text-base font-normal text-gray-500 dark:text-gray-400">({s.name})</span>}
+          </h2>
+          {s.url && (
+            <a href={s.url} target="_blank" rel="noopener noreferrer" class="text-sm text-primary-600 dark:text-primary-400 hover:underline">
+              View on GitHub ↗
+            </a>
+          )}
+        </div>
 
         {s.walkthrough?.length > 0 && (
           <div class="mb-8">

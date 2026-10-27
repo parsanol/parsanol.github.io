@@ -109,7 +109,12 @@ code, pre, .font-mono { font-family: var(--font-mono); }
   .filter-btn[data-on][data-filter="ruby"] .filter-dot { @apply bg-red-500; }
   .filter-btn[data-on][data-filter="parslet"] { @apply bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 ring-1 ring-purple-300 dark:ring-purple-700; }
   .filter-btn[data-on][data-filter="parslet"] .filter-dot { @apply bg-purple-500; }
+
+  .toc-link-active { @apply text-primary-600 dark:text-primary-400 border-primary-600 dark:border-primary-400 font-medium; }
 }
+
+/* Anchored headings must clear the sticky header when jumped to */
+.prose h2, .prose h3 { scroll-margin-top: 6rem; }
 
 .prose h1 { @apply text-4xl font-bold mt-8 mb-4 text-gray-900 dark:text-white; }
 .prose h2 { @apply text-2xl font-semibold mt-8 mb-4 text-gray-900 dark:text-white; }

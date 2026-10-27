@@ -1,17 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro'
 import PrevNext from '../components/PrevNext.astro'
-import DocsNav from '../components/organisms/DocsNav.astro'
+import DocsShell from '../components/DocsShell.astro'
 import content from '../data/views/tutorial.html?raw'
 ---
 <Layout title="Tutorial — Parsanol" description="The Parsanol tutorial: build a working parser end to end — from first atoms to a bound model object.">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <div class="flex gap-12">
-      <DocsNav showSections={['introduction']} />
-      <div class="flex-1 min-w-0 prose max-w-none">
-        <Fragment set:html={content} />
-      </div>
-    </div>
-  </div>
+  <DocsShell showSections={['introduction']} content={content} />
   <PrevNext />
 </Layout>
