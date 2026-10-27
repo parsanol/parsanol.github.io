@@ -1,0 +1,22 @@
+## The vehicle for dynamic atoms: the parse is context-sensitive in
+## the host engine (callbacks see captured state); the artifact demo
+## carries the plain shape — a header that the host validates.
+grammar Dynamic version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  nl = %x0A
+  alpha = %x41-5A / %x61-7A
+  ident = 1*( alpha / %x30-39 / %x5F ) as name
+  header = "# " ident pq nl
+  line = pq *( %x01-09 / %x0B-10FFFF ) pq nl
+  doc = header *( line )
+
+  entry main: doc
+
+  test {
+    accept "# section\nsome body\n"
+    accept "# x1\n"
+    reject "no header\n"
+    reject "#\n"
+  }
+}

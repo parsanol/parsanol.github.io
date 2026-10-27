@@ -1,0 +1,26 @@
+## Streaming: line-oriented records — the shape a chunked reader
+## replays record-at-a-time without holding the file. Each record is
+## a timestamped event; the grammar never needs more than one line.
+grammar StreamedLog version "1.0.0" {
+  nl = %x0A
+  ws = %x20 / %x09
+  pq = *ws
+  digit = %x30-39
+  ## clock bounds by shape: hour 00-23, minute/second 00-59.
+  hh = %x30-31 digit / "2" %x30-33
+  ms = %x30-35 digit
+  ts = hh ":" ms ":" ms as timestamp
+  tag = ( %i"IN" / %i"OUT" / %i"ERR" ) as direction
+  body = *( %x01-09 / %x0B-10FFFF ) as payload
+  record = pq ts pq tag pq body
+  file = *( record nl ) [ record ]
+
+  entry main: file
+
+  test {
+    accept "12:00:01 IN connect 1\n12:00:02 OUT ok"
+    accept "00:00:00 ERR start"
+    reject "12:00 IN x"
+    reject "24:00:00 IN impossible hour"
+  }
+}

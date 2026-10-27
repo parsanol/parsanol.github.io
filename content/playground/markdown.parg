@@ -1,0 +1,31 @@
+## Markdown, the document subset: ATX headers, bullet lists, fenced
+## code blocks and paragraphs. Line-oriented blocks; the inline-level
+## subset lives in the markup example.
+grammar Markdown version "1.0.0" {
+  nl = %x0A
+  ws = %x20
+  pq = *ws
+  ## printable minus backtick: inline text.
+  ## printable minus backtick AND minus newline (the rep's follower).
+  tchar = %x01-09 / %x0B-5F / %x61-10FFFF
+  heading = 1*6%x23 %x20 1*tchar pq nl as heading
+  item = pq "* " 1*tchar pq nl as item
+  ## The body's only follower is the closing fence, so it keeps
+  ## newlines — anything but a backtick. (No pq after the closing
+  ## fence: a nullable there defeats the repetition's backtracking.)
+  fence = "```" *( %x01-5F / %x61-10FFFF ) "```" nl as code
+  para = 1*tchar pq nl as paragraph
+  blank = pq nl
+  block = blank / heading / fence / item / para
+  doc = *block
+
+  entry main: doc
+
+  test {
+    accept "# Title\n\nSome text.\n"
+    accept "## Section\n- a\n- b\n"
+    accept "```\ncode here\n```\n"
+    accept "text only\n"
+    reject "```\nunclosed\n"
+  }
+}

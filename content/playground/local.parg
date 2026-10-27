@@ -1,0 +1,23 @@
+## Records without greed: a field is any run of non-newline bytes —
+## the terminator stays OUT of the body's class, so the field ends
+## exactly where the record does. Fields may contain pipes, colons,
+## any punctuation: the shape never needs to count them.
+grammar LocalVars version "1.0.0" {
+  nl = %x0A
+  ws = %x20 / %x09
+  pq = *ws
+  ## anything but the record terminator: the field body.
+  fchar = %x09 / %x20-10FFFF
+  field = *fchar as field
+  row = pq field pq nl
+  table = *( row )
+
+  entry main: table
+
+  test {
+    accept "a|b|c\n"
+    accept "key: value | with pipes | everywhere\n"
+    accept "single\n"
+    reject "no terminator"
+  }
+}

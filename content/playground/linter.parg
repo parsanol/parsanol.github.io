@@ -1,0 +1,25 @@
+## A linter's substrate: config lines whose slices carry exact
+## positions. The grammar is deliberately simple — the point is that
+## every capture's offset/line/column ride the tree, so diagnostics
+## need no re-lexing.
+grammar LintConfig version "1.0.0" {
+  nl = %x0A
+  ws = %x20 / %x09
+  pq = *ws
+  comment = "#" *( %x01-09 / %x0B-10FFFF )
+  name = 1*( %x41-5A / %x61-7A / %x5F ) as rule
+  ## severity is one of the three known words.
+  severity = ( %i"off" / %i"warn" / %i"error" ) as severity
+  setting = name pq ":" pq severity pq [ comment ] nl
+  file = *( setting )
+
+  entry main: file
+
+  test {
+    accept "no_unused: off\n"
+    accept "long_lines: warn # 100 cols\n"
+    accept "a: error\nb: warn\n"
+    reject "no_unused off\n"
+    reject "unknown_word: x\n"
+  }
+}

@@ -1,0 +1,22 @@
+## Capture atoms: `as` names attach to any expression, like named
+## regex groups. The tree keeps what you named — the log line below
+## exposes level, module and message without any transform code.
+grammar Captures version "1.0.0" {
+  ws = %x20 / %x09
+  pq = *ws
+  nl = %x0A
+  level = ( %i"INFO" / %i"WARN" / %i"ERROR" ) as level
+  mod = 1*( %x41-5A / %x61-7A ) *( %x3A 1*( %x41-5A / %x61-7A ) ) as module
+  rest = *( %x01-09 / %x0B-10FFFF ) as message
+  line = pq "[" pq level pq "]" pq mod pq ":" pq rest
+  file = *( line nl ) [ line ]
+
+  entry main: file
+
+  test {
+    accept "[INFO] core: started"
+    accept "[ERROR] net:dial: timeout\n[INFO] app: retrying"
+    reject "INFO core: no brackets"
+    reject "[DEBUG] unknown level: x"
+  }
+}

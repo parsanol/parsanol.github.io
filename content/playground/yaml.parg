@@ -1,0 +1,27 @@
+## YAML, the block-mapping subset: nested keys by two-space indent,
+## scalars and block sequences. The indentation-sensitive corners of
+## real YAML are out of scope — this is the shape configuration files
+## actually use.
+grammar YamlSubset version "1.0.0" {
+  nl = %x0A
+  ws = %x20
+  pq = *ws
+  indent = 2*2ws
+  key = 1*( %x41-5A / %x61-7A / %x30-39 / %x5F / %x2D ) as key
+  scalar = 1*( %x09 / %x0B-10FFFF ) as value
+  seqitem = [ indent ] "-" pq scalar nl
+  pair = key ":" pq scalar nl
+  nested = key ":" nl *( indent key ":" pq scalar nl ) as mapping
+  doc = *( pair / seqitem / nested )
+
+  entry main: doc
+
+  test {
+    accept "name: parsanol\ncount: 3\n"
+    accept "server:\n  host: localhost\n  port: 8080\n"
+    accept "items:\n- one\n- two\n"
+    accept "flat: value\n"
+    reject "name parsanol"
+    reject "key: value: trailing"
+  }
+}
