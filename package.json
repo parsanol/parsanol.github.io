@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "astro build && node scripts/generate-og.cjs && pagefind --site dist",
     "preview": "astro preview",
     "generate": "node scripts/generate-news.cjs",
     "generate:news": "node scripts/generate-news.cjs",
@@ -24,8 +24,10 @@
     "vue": "^3.5.13"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
     "@types/prismjs": "^1.26.6",
     "pagefind": "^1.5.2",
+    "satori": "^0.63.2",
     "typescript": "^5.6.3"
   }
 }
