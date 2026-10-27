@@ -1,0 +1,25 @@
+## Boolean expressions: OR is the top layer, AND beneath it, NOT binds
+## tightest. Keywords are case-insensitive; variables are alphanumerics.
+grammar Boolean version "1.0.0" {
+  ws = 1*( %x20 / %x09 )
+  pq = *ws
+  alpha = %x41-5A / %x61-7A
+  name = 1*( alpha / %x30-39 / %x5F ) as variable
+  primary = ( %x54 / %x46 ) 1*( alpha ) as literal / name / ( "(" pq or pq ")" )
+  not = ( ( %x21 ) / %i"NOT" pq ) pq primary / pq primary
+  and = not *( pq ( %i"AND" ) pq not )
+  or = and *( pq ( %i"OR" ) pq and )
+  top = pq or pq
+
+  entry main: top
+
+  test {
+    accept "a AND b"
+    accept "a OR NOT b"
+    accept "!(a AND b) OR TRUE"
+    accept "x1 AND x2 AND (x3 OR x4)"
+    reject "AND a"
+    reject "(a AND"
+    reject "a AND)"
+  }
+}

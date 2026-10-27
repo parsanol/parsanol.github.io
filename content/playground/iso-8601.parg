@@ -1,0 +1,31 @@
+## ISO 8601, the calendar profile: dates (YYYY-MM-DD), times
+## (HH:MM:SS with optional fraction and offset), and the combined
+## datetime. Demonstrates fixed-count fields composed three ways.
+grammar Iso8601 version "1.0.0" {
+  d = %x30-39
+  four = 4d
+  two = 2d
+  ## Shape-bounded fields: month 01-12, day 01-31, hour 00-23,
+  ## minute/second 00-59 — the calendar's bounds by character class.
+  mm = "0" %x31-39 / "1" %x30-32
+  dd = "0" %x31-39 / %x31-32 d / "3" %x30-31
+  hh = %x30-31 d / "2" %x30-33
+  ms = %x30-35 d
+  date = four "-" mm "-" dd as date
+  tsep = %x54 / %x20
+  offset = ( %x5A / ( %x2B / %x2D ) two ":" two )
+  time = hh ":" ms [ ":" ms [ "." 1*d ] ] [ offset ] as time
+  moment = date [ tsep time ]
+
+  entry main: moment
+
+  test {
+    accept "2026-10-27"
+    accept "2026-10-27T13:45:00"
+    accept "2026-10-27 13:45:00.250+02:00"
+    accept "2026-01-01T00:00:00Z"
+    reject "2026-10-27T"
+    reject "26-10-27"
+    reject "2026-13-40"
+  }
+}
