@@ -517,7 +517,7 @@ onBeforeUnmount(() => {
         {{
           mode === 'author'
             ? 'compiles in your browser with the wasm compiler — diagnostics below, parse on the right'
-            : 'pick a compiled artifact and probe it'
+            : 'pick a compiled artifact and probe it — ' + (current.artifact.edition ?? 'v1') + ' edition'
         }}
       </span>
     </div>

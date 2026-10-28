@@ -1,7 +1,7 @@
 ## Streaming with captures: the record grammar from the streaming
 ## example, with `as` bindings — chunked readers get typed fields per
 ## record without buffering the file.
-grammar StreamedFields version "1.0.0" {
+grammar StreamedFields version "1.0.0" edition "v2" {
   nl = %x0A
   ws = %x20 / %x09
   pq = *ws

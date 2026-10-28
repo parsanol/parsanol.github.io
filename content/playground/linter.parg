@@ -2,7 +2,7 @@
 ## positions. The grammar is deliberately simple — the point is that
 ## every capture's offset/line/column ride the tree, so diagnostics
 ## need no re-lexing.
-grammar LintConfig version "1.0.0" {
+grammar LintConfig version "1.0.0" edition "v2" {
   nl = %x0A
   ws = %x20 / %x09
   pq = *ws

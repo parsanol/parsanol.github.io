@@ -15,6 +15,7 @@ const props = defineProps<{
 const ready = ref(false)
 const failed = ref('')
 const entry = ref('')
+const edition = ref('')
 const input = ref(props.presetInput || '')
 const tree = ref('')
 const elapsed = ref(0)
@@ -73,6 +74,7 @@ onMounted(async () => {
     await initWasm()
     artifact = new PargArtifactJs(props.artifactRaw)
     const envelope = JSON.parse(props.artifactRaw)
+    edition.value = envelope.edition ?? 'v1'
     entry.value = envelope.default_entry || Object.keys(envelope.entries || {})[0] || 'main'
     input.value = sampleInput(envelope)
     await parse()
@@ -91,7 +93,7 @@ onMounted(async () => {
   <div class="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden mb-8">
     <div class="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <span class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-        Try it live · parsed in your browser by the wasm engine
+        Try it live<span v-if="edition"> · {{ edition }} edition</span> · parsed in your browser by the wasm engine
       </span>
       <a
         v-if="playgroundHref"

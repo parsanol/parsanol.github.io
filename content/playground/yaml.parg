@@ -2,7 +2,7 @@
 ## scalars and block sequences. The indentation-sensitive corners of
 ## real YAML are out of scope — this is the shape configuration files
 ## actually use.
-grammar YamlSubset version "1.0.0" {
+grammar YamlSubset version "1.0.0" edition "v2" {
   nl = %x0A
   ws = %x20
   pq = *ws

@@ -2,7 +2,7 @@
 ## atom alternation is ordered number / string / symbol — same-length
 ## shapes, so the order only expresses intent, and the recursion stays
 ## sexp -> list -> sexp.
-grammar MiniLisp version "1.0.0" mode "v1" {
+grammar MiniLisp version "1.0.0" edition "v1" {
   ws = %x20 / %x09 / %x0A
   pq = *ws
   digit = %x30-39

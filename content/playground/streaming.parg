@@ -1,7 +1,7 @@
 ## Streaming: line-oriented records — the shape a chunked reader
 ## replays record-at-a-time without holding the file. Each record is
 ## a timestamped event; the grammar never needs more than one line.
-grammar StreamedLog version "1.0.0" {
+grammar StreamedLog version "1.0.0" edition "v2" {
   nl = %x0A
   ws = %x20 / %x09
   pq = *ws

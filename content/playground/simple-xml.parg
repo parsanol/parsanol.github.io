@@ -1,7 +1,7 @@
 ## Simplified XML: nested elements with attributes and text. The shape
 ## guarantees well-formedness (every open has a close); matching tag
 ## NAMES are a semantic check the AST layer adds.
-grammar SimpleXml version "1.0.0" mode "v1" {
+grammar SimpleXml version "1.0.0" edition "v1" {
   ws = %x20 / %x09 / %x0A
   pq = *ws
   nchar = %x41-5A / %x61-7A / %x30-39 / %x5F / %x2D

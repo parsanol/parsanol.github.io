@@ -1,7 +1,7 @@
 ## Balanced parentheses: the classic context-free language. The nested
 ## form is `("(" nested ")")` — repetition with an inner recursion, no
 ## left recursion, no counting.
-grammar Balanced version "1.0.0" mode "v1" {
+grammar Balanced version "1.0.0" edition "v1" {
   ## nested = one unit or a sequence of units, inside optional parens.
   unit = ( "(" nested ")" ) as group
   nested = *( unit )

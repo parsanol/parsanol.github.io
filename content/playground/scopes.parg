@@ -1,7 +1,7 @@
 ## Scopes: block structure isolates captures — a binding made inside a
 ## block is visible while the block parses and gone when it exits, so
 ## outer captures never see inner iteration noise.
-grammar Scopes version "1.0.0" {
+grammar Scopes version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   nl = %x0A
   pq = *ws

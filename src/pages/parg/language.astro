@@ -8,6 +8,12 @@ const skeleton = `grammar Demo version "1.0.0" {
   number = 1*digit
 }
 
+# opt in to the v2 tree edition (v1 is the default)
+grammar Named version "1.0.0" edition "v2" {
+  digit = %x30-39
+  number = 1*digit
+}
+
 entry identifier: number`
 
 const terminals = `"abc"      exact literal (case-sensitive)
@@ -114,12 +120,26 @@ preprocess stage_code {
 
 stage_abbr = alt from_table "stages" column "abbr"`
 
+const editionHeaders = `grammar Demo version "1.0.0" { ... }                # v1 — the default
+grammar Demo version "1.0.0" edition "v2" { ... }  # v2 — opt-in`
+
+const editionGrammar = `grammar Pair version "1.0.0" {
+  root = k sep
+  k = 1*( %x61-7A ) as k
+  sep = ","
+  entry main: root
+}`
+
+const editionTrees = `v1  { k: "abc" }
+v2  { k: "abc", sep: "," }`
+
 const sections = [
   { id: 'skeleton', label: 'Grammar skeleton' },
   { id: 'brace-form', label: 'Brace form & core rules' },
   { id: 'terminals', label: 'Terminals' },
   { id: 'operators', label: 'Operators' },
   { id: 'captures', label: 'Captures' },
+  { id: 'editions', label: 'Editions: v1 and v2' },
   { id: 'behind-guards', label: 'Behind-guards' },
   { id: 'classes', label: 'Character classes' },
   { id: 'skip', label: 'Skip & trivia' },
@@ -160,7 +180,7 @@ const sections = [
       <ul>
         <li><code>#</code> starts a comment to end of line; <code>##</code> is a <strong>doc comment</strong> that attaches to the following rule and ships in the artifact (LSP hovers). One rule per line (newlines are significant) — except in brace bodies, where newlines are whitespace.</li>
         <li>A case-insensitive literal (<code>%i"iso"</code>) captures the <strong>raw input form</strong>: <code>IEEE 42</code> captures <code>"IEEE"</code>, not <code>"ieee"</code>.</li>
-        <li><code>grammar NAME version "X.Y.Z" {"{"}</code> wraps the rules; <code>entry NAME: rule</code> declares an artifact entry point — multiple entries share one rule set.</li>
+        <li><code>grammar NAME version "X.Y.Z" {"{"}</code> wraps the rules — an optional <code>edition "v2"</code> goes before the brace (v1 is the default); <code>entry NAME: rule</code> declares an artifact entry point — multiple entries share one rule set.</li>
         <li>Keywords (<code>grammar version as bindings preprocess entry table_lookup from_table column</code>) cannot name or reference rules.</li>
       </ul>
 
@@ -184,6 +204,63 @@ const sections = [
         2.0.0. The stable idiom: capture every structural rule so each iteration yields one
         hash. The normative laws are V0–V4 in the semantics document.
       </p>
+
+      <h2 id="editions">Editions: v1 and v2</h2>
+      <p>
+        The grammar header declares an <strong>edition</strong> — the shape of the tree the
+        compiler bakes into the artifact. <code>v1</code> is the default, deliberately:
+        existing grammars keep their capture trees. <code>v2</code> is opt-in.
+      </p>
+      <pre class="text-sm"><code>{editionHeaders}</code></pre>
+      <p>
+        Writing <code>edition "v1"</code> explicitly is equivalent to omitting it. The
+        deprecated <code>mode</code> header — <code>mode</code> plus a quoted
+        <code>v1</code> or <code>v2</code> — is the older spelling of the same axis. It
+        still compiles and is canonicalized to <code>edition</code> in the artifact — write
+        <code>edition</code> in all new grammars.
+      </p>
+      <p>
+        v2 is a <strong>tree-shape edition, not a syntax edition</strong>: the grammar text
+        is the same apart from the header. At compile time, every rule reference that
+        produces no capture is wrapped in <code>Named(rule_name)</code>, so consumers read a
+        fully named tree. Rules that can only match whitespace — literal-only bodies whose
+        literals all strip to empty ("glue") — are exempt and stay unnamed.
+      </p>
+      <p>With this grammar and the input <code>abc,</code>:</p>
+      <pre class="text-sm"><code>{editionGrammar}</code></pre>
+      <pre class="text-sm"><code>{editionTrees}</code></pre>
+      <p>
+        <code>k</code> was already captured by <code>as k</code>; v2 adds the
+        <code>sep</code> leaf that v1 drops because the reference produced no capture. The
+        CLI prints the same leaves with their source offsets (<code>"abc"@0</code>).
+        Because the trees differ, artifacts and checksums differ too: a grammar that moves
+        to v2 must be recompiled and redistributed — changing the header alone does not
+        change an existing artifact.
+      </p>
+      <p>
+        The compiled envelope carries <code>"edition": "v1" | "v2"</code>. An unknown
+        edition is rejected rather than parsed with the wrong tree shape: the compiler
+        rejects it in the grammar header (parsanol-ruby 1.3.112), and the loaders reject it
+        in an artifact (parsanol-ruby 1.3.112 and parsanol-rs 0.19.7).
+      </p>
+      <p>
+        To see what v2 would name in an existing v1 grammar, run the migration radar with
+        the flag after the file:
+      </p>
+      <pre class="text-sm"><code>bundle exec parsanol parg lint grammars/&lt;flavor&gt;.parg --captures</code></pre>
+      <p>
+        It prints one <code>captures:</code> line per reference v2 would wrap, e.g.
+        <code>rule root: reference to sep produces no capture -- modern mode would name it sep</code>.
+      </p>
+      <div class="not-prose bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-5 my-6">
+        <p class="text-amber-900 dark:text-amber-100 font-medium mb-1">Open interaction — text captures over lexical rules</p>
+        <p class="text-sm text-amber-800 dark:text-amber-200">
+          Under v2, a text capture over a rule assembled from lexical references — for
+          example, digits built from a digit rule — arrives as an array of named leaves
+          rather than a string. The language decision is under owner review; no
+          reconstruction recipe is documented here.
+        </p>
+      </div>
 
       <h2 id="behind-guards">Behind-guards</h2>
       <pre class="text-sm"><code>{behindExample}</code></pre>

@@ -1,7 +1,7 @@
 ## Rich error positions: when a nested structure fails, the failure
 ## wire carries offset/line/column and the expected-set — the raw
 ## material for "expected `}` at 3:14, inside `body`" messages.
-grammar NestedDoc version "1.0.0" {
+grammar NestedDoc version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   nl = %x0A
   pq = *ws

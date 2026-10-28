@@ -112,6 +112,11 @@ const features = [
     body: 'alt from_table builds literal alternatives from a table at compile time; table_lookup preprocesses bound values; bindings map captures to typed model fields.',
     anchor: '/parg/language#bindings',
   },
+  {
+    title: 'Two tree editions',
+    body: 'Edition v1 is the default capture tree. Edition v2 names every non-capturing rule reference, so consumers read a fully named tree — same grammar text apart from the header, different artifacts, checksums, and trees.',
+    anchor: '/parg/language#editions',
+  },
 ]
 ---
 <Layout
@@ -208,6 +213,7 @@ const features = [
         <li><strong>Self-containment</strong> — the original .parg text rides inside, so a runtime can rebuild atoms without the source file.</li>
         <li><strong>Behavior pinned</strong> — the in-file tests travel with the artifact; consumers replay them (this site's playground badge does exactly that).</li>
         <li><strong>Versioned</strong> — capture renames are major, new alternatives minor, literal fixes patch; model-side-only changes move a separate <code>binding_version</code>.</li>
+        <li><strong>Editioned</strong> — the envelope declares <code>edition</code> (<code>v1</code> or <code>v2</code>); the Ruby and Rust loaders validate it and reject an unknown edition rather than parsing it with the wrong tree shape.</li>
       </ul>
 
       <h2>What the language has</h2>

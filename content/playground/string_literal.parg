@@ -1,7 +1,7 @@
 ## String literals: double-quoted with backslash escapes. The plain
 ## body excludes quote and backslash; the escapes cover the classic
 ## five (\" \\ \n \t \r). Demonstrates alternation of escapes.
-grammar StringLit version "1.0.0" mode "v1" {
+grammar StringLit version "1.0.0" edition "v1" {
   dquote = %x22
   bslash = %x5C
   ## \" \\ \n \t \r

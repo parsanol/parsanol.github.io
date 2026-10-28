@@ -1,7 +1,7 @@
 ## Inline markup: bold, italic and code inside plain text. The
 ## alternation orders the longer delimiters first (** before *), and
 ## code's body excludes backticks — so the spans split deterministically.
-grammar Markup version "1.0.0" {
+grammar Markup version "1.0.0" edition "v2" {
   nl = %x0A
   ## printable minus the three delimiters, per position.
   tchar = %x01-09 / %x0B-2A / %x2C-5E / %x60-10FFFF

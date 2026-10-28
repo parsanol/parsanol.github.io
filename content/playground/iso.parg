@@ -1,4 +1,4 @@
-grammar PlayIso version "1.0.0" mode "v1" {
+grammar PlayIso version "1.0.0" edition "v1" {
   ## An ISO/IEC identifier: publisher, space, number.
   publisher = %i"iso" / %i"ieee" / %i"iec"
   main = publisher " " ( 1*%x30-39 ) as number
