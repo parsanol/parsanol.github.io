@@ -9,6 +9,7 @@ on:
       - 'scripts/**'
       - 'content/**'
       - 'package.json'
+      - '.github/workflows/**'
 
 permissions:
   contents: read
