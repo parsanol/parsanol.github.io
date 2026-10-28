@@ -2,7 +2,7 @@
 ## dotted labels with a 2-6 letter TLD in the domain. Label edge
 ## hyphens are tolerated here (real registries reject them; the demo
 ## keeps the shape simple).
-grammar Email version "1.0.0" mode "v1" {
+grammar Email version "1.0.0" edition "v1" {
   alpha = %x41-5A / %x61-7A
   digit = %x30-39
   ## atext without the dot (dots separate atoms).

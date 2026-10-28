@@ -1,6 +1,6 @@
 ## The capture DSL: `as` binds a name at each level, and the bound
 ## hash is the parse output. One line, three bindings.
-grammar CaptureDsl version "1.0.0" {
+grammar CaptureDsl version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   pq = *ws
   key = 1*( %x41-5A / %x61-7A ) as k

@@ -2,7 +2,7 @@
 ## expression (<%=), code (<%), and comment (<%#) forms. The pragmatic
 ## subset keeps % out of code bodies (a literal % needs the tag's
 ## closing to be visible).
-grammar Erb version "1.0.0" mode "v1" {
+grammar Erb version "1.0.0" edition "v1" {
   ## anything but "<": a text run.
   tchar = %x01-3B / %x3D-10FFFF
   text = 1*tchar

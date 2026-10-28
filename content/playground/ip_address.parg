@@ -1,7 +1,7 @@
 ## IPv4 addresses: dotted quads with RFC 5234 dec-octet bounds — each
 ## part is 0-255 by SHAPE, not value: single digit, 1-99, 100-199,
 ## 200-249, 250-255. Demonstrates layered character classes.
-grammar IpAddress version "1.0.0" mode "v1" {
+grammar IpAddress version "1.0.0" edition "v1" {
   digit = %x30-39
   ## 0-9 / 10-99 / 100-199 / 200-249 / 250-255 — longest shape first:
   ## the engine's memo does not re-invest a committed alternative into

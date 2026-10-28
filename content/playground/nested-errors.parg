@@ -1,7 +1,7 @@
 ## All the failure paths: the tree reporter keeps every branch's
 ## failure, so a rejected input shows WHERE each alternative died —
 ## the whole forest, not just the deepest tree.
-grammar NestedErrors version "1.0.0" {
+grammar NestedErrors version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   nl = %x0A
   pq = *ws

@@ -1,7 +1,7 @@
 ## The vehicle for custom atoms: the host plugs validation semantics
 ## into named positions. The artifact demo carries the plain shape —
 ## a tag list the host would decorate.
-grammar CustomAtoms version "1.0.0" {
+grammar CustomAtoms version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   pq = *ws
   tag = 1*( %x41-5A / %x61-7A / %x2D ) as tag

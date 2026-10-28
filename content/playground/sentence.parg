@@ -1,6 +1,6 @@
 ## Sentences: capitalized words separated by spaces, ending in a
 ## period. Demonstrates word repetition with whitespace threading.
-grammar Sentence version "1.0.0" mode "v1" {
+grammar Sentence version "1.0.0" edition "v1" {
   ws = 1*( %x20 )
   alpha = %x41-5A / %x61-7A
   word = 1*alpha

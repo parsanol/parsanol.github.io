@@ -1,7 +1,7 @@
 ## The vehicle for dynamic atoms: the parse is context-sensitive in
 ## the host engine (callbacks see captured state); the artifact demo
 ## carries the plain shape — a header that the host validates.
-grammar Dynamic version "1.0.0" {
+grammar Dynamic version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   pq = *ws
   nl = %x0A

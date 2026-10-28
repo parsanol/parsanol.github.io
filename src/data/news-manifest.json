@@ -1537,5 +1537,55 @@
         "text": "gem 'parsanol', '~> 1.0'"
       }
     ]
+  },
+  {
+    "id": "parg-editions",
+    "date": "2026-10-28T00:00:00Z",
+    "title": "PARG tree editions: v1 is the default, v2 opts in",
+    "summary": "PARG grammars can declare `edition \"v2\"` for fully named parse trees. Edition v1 remains the default; the compiler and loaders validate one edition axis.",
+    "tags": [
+      "parg",
+      "editions",
+      "ruby",
+      "rust",
+      "wasm"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "A PARG grammar header can now declare an **edition** — the shape of the tree the compiler bakes into the artifact. `v1` is the default, deliberately: existing grammars keep their capture trees. `v2` is opt-in."
+      },
+      {
+        "type": "code",
+        "language": "parg",
+        "text": "grammar Demo version \"1.0.0\" { ... }                # v1 — the default\ngrammar Demo version \"1.0.0\" edition \"v2\" { ... }  # v2 — opt-in"
+      },
+      {
+        "type": "paragraph",
+        "text": "`edition` is the canonical spelling; the deprecated `mode` header (a quoted `v1` or `v2` value) remains an alias that canonicalizes to `edition` in the artifact. v2 is a **tree-shape edition, not a syntax edition**: the grammar text is unchanged apart from the header. The compiler wraps every rule reference that produces no capture in `Named(rule_name)`, so consumers read a fully named tree; rules that can only match whitespace (\"glue\") stay unnamed."
+      },
+      {
+        "type": "paragraph",
+        "text": "With a literal separator, the same grammar yields `{ k: \"abc\" }` under v1 and `{ k: \"abc\", sep: \",\" }` under v2. Artifacts, checksums, and trees differ, so moving to v2 requires recompiling and redistributing the artifact."
+      },
+      {
+        "type": "paragraph",
+        "text": "The envelope carries `\"edition\": \"v1\" | \"v2\"`. An unknown edition is rejected instead of parsed with the wrong tree shape: parsanol-ruby 1.3.112 rejects it at compile time and at load, and parsanol-rs 0.19.7 rejects it at load. `parsanol` 1.3.112 or newer is required for `edition` headers."
+      },
+      {
+        "type": "paragraph",
+        "text": "To see what v2 would name in an existing v1 grammar, run the migration radar with the flag after the file:"
+      },
+      {
+        "type": "code",
+        "language": "shell",
+        "text": "bundle exec parsanol parg lint grammars/<flavor>.parg --captures"
+      },
+      {
+        "type": "paragraph",
+        "text": "One open interaction is under review: under v2, a text capture over a rule assembled from lexical references (for example, digits built from a digit rule) arrives as an array of named leaves rather than a string. No reconstruction recipe is documented while the language decision is open."
+      }
+    ]
   }
 ]

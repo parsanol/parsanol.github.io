@@ -4,7 +4,7 @@
 ## carries the composed grammar.
 use words
 
-grammar Modular version "1.0.0" {
+grammar Modular version "1.0.0" edition "v2" {
   ## Qualified reference into the module (the #208 surface).
   pair = words.pair as assignment
   entry main: pair

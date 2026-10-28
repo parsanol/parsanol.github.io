@@ -1,7 +1,7 @@
 ## Capture atoms: `as` names attach to any expression, like named
 ## regex groups. The tree keeps what you named — the log line below
 ## exposes level, module and message without any transform code.
-grammar Captures version "1.0.0" {
+grammar Captures version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   pq = *ws
   nl = %x0A

@@ -1,7 +1,7 @@
 ## Transform fuel: season names with their months, shaped so a tree
 ## transform has real structure to walk — a season captures its name
 ## and each month capture sits inside it.
-grammar Seasons version "1.0.0" {
+grammar Seasons version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   pq = *ws
   nl = %x0A

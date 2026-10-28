@@ -1,7 +1,7 @@
 ## Markdown, the document subset: ATX headers, bullet lists, fenced
 ## code blocks and paragraphs. Line-oriented blocks; the inline-level
 ## subset lives in the markup example.
-grammar Markdown version "1.0.0" {
+grammar Markdown version "1.0.0" edition "v2" {
   nl = %x0A
   ws = %x20
   pq = *ws

@@ -1,7 +1,7 @@
 ## Rational-friendly arithmetic: integer division that stays exact and
 ## the operator soup around it. The tree keeps the operator captures
 ## so the evaluator can pick per-operator semantics.
-grammar Mathn version "1.0.0" {
+grammar Mathn version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   pq = *ws
   digit = %x30-39

@@ -1,7 +1,7 @@
 ## The deepest failure wins: among all the branches that died, the
 ## reporter surfaces the one that got FURTHEST — "you were 3 lines in
 ## and missing one `=`", not "line 1 looked wrong".
-grammar DeepestErrors version "1.0.0" {
+grammar DeepestErrors version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   nl = %x0A
   pq = *ws

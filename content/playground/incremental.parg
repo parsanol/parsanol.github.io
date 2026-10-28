@@ -2,7 +2,7 @@
 ## re-parses region-by-region after an edit. Sections are
 ## self-delimiting, so a change inside one never invalidates the
 ## parse of its siblings.
-grammar Sectioned version "1.0.0" {
+grammar Sectioned version "1.0.0" edition "v2" {
   nl = %x0A
   ws = %x20 / %x09
   pq = *ws

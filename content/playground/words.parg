@@ -1,6 +1,6 @@
 ## The shared lexical module the modularity example `use`s: words and
 ## whitespace primitives, stated once.
-grammar Words version "1.0.0" {
+grammar Words version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   pq = *ws
   word = 1*( %x41-5A / %x61-7A / %x30-39 / %x5F ) as word

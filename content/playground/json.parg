@@ -1,4 +1,4 @@
-grammar BenchJson version "1.0.0" mode "v1" {
+grammar BenchJson version "1.0.0" edition "v1" {
   ## JSON (RFC 8259) for the SOTA benchmark suite: acceptance-only,
   ## no captures — the parse contract every harness shares.
   hexdig = ( %x30-39 / %x41-46 / %x61-66 )

@@ -2,7 +2,7 @@
 ## resync junk. The `resync` declaration owns the skip — the parser
 ## replays it deterministically instead of trial-scanning, so the
 ## spans of every discarded byte are exact.
-grammar RecoveryDemo version "1.0.0" {
+grammar RecoveryDemo version "1.0.0" edition "v2" {
   ws = %x20 / %x09
   pq = *ws
   nl = %x0A

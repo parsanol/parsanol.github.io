@@ -1,7 +1,7 @@
 ## URLs, the common shape: scheme://host[:port][/path][?query]. The
 ## classes keep each segment's terminators out of the next, so the
 ## segments split deterministically.
-grammar Url version "1.0.0" mode "v1" {
+grammar Url version "1.0.0" edition "v1" {
   alpha = %x41-5A / %x61-7A
   digit = %x30-39
   scheme = alpha *( alpha / digit / %x2B / %x2D / %x2E )

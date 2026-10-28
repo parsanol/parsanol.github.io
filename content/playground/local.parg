@@ -2,7 +2,7 @@
 ## the terminator stays OUT of the body's class, so the field ends
 ## exactly where the record does. Fields may contain pipes, colons,
 ## any punctuation: the shape never needs to count them.
-grammar LocalVars version "1.0.0" {
+grammar LocalVars version "1.0.0" edition "v2" {
   nl = %x0A
   ws = %x20 / %x09
   pq = *ws
