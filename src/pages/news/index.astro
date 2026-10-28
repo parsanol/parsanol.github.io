@@ -5,7 +5,10 @@ const sorted = news.slice().sort((a: any, b: any) => (a.date < b.date ? 1 : -1))
 ---
 <Layout title="News — Parsanol" description="Parsanol release notes and announcements: runtime releases, engine news, and PARG updates.">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h1 class="text-4xl font-bold mb-8">News</h1>
+    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">News</h1>
+    <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+      Release notes and announcements across the runtimes.
+    </p>
     <div class="space-y-3">
       {sorted.map((p: any) => (
         <a href={`/news/${p.id}`} class="card block hover:border-primary-400 transition">

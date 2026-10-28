@@ -27,6 +27,10 @@ const jsonLd = {
 ---
 <Layout title={`${post.title} — Parsanol`} description={post.summary}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <a href="/news" class="text-primary-600 dark:text-primary-400 hover:text-primary-700 text-sm inline-flex items-center gap-1 mb-6">
+      ← Back to News
+    </a>
+
     <article class="prose max-w-none">
       <time class="text-sm text-gray-500 mb-2" datetime={post.date}>{post.date?.slice(0, 10)}</time>
       <h1>{post.title}</h1>

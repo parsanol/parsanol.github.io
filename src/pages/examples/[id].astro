@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro'
 import CodeBlock from '../../components/atoms/CodeBlock.astro'
+import Badge from '../../components/atoms/Badge.astro'
 import TryItLive from '../../islands/TryItLive.vue'
 
 // The shipped playground artifacts, keyed by grammar name. An example
@@ -55,12 +56,12 @@ const artifactRaw = artifactsByName[exampleId] || null
 const demoIds = new Set(['balanced-parens', 'calculator', 'csv', 'json', 'iso', 'recovery'])
 const demoId = demoIds.has(exampleId) ? exampleId : undefined
 
-const difficultyColors: Record<string, string> = {
-  beginner: 'bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300',
-  intermediate: 'bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300',
-  advanced: 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300',
+const difficultyVariants: Record<string, 'green' | 'yellow' | 'red'> = {
+  beginner: 'green',
+  intermediate: 'yellow',
+  advanced: 'red',
 }
-const difficultyColor = difficultyColors[difficulty] || difficultyColors.intermediate
+const difficultyVariant = difficultyVariants[difficulty] ?? 'yellow'
 ---
 
 <Layout title={`${title} — Parsanol`} description={description}>
@@ -72,15 +73,15 @@ const difficultyColor = difficultyColors[difficulty] || difficultyColors.interme
     <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">{title}</h1>
 
     <div class="flex flex-wrap gap-2 mb-8">
-      {hasRust && <span class="px-3 py-1 text-sm font-medium rounded-full bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300">Rust</span>}
+      {hasRust && <Badge variant="rust">Rust</Badge>}
       {' '}
-      {hasRuby && <span class="px-3 py-1 text-sm font-medium rounded-full bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300">Ruby</span>}
+      {hasRuby && <Badge variant="ruby">Ruby</Badge>}
       {' '}
-      <span class="px-3 py-1 text-sm font-medium rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 capitalize">{category.replace(/-/g, ' ')}</span>
+      <Badge variant="neutral"><span class="capitalize">{category.replace(/-/g, ' ')}</span></Badge>
       {' '}
-      <span class={`px-3 py-1 text-sm font-medium rounded-full ${difficultyColor}`}>{difficulty}</span>
+      <Badge variant={difficultyVariant}>{difficulty}</Badge>
       {' '}
-      {parsletCompatible && <span class="px-3 py-1 text-sm font-medium rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300">Parslet-compatible</span>}
+      {parsletCompatible && <Badge variant="purple">Parslet-compatible</Badge>}
     </div>
 
     <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-3xl">{description}</p>
