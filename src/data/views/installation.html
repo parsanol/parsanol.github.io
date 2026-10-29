@@ -1,8 +1,17 @@
 
         <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Installation</h1>
         <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">
-          Add Parsanol to your Rust or Ruby project in minutes.
+          Add Parsanol to your Rust, Ruby, Python, TypeScript, or WASM project in minutes.
         </p>
+        <div class="mb-10 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
+          <p class="text-sm text-emerald-900 dark:text-emerald-100">
+            <strong>Release policy:</strong> every engine update releases <strong>all runtimes
+            together</strong> — rs (crates.io + <code>@parsanol/wasm</code> + release binaries),
+            ruby (RubyGems), python (PyPI), and typescript (npm). The runtimes are one product:
+            when a grammar-language feature lands (editions, <code>glue</code>, brace bodies), it
+            reaches every runtime in the same release train, so identical trees hold everywhere.
+          </p>
+        </div>
 
         <!-- Rust Installation -->
         <section class="mb-16">
