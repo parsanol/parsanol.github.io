@@ -238,10 +238,12 @@ const sections = [
         change an existing artifact.
       </p>
       <p>
-        The compiled envelope carries <code>"edition": "v1" | "v2"</code>. An unknown
-        edition is rejected rather than parsed with the wrong tree shape: the compiler
-        rejects it in the grammar header (parsanol-ruby 1.3.112), and the loaders reject it
-        in an artifact (parsanol-ruby 1.3.112 and parsanol-rs 0.19.7).
+        The compiled envelope carries <code>"edition": 1 | 2</code> — parsanol 1.3.113
+        switched the field to integers. The loaders also read the earlier quoted spellings
+        (<code>"v1"</code>, <code>"v2"</code>, <code>"classic"</code>), and an artifact
+        without the field parses as edition 1. An unknown edition is rejected rather than
+        parsed with the wrong tree shape: the compiler rejects it in the grammar header, and
+        the loaders reject it in an artifact (parsanol-ruby 1.3.115, parsanol-rs 0.19.12).
       </p>
       <p>
         To see what v2 would name in an existing v1 grammar, run the migration radar with

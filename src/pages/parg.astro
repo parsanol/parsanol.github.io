@@ -213,7 +213,7 @@ const features = [
         <li><strong>Self-containment</strong> — the original .parg text rides inside, so a runtime can rebuild atoms without the source file.</li>
         <li><strong>Behavior pinned</strong> — the in-file tests travel with the artifact; consumers replay them (this site's playground badge does exactly that).</li>
         <li><strong>Versioned</strong> — capture renames are major, new alternatives minor, literal fixes patch; model-side-only changes move a separate <code>binding_version</code>.</li>
-        <li><strong>Editioned</strong> — the envelope declares <code>edition</code> (<code>v1</code> or <code>v2</code>); the Ruby and Rust loaders validate it and reject an unknown edition rather than parsing it with the wrong tree shape.</li>
+        <li><strong>Editioned</strong> — the envelope declares <code>edition</code> (<code>1</code> or <code>2</code>); the Ruby and Rust loaders validate it — earlier quoted spellings still load — and reject an unknown edition rather than parsing it with the wrong tree shape.</li>
       </ul>
 
       <h2>What the language has</h2>

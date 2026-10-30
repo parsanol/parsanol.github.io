@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { decodeSharePayload as decodePayload, encodeSharePayload as encodePayload } from '../lib/share-payload'
+import { editionLabel } from '../lib/edition'
 import { EditorState } from '@codemirror/state'
 import { EditorView, basicSetup } from 'codemirror'
 import { json } from '@codemirror/lang-json'
@@ -517,7 +518,7 @@ onBeforeUnmount(() => {
         {{
           mode === 'author'
             ? 'compiles in your browser with the wasm compiler — diagnostics below, parse on the right'
-            : 'pick a compiled artifact and probe it — ' + (current.artifact.edition ?? 'v1') + ' edition'
+            : 'pick a compiled artifact and probe it — ' + editionLabel(current.artifact.edition) + ' edition'
         }}
       </span>
     </div>

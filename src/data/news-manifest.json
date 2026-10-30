@@ -1585,6 +1585,10 @@
       {
         "type": "paragraph",
         "text": "One open interaction is under review: under v2, a text capture over a rule assembled from lexical references (for example, digits built from a digit rule) arrives as an array of named leaves rather than a string. No reconstruction recipe is documented while the language decision is open."
+      },
+      {
+        "type": "paragraph",
+        "text": "**Update (2026-10-30):** parsanol 1.3.113 switched the envelope field to integers — `\"edition\": 1 | 2`. The loaders still read the earlier quoted spellings (`\"v1\"` / `\"v2\"`), and artifacts without the field parse as edition 1. The grammar header keeps `edition \"v2\"`."
       }
     ]
   }

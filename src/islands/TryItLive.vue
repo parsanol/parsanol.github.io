@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { encodeSharePayload } from '../lib/share-payload'
+import { editionLabel } from '../lib/edition'
 
 // The live Try-it-live block on an example page (site#36): the page
 // passes the artifact this example ships (checksum-verified on load)
@@ -74,7 +75,7 @@ onMounted(async () => {
     await initWasm()
     artifact = new PargArtifactJs(props.artifactRaw)
     const envelope = JSON.parse(props.artifactRaw)
-    edition.value = envelope.edition ?? 'v1'
+    edition.value = editionLabel(envelope.edition)
     entry.value = envelope.default_entry || Object.keys(envelope.entries || {})[0] || 'main'
     input.value = sampleInput(envelope)
     await parse()
