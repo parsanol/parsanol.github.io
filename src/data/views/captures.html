@@ -538,7 +538,7 @@ let all = result.captures(input);</pre>
           <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Tree shapes: v1 and v2 editions</h2>
           <p class="text-gray-600 dark:text-gray-400 mb-4">
             Compiled PARG artifacts declare an <strong>edition</strong> in their envelope —
-            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"edition": "v1" | "v2"</code>.
+            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"edition": 1 | 2</code>.
             Edition <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">v1</code>
             is the default: the tree keeps exactly the captures the grammar names. Edition
             <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">v2</code>
@@ -570,7 +570,10 @@ v2  { k: "abc", sep: "," }</pre>
             leaf that v1 drops because that reference produced no capture. Artifacts,
             checksums, and trees differ, so a grammar that moves to v2 must be recompiled.
             The envelope's edition is validated on load: an unknown value is rejected
-            instead of parsed with the wrong tree shape.
+            instead of parsed with the wrong tree shape. The earlier quoted spellings
+            (<code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"v1"</code> /
+            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"v2"</code>)
+            still load, and artifacts without the field read as edition 1.
           </p>
           <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
             <h3 class="font-medium text-amber-900 dark:text-amber-100 mb-2">Open interaction — text captures over lexical rules</h3>
