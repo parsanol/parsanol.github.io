@@ -1,0 +1,85 @@
+name: Re-bake playground artifacts
+
+# The deploy workflow installs the latest parsanol gem behind a byte-exact
+# freshness gate, so every gem release turns deploys red until someone
+# re-bakes. This workflow reacts to a failed deploy, re-bakes with the
+# latest gem, and opens (or refreshes) a PR with the diff — turning the
+# chore into a one-click merge. It is a no-op when the deploy failed for
+# any other reason: the diff check below bails out before opening anything.
+
+on:
+  workflow_run:
+    workflows: ['Deploy to GitHub Pages']
+    types:
+      - completed
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: rebake-playground-artifacts
+  cancel-in-progress: false
+
+jobs:
+  rebake:
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the commit that failed
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Ruby (playground artifact bake)
+        uses: ruby/setup-ruby@v1
+        with:
+          # The unicode_tables stamp (and so the checksum) rides the
+          # ruby patch — the bake must match the re-bake, everywhere.
+          ruby-version: '3.4.8'
+
+      - name: Install the parsanol gem
+        run: gem install parsanol
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Re-bake and open a PR when the bake differs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/bake-playground-artifacts.cjs
+
+          if git diff --quiet -- src/assets/playground; then
+            echo "bake is identical — the deploy failure was not artifact staleness; nothing to do"
+            exit 0
+          fi
+
+          VER=$(node -p "JSON.parse(require('fs').readFileSync('src/assets/playground/calculator.artifact.json','utf8')).compiler_version")
+          BRANCH=bot/rebake-playground-artifacts
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git ls-files -mo --exclude-standard -- src/assets/playground | xargs -r git add --
+          git diff --cached --quiet && { echo "nothing staged"; exit 0; }
+          git commit -m "Re-bake playground artifacts at parsanol ${VER}"
+          git push --force origin "$BRANCH"
+
+          printf '%s\n' \
+            "Automated re-bake: the deploy freshness gate failed because the committed playground artifacts were baked by an older parsanol than the latest release." \
+            "" \
+            "This PR re-bakes them with parsanol ${VER} (Ruby 3.4.8, the version the bake stamps). Review, then merge to turn deploys green." \
+            > pr-body.md
+
+          if gh pr list --head "$BRANCH" --state open --json number -q '.[0].number' | grep -q .; then
+            echo "re-bake PR already open — branch refreshed"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "Re-bake playground artifacts at parsanol ${VER}" \
+              --body-file pr-body.md
+          fi
