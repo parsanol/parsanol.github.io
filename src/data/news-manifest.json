@@ -2,8 +2,8 @@
   {
     "id": "parg-announcement",
     "date": "2026-10-23T12:00:00Z",
-    "title": "Announcing PARG — a language-independent grammar language with bindings on every runtime",
-    "summary": "PARG is parsanol's grammar language: write one text file, compile it once into a checksummed artifact, and bind its captures to typed model objects — with runtime and compiled object bindings on every runtime: Ruby, Rust, WebAssembly, and TypeScript.",
+    "title": "Announcing PARG \u2014 a language-independent grammar language with bindings on every runtime",
+    "summary": "PARG is parsanol's grammar language: write one text file, compile it once into a checksummed artifact, and bind its captures to typed model objects \u2014 with runtime and compiled object bindings on every runtime: Ruby, Rust, WebAssembly, and TypeScript.",
     "tags": [
       "parg",
       "announcement",
@@ -17,7 +17,7 @@
     "content": [
       {
         "type": "paragraph",
-        "text": "PARG is parsanol's grammar language, and it is now the recommended way to teach parsanol a new format. One `.parg` text file — rules in an ABNF-flavored style, entry points, bindings, and in-file tests — compiles **once** into a checksummed `parsanol-tree/v2` artifact that Ruby, Rust, WebAssembly, and TypeScript all load, verify, and parse **byte-identically**."
+        "text": "PARG is parsanol's grammar language, and it is now the recommended way to teach parsanol a new format. One `.parg` text file \u2014 rules in an ABNF-flavored style, entry points, bindings, and in-file tests \u2014 compiles **once** into a checksummed `parsanol-tree/v2` artifact that Ruby, Rust, WebAssembly, and TypeScript all load, verify, and parse **byte-identically**."
       },
       {
         "type": "heading",
@@ -31,7 +31,7 @@
       },
       {
         "type": "paragraph",
-        "text": "The compiler lints the grammar — shadowed alternatives and order-dependence are build failures, not runtime surprises — rewrites direct left recursion into left-folding precedence tiers, and runs every in-file test before anything ships. What ships is **data, not code**: a portable grammar envelope with a sha256 checksum over its canonicalized content, and the original source riding inside so any runtime can rebuild it."
+        "text": "The compiler lints the grammar \u2014 shadowed alternatives and order-dependence are build failures, not runtime surprises \u2014 rewrites direct left recursion into left-folding precedence tiers, and runs every in-file test before anything ships. What ships is **data, not code**: a portable grammar envelope with a sha256 checksum over its canonicalized content, and the original source riding inside so any runtime can rebuild it."
       },
       {
         "type": "heading",
@@ -49,7 +49,7 @@
       },
       {
         "type": "paragraph",
-        "text": "A capture declared with `as` maps to a model field — `string`, `integer`, `float`, or `boolean`, with cardinalities `1`, `0..1`, `1..*`, and `0..*` — plus declarative preprocess steps (`table_lookup`) and data-driven alternatives (`alt from_table`). The same artifact carries runtime and compiled object bindings on every surface parsanol runs on:"
+        "text": "A capture declared with `as` maps to a model field \u2014 `string`, `integer`, `float`, or `boolean`, with cardinalities `1`, `0..1`, `1..*`, and `0..*` \u2014 plus declarative preprocess steps (`table_lookup`) and data-driven alternatives (`alt from_table`). The same artifact carries runtime and compiled object bindings on every surface parsanol runs on:"
       },
       {
         "type": "table",
@@ -72,7 +72,7 @@
           [
             "WebAssembly",
             "`PargArtifactJs` (`@parsanol/wasm`)",
-            "The browser — this site's playground runs it"
+            "The browser \u2014 this site's playground runs it"
           ],
           [
             "TypeScript",
@@ -83,7 +83,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Every engine verifies the checksum, applies the same bindings, and returns the same tree — that identity is enforced by a 32-artifact conformance corpus and a nightly five-engine differential fuzz, not promised."
+        "text": "Every engine verifies the checksum, applies the same bindings, and returns the same tree \u2014 that identity is enforced by a 32-artifact conformance corpus and a nightly five-engine differential fuzz, not promised."
       },
       {
         "type": "heading",
@@ -93,12 +93,12 @@
       {
         "type": "list",
         "items": [
-          "**Skip and trivia injection** — whitespace and comments consumed by declaration, with `capture: comments` so captured trivia becomes data; `atomic` rules opt out for token-shaped bodies.",
-          "**Direct left recursion** — `expr = expr \"*\" expr / INT` is rewritten at compile time into left-folding precedence tiers, identical on every engine.",
-          "**Behind-guards** — `!<x` and `&<x` inspect the text behind the position without consuming, for intraword constraints like constrained emphasis.",
-          "**Declared recovery** — `resync` policies bake deterministic skip spans into the artifact, so a failed parse reports the deepest position, the partial tree, and the exact spans consumed to resume.",
-          "**In-file tests** — `accept` / `reject` / `capture` / `example` / `shape` assertions run at compile time and travel with the artifact, so every runtime replays the same expectations.",
-          "**Imports** — existing ABNF, EBNF, and pest grammars come in as PARG text through `Parsanol::PARG::Import`."
+          "**Skip and trivia injection** \u2014 whitespace and comments consumed by declaration, with `capture: comments` so captured trivia becomes data; `atomic` rules opt out for token-shaped bodies.",
+          "**Direct left recursion** \u2014 `expr = expr \"*\" expr / INT` is rewritten at compile time into left-folding precedence tiers, identical on every engine.",
+          "**Behind-guards** \u2014 `!<x` and `&<x` inspect the text behind the position without consuming, for intraword constraints like constrained emphasis.",
+          "**Declared recovery** \u2014 `resync` policies bake deterministic skip spans into the artifact, so a failed parse reports the deepest position, the partial tree, and the exact spans consumed to resume.",
+          "**In-file tests** \u2014 `accept` / `reject` / `capture` / `example` / `shape` assertions run at compile time and travel with the artifact, so every runtime replays the same expectations.",
+          "**Imports** \u2014 existing ABNF, EBNF, and pest grammars come in as PARG text through `Parsanol::PARG::Import`."
         ]
       },
       {
@@ -109,9 +109,9 @@
       {
         "type": "list",
         "items": [
-          "[What is PARG?](/parg) — the grammar language and the artifact guarantees.",
-          "[The language tour](/parg/language) — the whole syntax on one page, with examples.",
-          "[The playground](/playground) — parse with the shipped wasm binary in your browser, including the error-recovery grammar with a declared `resync` policy."
+          "[What is PARG?](/parg) \u2014 the grammar language and the artifact guarantees.",
+          "[The language tour](/parg/language) \u2014 the whole syntax on one page, with examples.",
+          "[The playground](/playground) \u2014 parse with the shipped wasm binary in your browser, including the error-recovery grammar with a declared `resync` policy."
         ]
       },
       {
@@ -124,7 +124,7 @@
     "id": "recovery-five-engines",
     "date": "2026-10-23T10:00:00Z",
     "title": "Error Recovery Everywhere, and a Fifth Engine to Keep It Honest",
-    "summary": "The recovery stack is complete on every runtime — deepest-failure diagnostics, partial trees, and declared resync spans with byte-identical offsets — verified daily by a five-engine differential fuzz that now includes a reference walker with every optimization switched off.",
+    "summary": "The recovery stack is complete on every runtime \u2014 deepest-failure diagnostics, partial trees, and declared resync spans with byte-identical offsets \u2014 verified daily by a five-engine differential fuzz that now includes a reference walker with every optimization switched off.",
     "tags": [
       "release",
       "ruby",
@@ -137,14 +137,14 @@
     "content": [
       {
         "type": "paragraph",
-        "text": "Parsanol's recovery stack is finished and shipped on **all five runtimes** — the Ruby interpreter and VM, the Rust packrat walker and its bytecode VM, the wasm build, and the TypeScript runtime:"
+        "text": "Parsanol's recovery stack is finished and shipped on **all five runtimes** \u2014 the Ruby interpreter and VM, the Rust packrat walker and its bytecode VM, the wasm build, and the TypeScript runtime:"
       },
       {
         "type": "list",
         "items": [
-          "**Deepest-failure diagnostics (F7)** — every failure reports the deepest real-content position with the expected set and ranked alternatives, not the outermost construct.",
-          "**Partial trees (R1.5)** — a failed parse still returns the deepest clean prefix, shaped exactly as the root rule would have shaped it.",
-          "**Declared resync (R2)** — `resync document = 1*( %x00-3A / %x3C-FF ) \";\"` bakes a deterministic skip policy into the artifact: at a failure point the engine consumes each pattern match as one annotated span (`offset → resumed_at`) and resumes parsing. No trial scanning, no heuristics — the author owns the spans, and every engine returns them byte-identically."
+          "**Deepest-failure diagnostics (F7)** \u2014 every failure reports the deepest real-content position with the expected set and ranked alternatives, not the outermost construct.",
+          "**Partial trees (R1.5)** \u2014 a failed parse still returns the deepest clean prefix, shaped exactly as the root rule would have shaped it.",
+          "**Declared resync (R2)** \u2014 `resync document = 1*( %x00-3A / %x3C-FF ) \";\"` bakes a deterministic skip policy into the artifact: at a failure point the engine consumes each pattern match as one annotated span (`offset \u2192 resumed_at`) and resumes parsing. No trial scanning, no heuristics \u2014 the author owns the spans, and every engine returns them byte-identically."
         ]
       },
       {
@@ -154,7 +154,7 @@
       },
       {
         "type": "paragraph",
-        "text": "The nightly differential fuzz grew a fifth path: a **reference walker** with every memo table, fused scan, and fast path switched off — the plain recursive relation the normative semantics document states, nothing more. The whole conformance corpus (32 artifacts, 125 cases) replays identically through it, and an archived one-shot validator — an independent implementation of the semantics written from the document — agrees on **304/304** cases. Two spec ambiguities that run surfaced were fixed in the document, not papered over."
+        "text": "The nightly differential fuzz grew a fifth path: a **reference walker** with every memo table, fused scan, and fast path switched off \u2014 the plain recursive relation the normative semantics document states, nothing more. The whole conformance corpus (32 artifacts, 125 cases) replays identically through it, and an archived one-shot validator \u2014 an independent implementation of the semantics written from the document \u2014 agrees on **304/304** cases. Two spec ambiguities that run surfaced were fixed in the document, not papered over."
       },
       {
         "type": "heading",
@@ -163,11 +163,11 @@
       },
       {
         "type": "paragraph",
-        "text": "The [playground](/playground) now ships an error-recovery grammar: break the input and the engine shows the strict failure, the partial tree, and the exact resync span side by side — produced by the same `@parsanol/wasm` binary the conformance suites validate."
+        "text": "The [playground](/playground) now ships an error-recovery grammar: break the input and the engine shows the strict failure, the partial tree, and the exact resync span side by side \u2014 produced by the same `@parsanol/wasm` binary the conformance suites validate."
       },
       {
         "type": "paragraph",
-        "text": "**Released:** parsanol-rs 0.18.18 (+ @parsanol/wasm 0.18.18), parsanol (TS) 0.10.13, parsanol-ruby 1.3.107 — all shipped, audited, and replay-verified across the corpus."
+        "text": "**Released:** parsanol-rs 0.18.18 (+ @parsanol/wasm 0.18.18), parsanol (TS) 0.10.13, parsanol-ruby 1.3.107 \u2014 all shipped, audited, and replay-verified across the corpus."
       }
     ]
   },
@@ -438,7 +438,7 @@
     "id": "ruby-1.3.52-cdylib-platform-gems",
     "date": "2026-09-23T10:00:00Z",
     "title": "1.3.52: A Vendored C Library in Every Platform Gem",
-    "summary": "Each prebuilt platform gem now carries its own pure-portable cdylib next to the extension — the ffi tier works everywhere from MRI fallback to TruffleRuby — while the source gem stays binary-free.",
+    "summary": "Each prebuilt platform gem now carries its own pure-portable cdylib next to the extension \u2014 the ffi tier works everywhere from MRI fallback to TruffleRuby \u2014 while the source gem stays binary-free.",
     "tags": [
       "release",
       "ruby",
@@ -457,14 +457,14 @@
       },
       {
         "type": "paragraph",
-        "text": "The cdylib speaks a plain C ABI with zero Ruby-version coupling — no magnus, no rb-sys. That makes it useful to runtimes that can't load C-API extensions:"
+        "text": "The cdylib speaks a plain C ABI with zero Ruby-version coupling \u2014 no magnus, no rb-sys. That makes it useful to runtimes that can't load C-API extensions:"
       },
       {
         "type": "list",
         "items": [
           "**TruffleRuby** resolves its host-triple platform gem and gets native parsing through the ffi tier",
           "**MRI** gets a resilience fallback: if the extension ever fails to load on an exotic libc, the ffi tier picks up the cdylib instead of dropping to pure Ruby",
-          "The **ruby source gem stays binary-free** — binaries live only in per-platform gems, never in git"
+          "The **ruby source gem stays binary-free** \u2014 binaries live only in per-platform gems, never in git"
         ]
       },
       {
@@ -483,22 +483,22 @@
           [
             "x86_64-linux / -musl, aarch64-linux / -musl",
             "glibc + Alpine, 64-bit",
-            "3.2–4.0"
+            "3.2\u20134.0"
           ],
           [
             "arm-linux / -musl",
             "32-bit armv7",
-            "3.2–4.0"
+            "3.2\u20134.0"
           ],
           [
             "arm64-darwin, x86_64-darwin",
             "macOS 11+",
-            "3.2–4.0"
+            "3.2\u20134.0"
           ],
           [
             "x64-mingw-ucrt, aarch64-mingw-ucrt",
             "Windows",
-            "3.2–4.0"
+            "3.2\u20134.0"
           ],
           [
             "x64-mingw32",
@@ -518,7 +518,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Also in this release: binary-safe `parsanol_c_parse_len` on the C ABI (interior NULs survive the boundary), and bounded caches — the compiled-program cache is an LRU, closing the unbounded memory growth reported on dynamic-fragment grammars."
+        "text": "Also in this release: binary-safe `parsanol_c_parse_len` on the C ABI (interior NULs survive the boundary), and bounded caches \u2014 the compiled-program cache is an LRU, closing the unbounded memory growth reported on dynamic-fragment grammars."
       }
     ]
   },
@@ -526,7 +526,7 @@
     "id": "tree-parity-canflatten",
     "date": "2026-09-21T10:00:00Z",
     "title": "Exact Tree Parity: CanFlatten, Dynamic Capture Writes, TreeDiff",
-    "summary": "Both engines now produce byte-identical parslet trees — the CanFlatten fold is ported exactly, dynamic blocks can read AND write captures across the FFI boundary, and TreeDiff.why explains any divergence in one call.",
+    "summary": "Both engines now produce byte-identical parslet trees \u2014 the CanFlatten fold is ported exactly, dynamic blocks can read AND write captures across the FFI boundary, and TreeDiff.why explains any divergence in one call.",
     "tags": [
       "release",
       "ruby",
@@ -537,7 +537,7 @@
     "content": [
       {
         "type": "paragraph",
-        "text": "Parsanol's compatibility bar moved from \"parslet-like\" to **exact**: the transformer is now a line-for-line port of Parslet's `CanFlatten` fold (merge_fold, flatten_repetition, named-empty-list semantics), and a differential suite pins Ruby vs Rust vs parslet on shared corpora — including the subtle bare-repeated-sibling-capture cases that historically lost data (#36, #83)."
+        "text": "Parsanol's compatibility bar moved from \"parslet-like\" to **exact**: the transformer is now a line-for-line port of Parslet's `CanFlatten` fold (merge_fold, flatten_repetition, named-empty-list semantics), and a differential suite pins Ruby vs Rust vs parslet on shared corpora \u2014 including the subtle bare-repeated-sibling-capture cases that historically lost data (#36, #83)."
       },
       {
         "type": "heading",
@@ -546,14 +546,14 @@
       },
       {
         "type": "paragraph",
-        "text": "Coradoc-style dispatch grammars — mutually recursive rules keyed on captures — now work natively end to end:"
+        "text": "Coradoc-style dispatch grammars \u2014 mutually recursive rules keyed on captures \u2014 now work natively end to end:"
       },
       {
         "type": "list",
         "items": [
           "blocks **read** `ctx.captures` (capture subtrees travel with the state, content-fingerprinted)",
           "blocks **write** `ctx.captures[:k] = v`, and writes propagate back into the enclosing capture scope with rollback on failed branches",
-          "deterministic blocks are pure cache functions of `(input, pos, captures)` — hits replay grammar and writes without re-entering the host"
+          "deterministic blocks are pure cache functions of `(input, pos, captures)` \u2014 hits replay grammar and writes without re-entering the host"
         ]
       },
       {
@@ -563,7 +563,7 @@
       },
       {
         "type": "paragraph",
-        "text": "`Parsanol::TreeDiff.why(a, b)` reports the first divergence with a path — the debugging tool we used to chase the remaining edge cases ourselves."
+        "text": "`Parsanol::TreeDiff.why(a, b)` reports the first divergence with a path \u2014 the debugging tool we used to chase the remaining edge cases ourselves."
       }
     ]
   },
@@ -571,7 +571,7 @@
     "id": "engine-modernization",
     "date": "2026-09-15T10:00:00Z",
     "title": "Engine Modernization: Bytecode VM, SIMD Scanning, Incremental Reparse",
-    "summary": "parsanol-rs 0.6–0.8 ships a bytecode VM with lead-byte dispatch and selective rule memoization, SIMD scan kernels, compiled-program artifact caching, and tree-sitter-style incremental parsing sessions.",
+    "summary": "parsanol-rs 0.6\u20130.8 ships a bytecode VM with lead-byte dispatch and selective rule memoization, SIMD scan kernels, compiled-program artifact caching, and tree-sitter-style incremental parsing sessions.",
     "tags": [
       "release",
       "rust",
@@ -581,7 +581,7 @@
     "content": [
       {
         "type": "paragraph",
-        "text": "The Rust engine grew three major subsystems across 0.6 → 0.8:"
+        "text": "The Rust engine grew three major subsystems across 0.6 \u2192 0.8:"
       },
       {
         "type": "heading",
@@ -596,7 +596,7 @@
         "type": "list",
         "items": [
           "**BYTE_DISPATCH**: alternatives with provably disjoint lead-byte sets compile to a single table jump (the KV benchmark parses 47.5 KB in ~3 ms)",
-          "**Selective rule memoization**: a CFG dataflow over the compiled program memoizes only rules that never cross host calls or capture writes — sound by construction, no memory tax on dynamic grammars",
+          "**Selective rule memoization**: a CFG dataflow over the compiled program memoizes only rules that never cross host calls or capture writes \u2014 sound by construction, no memory tax on dynamic grammars",
           "**Compile-once**: `Parser::with_program` plus an on-disk artifact cache (XDG, versioned format) amortizes compilation across processes"
         ]
       },
@@ -607,7 +607,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Identifier/delimiter classification runs 16/32-byte block membership kernels (NEON always; AVX2 behind runtime detection): ~6.2× on identifier runs, stable under load where scalar collapses."
+        "text": "Identifier/delimiter classification runs 16/32-byte block membership kernels (NEON always; AVX2 behind runtime detection): ~6.2\u00d7 on identifier runs, stable under load where scalar collapses."
       },
       {
         "type": "heading",
@@ -616,7 +616,7 @@
       },
       {
         "type": "paragraph",
-        "text": "`Parsanol::IncrementalSession` (and `mode: :incremental`) reparse only the dirty span: per-edit tree equality against full reparse is CI-gated, and measured keystroke latency on ~600 KB documents is ~1.5–1.7× better than reparse. Retention is sound across edits — failure entries are never retained, and pool-backed values are re-walked instead of adopted."
+        "text": "`Parsanol::IncrementalSession` (and `mode: :incremental`) reparse only the dirty span: per-edit tree equality against full reparse is CI-gated, and measured keystroke latency on ~600 KB documents is ~1.5\u20131.7\u00d7 better than reparse. Retention is sound across edits \u2014 failure entries are never retained, and pool-backed values are re-walked instead of adopted."
       }
     ]
   },
@@ -624,7 +624,7 @@
     "id": "ruby-1.3-native-first",
     "date": "2026-08-20T10:00:00Z",
     "title": "Parsanol 1.3: The Native-First Era",
-    "summary": "Native Rust parsing is now the default on every mode — cause-tree errors, prefix and reporter parsing, incremental sessions — with a pure-Ruby engine always underneath as the portable floor.",
+    "summary": "Native Rust parsing is now the default on every mode \u2014 cause-tree errors, prefix and reporter parsing, incremental sessions \u2014 with a pure-Ruby engine always underneath as the portable floor.",
     "tags": [
       "release",
       "ruby",
@@ -635,7 +635,7 @@
     "content": [
       {
         "type": "paragraph",
-        "text": "Parsanol 1.3 reorganized the gem around one principle: the Rust engine is the default, and every parsing mode runs natively — no silent re-entry into Ruby mid-parse."
+        "text": "Parsanol 1.3 reorganized the gem around one principle: the Rust engine is the default, and every parsing mode runs natively \u2014 no silent re-entry into Ruby mid-parse."
       },
       {
         "type": "heading",
@@ -679,7 +679,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Grammars that cannot be serialized to Rust (Cut, Infix, custom atoms) fail fast at registration with `Parsanol::Native::UnsupportedGrammar` and route to the Ruby engine — loudly, never silently diverging."
+        "text": "Grammars that cannot be serialized to Rust (Cut, Infix, custom atoms) fail fast at registration with `Parsanol::Native::UnsupportedGrammar` and route to the Ruby engine \u2014 loudly, never silently diverging."
       },
       {
         "type": "heading",
@@ -693,9 +693,9 @@
       {
         "type": "list",
         "items": [
-          "molecule grammar: native **10.7–12.2×** parslet, ruby **1.7–1.9×**",
-          "pubid-ISO corpus: native **6.9×** parslet",
-          "asciichem mixed valid/invalid: native **~2.9×** parslet after the native failure path landed"
+          "molecule grammar: native **10.7\u201312.2\u00d7** parslet, ruby **1.7\u20131.9\u00d7**",
+          "pubid-ISO corpus: native **6.9\u00d7** parslet",
+          "asciichem mixed valid/invalid: native **~2.9\u00d7** parslet after the native failure path landed"
         ]
       },
       {
@@ -705,7 +705,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Large-input memoization recycles packrat caches at capacity instead of freezing them (expressir's 605 KB giants: 99.8 → 11.5 ms/KB), and a bounded-RSS spec now guards release CI: dozens of distinct documents and repeated parses of one document must not grow RSS."
+        "text": "Large-input memoization recycles packrat caches at capacity instead of freezing them (expressir's 605 KB giants: 99.8 \u2192 11.5 ms/KB), and a bounded-RSS spec now guards release CI: dozens of distinct documents and repeated parses of one document must not grow RSS."
       }
     ]
   },
@@ -738,7 +738,7 @@
       {
         "type": "list",
         "items": [
-          "`parse_with_transform(g, i, cache)` → `parse(g, i, map)`",
+          "`parse_with_transform(g, i, cache)` \u2192 `parse(g, i, map)`",
           "raw atoms keep `parse_with_grammar(atom, i)`"
         ]
       },
@@ -749,7 +749,7 @@
       },
       {
         "type": "paragraph",
-        "text": "`Slice` carries `offset` and `content`; `line_and_column` is computed on demand and cached after first access — position info costs nothing unless you read it:"
+        "text": "`Slice` carries `offset` and `content`; `line_and_column` is computed on demand and cached after first access \u2014 position info costs nothing unless you read it:"
       },
       {
         "type": "code",
@@ -1554,12 +1554,12 @@
     "content": [
       {
         "type": "paragraph",
-        "text": "A PARG grammar header can now declare an **edition** — the shape of the tree the compiler bakes into the artifact. `v1` is the default, deliberately: existing grammars keep their capture trees. `v2` is opt-in."
+        "text": "A PARG grammar header can now declare an **edition** \u2014 the shape of the tree the compiler bakes into the artifact. `v1` is the default, deliberately: existing grammars keep their capture trees. `v2` is opt-in."
       },
       {
         "type": "code",
         "language": "parg",
-        "text": "grammar Demo version \"1.0.0\" { ... }                # v1 — the default\ngrammar Demo version \"1.0.0\" edition \"v2\" { ... }  # v2 — opt-in"
+        "text": "grammar Demo version \"1.0.0\" { ... }                # v1 \u2014 the default\ngrammar Demo version \"1.0.0\" edition \"v2\" { ... }  # v2 \u2014 opt-in"
       },
       {
         "type": "paragraph",
@@ -1588,7 +1588,7 @@
       },
       {
         "type": "paragraph",
-        "text": "**Update (2026-10-30):** parsanol 1.3.113 switched the envelope field to integers — `\"edition\": 1 | 2`. The loaders still read the earlier quoted spellings (`\"v1\"` / `\"v2\"`), and artifacts without the field parse as edition 1. The grammar header keeps `edition \"v2\"`."
+        "text": "**Update (2026-10-30):** parsanol 1.3.113 switched the envelope field to integers \u2014 `\"edition\": 1 | 2`. The loaders still read the earlier quoted spellings (`\"v1\"` / `\"v2\"`), and artifacts without the field parse as edition 1. The grammar header keeps `edition \"v2\"`."
       }
     ]
   },
@@ -1596,7 +1596,7 @@
     "id": "semantics-hash",
     "date": "2026-10-31T00:00:00Z",
     "title": "Artifacts now carry a semantics hash",
-    "summary": "Beside the producer-pinning checksum, PARG envelopes carry `semantics_hash` — stable across re-bakes by a newer compiler, so freshness gates compare behavior, not bytes.",
+    "summary": "Beside the producer-pinning checksum, PARG envelopes carry `semantics_hash` \u2014 stable across re-bakes by a newer compiler, so freshness gates compare behavior, not bytes.",
     "tags": [
       "parg",
       "artifacts",
@@ -1608,24 +1608,52 @@
     "content": [
       {
         "type": "paragraph",
-        "text": "The artifact checksum pins the **exact producer**: it covers the whole canonicalized envelope, `compiler_version` included — so every gem release legitimately re-bakes every artifact, and byte-exact freshness gates go red on compiler-only changes."
+        "text": "The artifact checksum pins the **exact producer**: it covers the whole canonicalized envelope, `compiler_version` included \u2014 so every gem release legitimately re-bakes every artifact, and byte-exact freshness gates go red on compiler-only changes."
       },
       {
         "type": "paragraph",
-        "text": "Since **parsanol 1.3.117** (ruby) and **0.19.14** (rs), the envelope also carries `semantics_hash`: a sha256 over everything **except** producer metadata — `checksum`, `compiler_version`, `unicode_tables`, and the field itself. Re-bake the same grammar with a newer compiler and the checksum moves while the semantics hash stays byte-identical."
+        "text": "Since **parsanol 1.3.117** (ruby) and **0.19.14** (rs), the envelope also carries `semantics_hash`: a sha256 over everything **except** producer metadata \u2014 `checksum`, `compiler_version`, `unicode_tables`, and the field itself. Re-bake the same grammar with a newer compiler and the checksum moves while the semantics hash stays byte-identical."
       },
       {
         "type": "code",
         "language": "ruby",
-        "text": "artifact = Parsanol::PARG::Artifact.load(\"demo.artifact.json\")\nartifact.semantics_hash  # => \"sha256:…\" (nil on pre-1.3.117 artifacts)"
+        "text": "artifact = Parsanol::PARG::Artifact.load(\"demo.artifact.json\")\nartifact.semantics_hash  # => \"sha256:\u2026\" (nil on pre-1.3.117 artifacts)"
       },
       {
         "type": "paragraph",
-        "text": "The loader reader is `nil` on artifacts baked before the field existed — nothing old stops loading. The wasm, Python, and TypeScript runtimes ride the same rs engine, so the field and the edition validation travel with them."
+        "text": "The loader reader is `nil` on artifacts baked before the field existed \u2014 nothing old stops loading. The wasm, Python, and TypeScript runtimes ride the same rs engine, so the field and the edition validation travel with them."
       },
       {
         "type": "paragraph",
         "text": "Guidance for consumers: gate on `semantics_hash` to answer *\"did the grammar's behavior change\"*, and keep the checksum for *\"is this exactly the artifact that producer baked\"*. This site's own playground freshness gate works that way since today."
+      }
+    ]
+  },
+  {
+    "id": "mode-removed",
+    "date": "2026-10-31T00:00:00Z",
+    "title": "The mode header keyword is removed",
+    "summary": "The pre-1.3.113 `mode` alias of `edition` now fails the parse with the fix named. Write `edition` in every grammar header.",
+    "tags": [
+      "parg",
+      "editions",
+      "ruby",
+      "rust"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "The grammar header takes **`edition`** \u2014 `edition \"v1\"` (the default, spellable explicitly) or `edition \"v2\"`. The older `mode` spelling of the same axis has been **removed**: parsanol 1.3.119 rejects it at parse time with the fix named, and every runtime rides the same engine."
+      },
+      {
+        "type": "code",
+        "language": "parg",
+        "text": "grammar Demo version \"1.0.0\" edition \"v2\" { ... }  # canonical\ngrammar Demo version \"1.0.0\" mode \"v2\" { ... }    # parse error \u2014 removed"
+      },
+      {
+        "type": "paragraph",
+        "text": "Artifacts are unaffected: the envelope has carried `edition` since 1.3.113, and the loaders still read artifacts baked before that consolidation. Migrating a grammar is one word: replace `mode` with `edition` in the header."
       }
     ]
   }
