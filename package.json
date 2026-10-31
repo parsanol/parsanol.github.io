@@ -14,7 +14,7 @@
     "@astrojs/sitemap": "^3.7.4",
     "@astrojs/vue": "^7.0.3",
     "@codemirror/lang-json": "^6.0.2",
-    "@parsanol/wasm": "^0.19.15",
+    "@parsanol/wasm": "^0.19.17",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.4",
     "codemirror": "^6.0.2",
