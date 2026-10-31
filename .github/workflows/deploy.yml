@@ -78,12 +78,7 @@ jobs:
         run: gem install parsanol
 
       - name: Bake playground artifacts (freshness gate)
-        run: |
-          node scripts/bake-playground-artifacts.cjs
-          git diff --exit-code -- src/assets/playground || {
-            echo "::error::playground artifacts are stale against content/playground — run scripts/bake-playground-artifacts.cjs and commit"
-            exit 1
-          }
+        run: node scripts/bake-playground-artifacts.cjs --check
 
       - name: Setup Node
         uses: actions/setup-node@v4
