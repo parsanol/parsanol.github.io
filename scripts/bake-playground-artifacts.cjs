@@ -50,6 +50,31 @@ for (const source of sources) {
     console.log(`${name}: fresh`)
     continue
   }
+  // Semantics first (parsanol-ruby#377): the checksum pins the exact
+  // producer, so a newer gem re-bakes every artifact byte-for-byte
+  // differently even when behavior is unchanged. The gate fails only on
+  // semantics drift; producer-only drift (bytes differ, semantics_hash
+  // equal) warns in --check and updates in bake mode, so deploys stay
+  // green across compiler-only releases.
+  const producerOnlyDrift = (() => {
+    try {
+      const a = JSON.parse(committed)
+      const b = JSON.parse(baked)
+      return a.semantics_hash != null && a.semantics_hash === b.semantics_hash
+    } catch {
+      return false
+    }
+  })()
+  if (producerOnlyDrift) {
+    if (checkOnly) {
+      console.log(`${name}: producer drift (semantics equal) — re-bake recommended`)
+      console.log(`::warning title=playground producer drift::${name}: semantics unchanged, envelope baked by an older parsanol — re-bake when convenient`)
+      continue
+    }
+    writeFileSync(artifactPath, baked)
+    console.log(`${name}: re-baked (producer drift, semantics unchanged)`)
+    continue
+  }
   if (checkOnly) {
     console.error(`${name}: artifact is stale against its source — run scripts/bake-playground-artifacts.cjs and commit`)
     failed = true
