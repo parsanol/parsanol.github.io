@@ -573,7 +573,11 @@ v2  { k: "abc", sep: "," }</pre>
             instead of parsed with the wrong tree shape. The earlier quoted spellings
             (<code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"v1"</code> /
             <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"v2"</code>)
-            still load, and artifacts without the field read as edition 1.
+            still load, and artifacts without the field read as edition 1. Since parsanol
+            1.3.117 the envelope also carries a
+            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">semantics_hash</code>
+            — stable across re-bakes by a newer compiler, so freshness gates can compare
+            behavior instead of bytes.
           </p>
           <div class="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
             <h3 class="font-medium text-amber-900 dark:text-amber-100 mb-2">Open interaction — text captures over lexical rules</h3>

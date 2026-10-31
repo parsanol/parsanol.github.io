@@ -1591,5 +1591,42 @@
         "text": "**Update (2026-10-30):** parsanol 1.3.113 switched the envelope field to integers — `\"edition\": 1 | 2`. The loaders still read the earlier quoted spellings (`\"v1\"` / `\"v2\"`), and artifacts without the field parse as edition 1. The grammar header keeps `edition \"v2\"`."
       }
     ]
+  },
+  {
+    "id": "semantics-hash",
+    "date": "2026-10-31T00:00:00Z",
+    "title": "Artifacts now carry a semantics hash",
+    "summary": "Beside the producer-pinning checksum, PARG envelopes carry `semantics_hash` — stable across re-bakes by a newer compiler, so freshness gates compare behavior, not bytes.",
+    "tags": [
+      "parg",
+      "artifacts",
+      "ruby",
+      "rust",
+      "wasm"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "The artifact checksum pins the **exact producer**: it covers the whole canonicalized envelope, `compiler_version` included — so every gem release legitimately re-bakes every artifact, and byte-exact freshness gates go red on compiler-only changes."
+      },
+      {
+        "type": "paragraph",
+        "text": "Since **parsanol 1.3.117** (ruby) and **0.19.14** (rs), the envelope also carries `semantics_hash`: a sha256 over everything **except** producer metadata — `checksum`, `compiler_version`, `unicode_tables`, and the field itself. Re-bake the same grammar with a newer compiler and the checksum moves while the semantics hash stays byte-identical."
+      },
+      {
+        "type": "code",
+        "language": "ruby",
+        "text": "artifact = Parsanol::PARG::Artifact.load(\"demo.artifact.json\")\nartifact.semantics_hash  # => \"sha256:…\" (nil on pre-1.3.117 artifacts)"
+      },
+      {
+        "type": "paragraph",
+        "text": "The loader reader is `nil` on artifacts baked before the field existed — nothing old stops loading. The wasm, Python, and TypeScript runtimes ride the same rs engine, so the field and the edition validation travel with them."
+      },
+      {
+        "type": "paragraph",
+        "text": "Guidance for consumers: gate on `semantics_hash` to answer *\"did the grammar's behavior change\"*, and keep the checksum for *\"is this exactly the artifact that producer baked\"*. This site's own playground freshness gate works that way since today."
+      }
+    ]
   }
 ]

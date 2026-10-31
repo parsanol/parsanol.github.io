@@ -244,6 +244,11 @@ const sections = [
         without the field parses as edition 1. An unknown edition is rejected rather than
         parsed with the wrong tree shape: the compiler rejects it in the grammar header, and
         the loaders reject it in an artifact (parsanol-ruby 1.3.115, parsanol-rs 0.19.12).
+        Since parsanol 1.3.117 the envelope also carries a
+        <code>semantics_hash</code> — computed over everything except producer metadata
+        (<code>checksum</code>, <code>compiler_version</code>, <code>unicode_tables</code>),
+        so it is stable across re-bakes by a newer compiler and gates can compare behavior
+        instead of bytes.
       </p>
       <p>
         To see what v2 would name in an existing v1 grammar, run the migration radar with
