@@ -1656,5 +1656,32 @@
         "text": "Artifacts are unaffected: the envelope has carried `edition` since 1.3.113, and the loaders still read artifacts baked before that consolidation. Migrating a grammar is one word: replace `mode` with `edition` in the header."
       }
     ]
+  },
+  {
+    "id": "edition-2-additive",
+    "date": "2026-11-01T00:00:00Z",
+    "title": "Edition 2 is purely additive",
+    "summary": "A text capture over reference-built rules yields the matched text under edition 2 too \u2014 a v2 tree is always the v1 tree plus Named leaves for non-captured references.",
+    "tags": [
+      "parg",
+      "editions",
+      "ruby",
+      "rust"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "The wrap pass now skips every rule a text capture transitively spans (ruby#400): attaching `as name` to a rule assembled from other rules yields the **matched text**, exactly as edition 1 does \u2014 no more leaf arrays depending on a rule's internals."
+      },
+      {
+        "type": "paragraph",
+        "text": "The invariant: **a v2 tree is the v1 tree plus `Named` leaves for non-captured references.** Migrating to v2 can only add leaves; it never changes an existing capture's value. The migration radar mirrors the new verdicts."
+      },
+      {
+        "type": "paragraph",
+        "text": "Shipped in parsanol 1.3.120 (ruby) and 0.19.19 (rs \u2014 wasm, Python, TypeScript ride the same engine). Pinned by the conformance case `capture_over_reference`."
+      }
+    ]
   }
 ]

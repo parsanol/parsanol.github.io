@@ -258,15 +258,13 @@ const sections = [
         It prints one <code>captures:</code> line per reference v2 would wrap, e.g.
         <code>rule root: reference to sep produces no capture -- modern mode would name it sep</code>.
       </p>
-      <div class="not-prose bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-5 my-6">
-        <p class="text-amber-900 dark:text-amber-100 font-medium mb-1">Open interaction — text captures over lexical rules</p>
-        <p class="text-sm text-amber-800 dark:text-amber-200">
-          Under v2, a text capture over a rule assembled from lexical references — for
-          example, digits built from a digit rule — arrives as an array of named leaves
-          rather than a string. The language decision is under owner review; no
-          reconstruction recipe is documented here.
-        </p>
-      </div>
+      <p>
+        Text captures are unaffected by the wrapping (ruby#400): a capture spans the rules
+        it references, so a text capture over a rule assembled from lexical references —
+        digits built from a digit rule — still yields the matched text, exactly as in v1.
+        Edition 2 is purely additive: its tree is the v1 tree plus <code>Named</code>
+        leaves for non-captured references.
+      </p>
 
       <h2 id="behind-guards">Behind-guards</h2>
       <pre class="text-sm"><code>{behindExample}</code></pre>
