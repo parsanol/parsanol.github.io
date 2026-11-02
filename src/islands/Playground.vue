@@ -8,6 +8,7 @@ import { json } from '@codemirror/lang-json'
 import balancedArtifact from '../assets/playground/balanced-parens.artifact.json?raw'
 import calculatorArtifact from '../assets/playground/calculator.artifact.json?raw'
 import csvArtifact from '../assets/playground/csv.artifact.json?raw'
+import editionPairArtifact from '../assets/playground/edition_pair.artifact.json?raw'
 import jsonArtifact from '../assets/playground/json.artifact.json?raw'
 import isoArtifact from '../assets/playground/iso.artifact.json?raw'
 import recoveryArtifact from '../assets/playground/recovery.artifact.json?raw'
@@ -37,6 +38,14 @@ const demos: Demo[] = [
     artifactRaw: balancedArtifact,
     artifact: JSON.parse(balancedArtifact),
     input: '((()())())',
+  },
+  {
+    id: 'edition-pair',
+    name: 'Edition v2 (Named wrapping)',
+    entry: 'main',
+    artifactRaw: editionPairArtifact,
+    artifact: JSON.parse(editionPairArtifact),
+    input: 'abc,',
   },
   {
     id: 'csv',
