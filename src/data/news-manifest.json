@@ -1712,7 +1712,7 @@
       },
       {
         "type": "paragraph",
-        "text": "Shipped in parsanol 1.3.128 (ruby) and staged for 0.20.0 (rs \u2014 wasm, Python, TypeScript ride the same engine)."
+        "text": "Shipped in parsanol 1.3.128 (ruby) and 0.20.1 (rs \u2014 wasm, Python, TypeScript ride the same engine)."
       }
     ]
   }
