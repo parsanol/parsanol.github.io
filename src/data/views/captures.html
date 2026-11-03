@@ -31,7 +31,7 @@
                   <a href="#captures" class="nav-link text-sm hover:text-primary-600 dark:hover:text-primary-400">Capture Atoms</a>
                 </li>
                 <li>
-                  <a href="#editions" class="nav-link text-sm hover:text-primary-600 dark:hover:text-primary-400">Tree Editions (v1 / v2)</a>
+                  <a href="#editions" class="nav-link text-sm hover:text-primary-600 dark:hover:text-primary-400">Tree Editions</a>
                 </li>
                 <li>
                   <a href="#scopes" class="nav-link text-sm hover:text-primary-600 dark:hover:text-primary-400">Scope Atoms</a>
@@ -535,20 +535,21 @@ let all = result.captures(input);</pre>
 
         <!-- Tree editions -->
         <section id="editions" class="mb-12">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Tree shapes: v1 and v2 editions</h2>
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Tree shape: the edition header</h2>
           <p class="text-gray-600 dark:text-gray-400 mb-4">
             Compiled PARG artifacts declare an <strong>edition</strong> in their envelope —
-            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"edition": 1 | 2</code>.
-            Edition <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">v1</code>
-            is the default: the tree keeps exactly the captures the grammar names. Edition
-            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">v2</code>
-            is opt-in with <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">edition "v2"</code>
-            in the grammar header: the compiler also names every rule reference that
-            produces no capture, so consumers read a fully named tree. Rules that can only
-            match whitespace ("glue") stay unnamed in both editions.
+            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"edition": 2</code>.
+            Edition 2 ("named trees + spans") is <strong>the only edition</strong>:
+            edition 1 was removed (parsanol-ruby 1.3.128, parsanol-rs 0.20.0), and a grammar
+            requesting <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">edition "v1"</code>
+            fails the parse with the fix named. The compiler names every rule reference that
+            produces no capture, so consumers read a fully named tree, while
+            capture-reachable rules compile unwrapped — capture trees and values are exactly
+            what earlier editions produced. Rules that can only
+            match whitespace ("glue") stay unnamed.
           </p>
           <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
-            <pre v-pre class="text-sm font-mono text-gray-800 dark:text-gray-200">grammar Pair version "1.0.0" {
+            <pre v-pre class="text-sm font-mono text-gray-800 dark:text-gray-200">grammar Pair version "1.0.0" edition "v2" {
   root = k sep
   k = 1*( %x61-7A ) as k
   sep = ","
@@ -556,24 +557,25 @@ let all = result.captures(input);</pre>
 }</pre>
           </div>
           <p class="text-gray-600 dark:text-gray-400 mb-4">
-            For the input <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">abc,</code>,
-            the same grammar produces a different tree per edition:
+            For the input <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">abc,</code>
+            the tree is:
           </p>
           <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-4 overflow-x-auto">
-            <pre v-pre class="text-sm font-mono text-gray-800 dark:text-gray-200">v1  { k: "abc" }
-v2  { k: "abc", sep: "," }</pre>
+            <pre v-pre class="text-sm font-mono text-gray-800 dark:text-gray-200">v2  { k: "abc", sep: "," }   # sep arrives as a Named leaf</pre>
           </div>
           <p class="text-gray-600 dark:text-gray-400 mb-4">
             <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">k</code>
-            is captured explicitly; v2 adds the
+            is captured explicitly; the
             <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">sep</code>
-            leaf that v1 drops because that reference produced no capture. Artifacts,
-            checksums, and trees differ, so a grammar that moves to v2 must be recompiled.
-            The envelope's edition is validated on load: an unknown value is rejected
-            instead of parsed with the wrong tree shape. The earlier quoted spellings
-            (<code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"v1"</code> /
-            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"v2"</code>)
-            still load, and artifacts without the field read as edition 1. Since parsanol
+            reference produced no capture, so edition 2 names it as a
+            <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">Named</code>
+            leaf. The envelope's edition is validated on load: the loaders accept only the
+            edition-2 spellings — the integer <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">2</code>,
+            the quoted <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">"v2"</code>
+            (kept for artifacts baked before the numeric surface), and a missing field. An
+            edition-1 artifact is rejected with the recompile instruction before the checksum
+            is verified, so old artifacts fail loudly rather than parse with the wrong tree
+            shape. Since parsanol
             1.3.117 the envelope also carries a
             <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">semantics_hash</code>
             — stable across re-bakes by a newer compiler, so freshness gates can compare
@@ -582,10 +584,11 @@ v2  { k: "abc", sep: "," }</pre>
           <p class="text-gray-600 dark:text-gray-400 mt-4">
             Text captures are unaffected by the wrapping (ruby#400): a capture spans the
             rules it references, so a text capture over a rule assembled from lexical
-            references — digits built from a digit rule — still yields the matched text,
-            exactly as in v1. Edition 2 is purely additive: its tree is the v1 tree plus
+            references — digits built from a digit rule — still yields the matched text.
+            Edition 2 is purely additive: its tree is the capture tree plus
             <code class="px-1 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-sm">Named</code>
-            leaves for non-captured references.
+            leaves for non-captured references, so recompiling an edition-1 grammar changes
+            checksums and requires a re-release, but capture expectations hold unchanged.
           </p>
         </section>
 
