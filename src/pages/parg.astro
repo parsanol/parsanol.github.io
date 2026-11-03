@@ -117,6 +117,16 @@ const features = [
     body: 'Edition v2 ("named trees + spans") is the only edition: every non-capturing rule reference is named, so consumers read a fully named tree — same grammar text apart from the header. Edition 1 was removed; artifacts declaring it are rejected with the recompile instruction.',
     anchor: '/parg/language#editions',
   },
+  {
+    title: 'Grammar composition',
+    body: 'use name merges another .parg file at compile time — imported rules namespaced name.rule, capture names preserved, cycles and missing files rejected — and the artifact bakes the expansion, so consumers never resolve imports.',
+    anchor: '/parg/language#use',
+  },
+  {
+    title: 'Declared binding artifacts',
+    body: 'From one compiled grammar the toolchain emits one checksummed parg-bindings payload per target (ruby / rs / ts / python), pinned to the grammar by source hash. Loaders pair it with the parse artifact and apply the identical bound maps — declared and diffable, not baked.',
+    anchor: '/parg/language#bindings',
+  },
 ]
 ---
 <Layout

@@ -1715,5 +1715,37 @@
         "text": "Shipped in parsanol 1.3.128 (ruby) and 0.20.1 (rs \u2014 wasm, Python, TypeScript ride the same engine)."
       }
     ]
+  },
+  {
+    "id": "use-composition-binding-artifacts",
+    "date": "2026-11-03T12:00:00Z",
+    "title": "Compose grammars with `use`; binding records become declared artifacts",
+    "summary": "`use name` merges .parg files at compile time with prefixed namespacing, and the toolchain emits one checksummed parg-bindings artifact per target \u2014 shipped in parsanol 1.3.129/1.3.130 and 0.20.1/0.20.2.",
+    "tags": [
+      "parg",
+      "composition",
+      "bindings",
+      "ruby",
+      "rust"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "`use name` at the top of a source file loads `name.parg` from the import directories and merges it **at compile time** (semantics law I1): every imported rule is renamed `name.rule`, references inside imported rules are rewritten to match, and capture names are preserved. Entries, bindings, preprocess steps, tests, and docs merge under the same prefix (`name.entry`). Imports are recursive; cycles and missing files fail the compile. The artifact bakes the expansion \u2014 consumers never resolve imports."
+      },
+      {
+        "type": "paragraph",
+        "text": "A `.parg` with no compiled sibling artifact is an **import helper**: its only contract is what importing grammars observe. The conformance corpus pins the laws as `helper` and `imports`."
+      },
+      {
+        "type": "paragraph",
+        "text": "The declared per-target binding layer (ruby#432) also ships: from one compiled grammar the toolchain emits one checksummed `artifact_kind=parg-bindings` payload per target (ruby / rs / ts / python), pinned to the grammar by source hash. Loaders pair it with the parse artifact and apply through the same binding core as the embedded records \u2014 identical bound maps by construction, declared and diffable rather than baked."
+      },
+      {
+        "type": "paragraph",
+        "text": "Shipped in parsanol 1.3.129/1.3.130 (ruby \u2014 `Bindings::Artifact`) and 0.20.2 (rs \u2014 loader plus the `applyBindingsArtifact` wasm seam). The python and ts loaders ride the next runtimes train."
+      }
+    ]
   }
 ]
