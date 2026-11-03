@@ -1683,5 +1683,37 @@
         "text": "Shipped in parsanol 1.3.120 (ruby) and 0.19.19 (rs \u2014 wasm, Python, TypeScript ride the same engine). Pinned by the conformance case `capture_over_reference`."
       }
     ]
+  },
+  {
+    "id": "edition-1-removed",
+    "date": "2026-11-03T00:00:00Z",
+    "title": "Edition 1 removed \u2014 edition 2 is the only edition",
+    "summary": "Edition \"v2\" (named trees + spans) is the only edition: requesting edition 1 fails the parse with the fix named, and edition-1 artifacts are rejected at load with the recompile instruction.",
+    "tags": [
+      "parg",
+      "editions",
+      "ruby",
+      "rust",
+      "breaking"
+    ],
+    "featured": false,
+    "content": [
+      {
+        "type": "paragraph",
+        "text": "The edition-1 tree shape is gone (ruby#431): the header accepts only `2` or `\"v2\"` \u2014 `edition \"v1\"`, `1`, and `\"classic\"` fail the parse with **edition 1 was removed; write edition \"v2\" (named trees + spans)**. Omitting the header compiles as edition 2."
+      },
+      {
+        "type": "paragraph",
+        "text": "The loaders mirror the compiler: the envelope's `\"edition\": 2` is the only accepted value (the quoted `\"v2\"` stays loadable for artifacts baked before the numeric surface, and a missing field reads as edition 2). An edition-1 artifact is rejected **before the checksum is verified**, so old artifacts fail loudly with the recompile instruction instead of parsing with the wrong tree shape."
+      },
+      {
+        "type": "paragraph",
+        "text": "Migration is mechanical: change the header to `edition \"v2\"`, recompile, re-release. Edition 2 is purely additive (ruby#400) \u2014 the tree is the capture tree plus `Named` leaves for non-captured references \u2014 so capture expectations hold unchanged. Every grammar on this site has been re-baked at edition 2."
+      },
+      {
+        "type": "paragraph",
+        "text": "Shipped in parsanol 1.3.128 (ruby) and staged for 0.20.0 (rs \u2014 wasm, Python, TypeScript ride the same engine)."
+      }
+    ]
   }
 ]

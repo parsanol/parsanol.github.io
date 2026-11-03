@@ -113,8 +113,8 @@ const features = [
     anchor: '/parg/language#bindings',
   },
   {
-    title: 'Two tree editions',
-    body: 'Edition v1 is the default capture tree. Edition v2 names every non-capturing rule reference, so consumers read a fully named tree — same grammar text apart from the header, different artifacts, checksums, and trees.',
+    title: 'One tree edition',
+    body: 'Edition v2 ("named trees + spans") is the only edition: every non-capturing rule reference is named, so consumers read a fully named tree — same grammar text apart from the header. Edition 1 was removed; artifacts declaring it are rejected with the recompile instruction.',
     anchor: '/parg/language#editions',
   },
 ]
@@ -213,7 +213,7 @@ const features = [
         <li><strong>Self-containment</strong> — the original .parg text rides inside, so a runtime can rebuild atoms without the source file.</li>
         <li><strong>Behavior pinned</strong> — the in-file tests travel with the artifact; consumers replay them (this site's playground badge does exactly that).</li>
         <li><strong>Versioned</strong> — capture renames are major, new alternatives minor, literal fixes patch; model-side-only changes move a separate <code>binding_version</code>.</li>
-        <li><strong>Editioned</strong> — the envelope declares <code>edition</code> (<code>1</code> or <code>2</code>); the Ruby and Rust loaders validate it — earlier quoted spellings still load — and reject an unknown edition rather than parsing it with the wrong tree shape.</li>
+        <li><strong>Editioned</strong> — the envelope declares <code>edition</code> (<code>2</code>, named trees + spans — the only edition); the Ruby and Rust loaders accept the edition-2 spellings (<code>2</code>, <code>"v2"</code>, or no field) and reject anything else — including the removed edition 1 — with the recompile instruction rather than parsing it with the wrong tree shape.</li>
         <li><strong>Semantics-addressable</strong> — since parsanol 1.3.117 the envelope carries a <code>semantics_hash</code> beside the checksum: the checksum pins the exact producer, the hash skips producer metadata (<code>compiler_version</code>, <code>unicode_tables</code>), so gates tell a re-bake by a newer compiler from a grammar change.</li>
       </ul>
 

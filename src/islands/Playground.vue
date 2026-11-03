@@ -41,7 +41,7 @@ const demos: Demo[] = [
   },
   {
     id: 'edition-pair',
-    name: 'Edition v2 (Named wrapping)',
+    name: 'Named trees (Named wrapping)',
     entry: 'main',
     artifactRaw: editionPairArtifact,
     artifact: JSON.parse(editionPairArtifact),

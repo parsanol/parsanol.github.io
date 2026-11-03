@@ -8,7 +8,7 @@ const skeleton = `grammar Demo version "1.0.0" {
   number = 1*digit
 }
 
-# opt in to the v2 tree edition (v1 is the default)
+# edition "v2" — the only edition (edition 1 was removed)
 grammar Named version "1.0.0" edition "v2" {
   digit = %x30-39
   number = 1*digit
@@ -120,8 +120,8 @@ preprocess stage_code {
 
 stage_abbr = alt from_table "stages" column "abbr"`
 
-const editionHeaders = `grammar Demo version "1.0.0" { ... }                # v1 — the default
-grammar Demo version "1.0.0" edition "v2" { ... }  # v2 — opt-in`
+const editionHeaders = `grammar Demo version "1.0.0" edition "v2" { ... }  # the only edition
+grammar Demo version "1.0.0" edition "v1" { ... }  # ERROR: edition 1 was removed`
 
 const editionGrammar = `grammar Pair version "1.0.0" {
   root = k sep
@@ -130,8 +130,7 @@ const editionGrammar = `grammar Pair version "1.0.0" {
   entry main: root
 }`
 
-const editionTrees = `v1  { k: "abc" }
-v2  { k: "abc", sep: "," }`
+const editionTrees = `v2  { k: "abc", sep: "," }   # sep arrives as a Named leaf`
 
 const sections = [
   { id: 'skeleton', label: 'Grammar skeleton' },
@@ -139,7 +138,7 @@ const sections = [
   { id: 'terminals', label: 'Terminals' },
   { id: 'operators', label: 'Operators' },
   { id: 'captures', label: 'Captures' },
-  { id: 'editions', label: 'Editions: v1 and v2' },
+  { id: 'editions', label: 'Editions' },
   { id: 'behind-guards', label: 'Behind-guards' },
   { id: 'classes', label: 'Character classes' },
   { id: 'skip', label: 'Skip & trivia' },
@@ -180,7 +179,7 @@ const sections = [
       <ul>
         <li><code>#</code> starts a comment to end of line; <code>##</code> is a <strong>doc comment</strong> that attaches to the following rule and ships in the artifact (LSP hovers). One rule per line (newlines are significant) — except in brace bodies, where newlines are whitespace.</li>
         <li>A case-insensitive literal (<code>%i"iso"</code>) captures the <strong>raw input form</strong>: <code>IEEE 42</code> captures <code>"IEEE"</code>, not <code>"ieee"</code>.</li>
-        <li><code>grammar NAME version "X.Y.Z" {"{"}</code> wraps the rules — an optional <code>edition "v2"</code> goes before the brace (v1 is the default); <code>entry NAME: rule</code> declares an artifact entry point — multiple entries share one rule set.</li>
+        <li><code>grammar NAME version "X.Y.Z" {"{"}</code> wraps the rules — <code>edition "v2"</code> goes before the brace and is the only edition; <code>entry NAME: rule</code> declares an artifact entry point — multiple entries share one rule set.</li>
         <li>Keywords (<code>grammar version as bindings preprocess entry table_lookup from_table column</code>) cannot name or reference rules.</li>
       </ul>
 
@@ -205,44 +204,46 @@ const sections = [
         hash. The normative laws are V0–V4 in the semantics document.
       </p>
 
-      <h2 id="editions">Editions: v1 and v2</h2>
+      <h2 id="editions">Editions</h2>
       <p>
         The grammar header declares an <strong>edition</strong> — the shape of the tree the
-        compiler bakes into the artifact. <code>v1</code> is the default, deliberately:
-        existing grammars keep their capture trees. <code>v2</code> is opt-in.
+        compiler bakes into the artifact. Edition 2 ("named trees + spans") is
+        <strong>the only edition</strong>: edition 1 was removed (parsanol-ruby 1.3.128,
+        parsanol-rs 0.20.0), and a grammar requesting it fails the parse with the fix named —
+        write <code>edition "v2"</code> in all grammars.
       </p>
       <pre class="text-sm"><code>{editionHeaders}</code></pre>
       <p>
-        Writing <code>edition "v1"</code> explicitly is equivalent to omitting it. The
-        pre-1.3.113 <code>mode</code> header keyword has been removed (parsanol 1.3.119): a
-        grammar using it fails the parse with the fix named — write <code>edition</code> in
-        all grammars.
+        Omitting the header compiles as edition 2 as well. The pre-1.3.113 <code>mode</code>
+        header keyword had already been removed (parsanol 1.3.119): a grammar using it fails
+        the parse with the fix named — write <code>edition</code> in all grammars.
       </p>
       <p>
-        v2 is a <strong>tree-shape edition, not a syntax edition</strong>: the grammar text
-        is the same apart from the header. At compile time, every rule reference that
+        Edition 2 is a <strong>tree-shape edition, not a syntax edition</strong>: the grammar
+        text is the same apart from the header. At compile time, every rule reference that
         produces no capture is wrapped in <code>Named(rule_name)</code>, so consumers read a
         fully named tree. Rules that can only match whitespace — literal-only bodies whose
-        literals all strip to empty ("glue") — are exempt and stay unnamed.
+        literals all strip to empty ("glue") — are exempt and stay unnamed. Captured
+        structure is untouched: capture-reachable rules compile unwrapped, so capture trees
+        and values are exactly what earlier editions produced.
       </p>
       <p>With this grammar and the input <code>abc,</code>:</p>
       <pre class="text-sm"><code>{editionGrammar}</code></pre>
       <pre class="text-sm"><code>{editionTrees}</code></pre>
       <p>
-        <code>k</code> was already captured by <code>as k</code>; v2 adds the
-        <code>sep</code> leaf that v1 drops because the reference produced no capture. The
+        <code>k</code> was captured by <code>as k</code>; the <code>sep</code> reference
+        produced no capture, so edition 2 names it as a <code>Named</code> leaf. The
         CLI prints the same leaves with their source offsets (<code>"abc"@0</code>).
-        Because the trees differ, artifacts and checksums differ too: a grammar that moves
-        to v2 must be recompiled and redistributed — changing the header alone does not
-        change an existing artifact.
       </p>
       <p>
-        The compiled envelope carries <code>"edition": 1 | 2</code> — parsanol 1.3.113
-        switched the field to integers. The loaders also read the earlier quoted spellings
-        (<code>"v1"</code>, <code>"v2"</code>, <code>"classic"</code>), and an artifact
-        without the field parses as edition 1. An unknown edition is rejected rather than
-        parsed with the wrong tree shape: the compiler rejects it in the grammar header, and
-        the loaders reject it in an artifact (parsanol-ruby 1.3.115, parsanol-rs 0.19.12).
+        The compiled envelope carries <code>"edition": 2</code>. The loaders accept only the
+        edition-2 spellings — the integer <code>2</code>, the quoted <code>"v2"</code> (kept
+        for artifacts baked before the numeric surface), and a missing field (pre-1.3.109
+        artifacts load as edition 2). An edition-1 artifact is rejected at load with the
+        recompile instruction — <code>recompile the grammar with edition "v2"</code> — before
+        the checksum is verified, so old artifacts fail loudly rather than parse with the
+        wrong tree shape (parsanol-ruby 1.3.128, parsanol-rs 0.20.0; unknown-edition
+        rejection since parsanol-ruby 1.3.115, parsanol-rs 0.19.12).
         Since parsanol 1.3.117 the envelope also carries a
         <code>semantics_hash</code> — computed over everything except producer metadata
         (<code>checksum</code>, <code>compiler_version</code>, <code>unicode_tables</code>),
@@ -250,20 +251,12 @@ const sections = [
         instead of bytes.
       </p>
       <p>
-        To see what v2 would name in an existing v1 grammar, run the migration radar with
-        the flag after the file:
-      </p>
-      <pre class="text-sm"><code>bundle exec parsanol parg lint grammars/&lt;flavor&gt;.parg --captures</code></pre>
-      <p>
-        It prints one <code>captures:</code> line per reference v2 would wrap, e.g.
-        <code>rule root: reference to sep produces no capture -- modern mode would name it sep</code>.
-      </p>
-      <p>
         Text captures are unaffected by the wrapping (ruby#400): a capture spans the rules
         it references, so a text capture over a rule assembled from lexical references —
-        digits built from a digit rule — still yields the matched text, exactly as in v1.
-        Edition 2 is purely additive: its tree is the v1 tree plus <code>Named</code>
-        leaves for non-captured references.
+        digits built from a digit rule — still yields the matched text. Edition 2 is purely
+        additive: its tree is the capture tree plus <code>Named</code> leaves for
+        non-captured references, so recompiling an edition-1 grammar changes checksums and
+        requires a re-release, but capture expectations hold unchanged.
       </p>
 
       <h2 id="behind-guards">Behind-guards</h2>
