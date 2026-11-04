@@ -260,9 +260,26 @@ const sections = [
         rejection since parsanol-ruby 1.3.115, parsanol-rs 0.19.12).
         Since parsanol 1.3.117 the envelope also carries a
         <code>semantics_hash</code> — computed over everything except producer metadata
-        (<code>checksum</code>, <code>compiler_version</code>, <code>unicode_tables</code>),
-        so it is stable across re-bakes by a newer compiler and gates can compare behavior
-        instead of bytes.
+        (<code>checksum</code>, <code>compiler_version</code>, <code>unicode_tables</code>)
+        and the two digests/receipt below, so it is stable across re-bakes by a newer
+        compiler and gates can compare behavior instead of bytes.
+      </p>
+      <p>
+        Since parsanol 1.3.131 the envelope adds two checksum-covered members, both outside
+        the canonical payload. <code>byte_checksum</code> stamps a SHA-256 over the exact
+        file bytes (the digest's own 64-hex region zeroed), so a load can take one
+        O(bytes) hash pass with no parse or canonicalization — a flipped bit, wrong file,
+        or hand edit is rejected before any parse work; loaders that only see a parsed
+        envelope fall back to the canonical tier unchanged. And <code>validated</code> is
+        the bake receipt — <code>lint_errors</code> (always 0; the compiler refuses to emit
+        with lint errors), <code>lint_warnings</code>, <code>tests_total</code> /
+        <code>tests_failures</code> (the embedded tests replayed green at bake), and
+        <code>self_test</code> — so "is this grammar validated" is an inspectable envelope
+        field covered by both digests, not an out-of-band claim. Since parsanol 1.3.133,
+        <code>parg compile --model-bindings FILE</code> embeds a versioned
+        rule-to-model sidecar as additive <code>model_bindings</code> metadata
+        (<code>parg bindings ARTIFACT</code> dumps it as JSON — no grammar source or class
+        loading needed); artifacts compiled without a sidecar are byte-identical.
       </p>
       <p>
         Text captures are unaffected by the wrapping (ruby#400): a capture spans the rules

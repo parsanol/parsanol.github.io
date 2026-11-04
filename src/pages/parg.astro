@@ -124,7 +124,7 @@ const features = [
   },
   {
     title: 'Declared binding artifacts',
-    body: 'From one compiled grammar the toolchain emits one checksummed parg-bindings payload per target (ruby / rs / ts / python), pinned to the grammar by source hash. Loaders pair it with the parse artifact and apply the identical bound maps — declared and diffable, not baked.',
+    body: 'parg compile --bindings all emits one checksummed parg-bindings payload per target (ruby / rs / ts / python) beside the parse artifact, pinned to the grammar by source hash. Loaders pair it with the parse artifact and apply the identical bound maps — declared and diffable, not baked.',
     anchor: '/parg/language#bindings',
   },
 ]
@@ -218,10 +218,11 @@ const features = [
 
       <h2>What the artifact guarantees</h2>
       <ul>
-        <li><strong>Integrity</strong> — the sha256 checksum over the canonicalized envelope is verified on load; a mismatch fails loudly, never silently mis-parses.</li>
+        <li><strong>Integrity</strong> — the sha256 checksum over the canonicalized envelope is verified on load; a mismatch fails loudly, never silently mis-parses. Since parsanol 1.3.131 a <code>byte_checksum</code> over the exact file bytes gives loaders a one-pass fast tier (no parse, no canonicalization) with byte-level tamper detection — checksum-covered and outside the canonical payload, so older loaders fall back to the canonical tier unchanged.</li>
         <li><strong>Portability</strong> — the grammar section is the exact wire format every engine registers; one serialization, four runtimes.</li>
         <li><strong>Self-containment</strong> — the original .parg text rides inside, so a runtime can rebuild atoms without the source file.</li>
         <li><strong>Behavior pinned</strong> — the in-file tests travel with the artifact; consumers replay them (this site's playground badge does exactly that).</li>
+        <li><strong>Validated, inspectably</strong> — since parsanol 1.3.131 the envelope carries a <code>validated</code> bake receipt: lint errors (0 — the compiler refuses to emit with lint errors), lint warnings, embedded test totals, and the native self-test flag. "Is this grammar validated" is an envelope field covered by both digests, not an out-of-band claim.</li>
         <li><strong>Versioned</strong> — capture renames are major, new alternatives minor, literal fixes patch; model-side-only changes move a separate <code>binding_version</code>.</li>
         <li><strong>Editioned</strong> — the envelope declares <code>edition</code> (<code>2</code>, named trees + spans — the only edition); the Ruby and Rust loaders accept the edition-2 spellings (<code>2</code>, <code>"v2"</code>, or no field) and reject anything else — including the removed edition 1 — with the recompile instruction rather than parsing it with the wrong tree shape.</li>
         <li><strong>Semantics-addressable</strong> — since parsanol 1.3.117 the envelope carries a <code>semantics_hash</code> beside the checksum: the checksum pins the exact producer, the hash skips producer metadata (<code>compiler_version</code>, <code>unicode_tables</code>), so gates tell a re-bake by a newer compiler from a grammar change.</li>
