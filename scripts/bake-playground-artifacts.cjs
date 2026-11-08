@@ -13,6 +13,15 @@ const contentDir = join(__dirname, '..', 'content', 'playground')
 const assetsDir = join(__dirname, '..', 'src', 'assets', 'playground')
 const checkOnly = process.argv.includes('--check')
 
+// Pin the compiler so local bakes and CI produce identical stamps.
+// `.parsanol-version` holds a released gem version; the binstub's
+// `_<version>_` form selects it regardless of what `gem install
+// parsanol` (unpinned) would resolve to on the machine.
+const versionFile = join(__dirname, '..', '.parsanol-version')
+const pinArgs = existsSync(versionFile)
+  ? [`_${readFileSync(versionFile, 'utf8').trim()}_`]
+  : []
+
 const sources = readdirSync(contentDir).filter((name) => name.endsWith('.parg'))
 if (sources.length === 0) {
   console.error('no .parg sources in content/playground')
@@ -29,7 +38,7 @@ for (const source of sources) {
   let baked
   try {
     execFileSync('parsanol', [
-      'parg', 'compile', join(contentDir, source), '-o', join(scratch, 'artifact.json'),
+      ...pinArgs, 'parg', 'compile', join(contentDir, source), '-o', join(scratch, 'artifact.json'),
     ], { encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })
     baked = readFileSync(join(scratch, 'artifact.json'), 'utf8')
   } finally {
