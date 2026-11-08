@@ -55,8 +55,8 @@ jobs:
           # ruby patch — the bake must match the re-bake, everywhere.
           ruby-version: '3.4.8'
 
-      - name: Install the parsanol gem
-        run: gem install parsanol
+      - name: Install the parsanol gem (pinned by .parsanol-version)
+        run: gem install parsanol -v "$(cat .parsanol-version)"
 
       - name: Bake playground artifacts (freshness gate)
         run: node scripts/bake-playground-artifacts.cjs --check
