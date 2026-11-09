@@ -127,6 +127,11 @@ const features = [
     body: 'parg compile --bindings all emits one checksummed parg-bindings payload per target (ruby / rs / ts / python) beside the parse artifact, pinned to the grammar by source hash. Loaders pair it with the parse artifact and apply the identical bound maps — declared and diffable, not baked.',
     anchor: '/parg/language#bindings',
   },
+  {
+    title: 'LLM structured output',
+    body: 'parg export ARTIFACT --target xgrammar|llguidance lowers the compiled artifact to a decoder-facing grammar — same artifact in, same backend grammar out; unmappable constructs are rejected loudly, never silently dropped.',
+    anchor: '/parg/language#export',
+  },
 ]
 ---
 <Layout
