@@ -145,6 +145,13 @@ grammar Main version "1.0.0" {
   entry main: number
 }`
 
+const exportExample = `$ parg export demo.artifact.json --target xgrammar
+identifier_entry ::= ( ( " " ) )* ( ( ( [Ii][Ss][Oo] | [Ii][Ee][Ee][Ee] ) ) ) ...
+
+$ parg export demo.artifact.json --target llguidance
+start: identifier_entry
+identifier_entry: ( ( " " ) )* ( ( ( [Ii][Ss][Oo] | [Ii][Ee][Ee][Ee] ) ) ) ...`
+
 const sections = [
   { id: 'skeleton', label: 'Grammar skeleton' },
   { id: 'brace-form', label: 'Brace form & core rules' },
@@ -160,6 +167,7 @@ const sections = [
   { id: 'tests', label: 'In-file tests' },
   { id: 'use', label: 'Composition: use' },
   { id: 'bindings', label: 'Bindings & tables' },
+  { id: 'export', label: 'Export: LLM structured output' },
   { id: 'style', label: 'Style guide' },
   { id: 'lint', label: 'The lint' },
 ]
@@ -415,6 +423,19 @@ const sections = [
         array-grouping level. Preprocess steps are declarative data operations
         (<code>table_lookup</code> in v1). <code>alt from_table</code> expands a table
         column into literal alternatives, sorted longest-first.
+      </p>
+
+      <h2 id="export">Export: LLM structured output</h2>
+      <pre class="text-sm"><code>{exportExample}</code></pre>
+      <p>
+        <code>parg export ARTIFACT --target xgrammar</code> lowers the compiled artifact
+        to a decoder-facing grammar for LLM structured output;
+        <code>--target llguidance</code> emits the Lark-subset dialect. The export reads
+        the <strong>artifact</strong> — the checksummed envelope, not the source — so
+        every runtime lowers the same grammar to the same backend format. Constructs that
+        don't map to constrained decoding are rejected loudly at export time, never
+        silently dropped; the same artifact-first contract as the tree format, applied to
+        a new consumer class.
       </p>
 
       <h2 id="style">Style guide</h2>
