@@ -116,6 +116,8 @@ const bindingsExample = `bindings iso_identifier {
 
 preprocess stage_code {
   table_lookup stages abbr -> code
+  const_map "WD" -> "working-draft"
+  rename sub -> supplement
 }
 
 stage_abbr = alt from_table "stages" column "abbr"`
@@ -420,8 +422,14 @@ const sections = [
         Bindings map captures to typed model fields (<code>string</code>,
         <code>integer</code>, <code>float</code>, <code>boolean</code>; cardinalities
         <code>1</code>, <code>0..1</code>, <code>1..*</code>, <code>0..*</code>) with one
-        array-grouping level. Preprocess steps are declarative data operations
-        (<code>table_lookup</code> in v1). <code>alt from_table</code> expands a table
+        array-grouping level. Preprocess steps are declarative data operations:
+        <code>table_lookup</code> (v1) plus the v1.1 vocabulary — <code>const_map</code>
+        (a closed mapping carried in the step itself), <code>default_when_absent</code>
+        (fill a top-level nil or nil hash members), and <code>rename</code>
+        (capture-name alignment, key order preserved). Using any post-v1 op stamps the
+        artifact <code>binding_version: 2</code> — engines accept 1 and 2 and refuse
+        higher, so a step an old engine doesn't know can never be silently mis-executed.
+        <code>alt from_table</code> expands a table
         column into literal alternatives, sorted longest-first.
       </p>
 
