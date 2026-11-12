@@ -1,0 +1,74 @@
+---
+import Layout from '../layouts/Layout.astro'
+import DocsNav from '../components/organisms/DocsNav.astro'
+
+// The receipt snapshot: the numbers below are one receipt run (the
+// machine, rustc, and commit are stamped in the table). The living
+// receipt — refreshed weekly by the bench-report workflow with the
+// regression gate — lives in the repository:
+// https://github.com/parsanol/parsanol-rs/blob/main/benchmarks/latest.md
+const libraries = [
+  { name: 'json/parsanol/tiny', ns: 3190 },
+  { name: 'json/parsanol/small', ns: 3155 },
+  { name: 'json/parsanol-parslet/small', ns: 3161 },
+  { name: 'expression/parsanol/tiny', ns: 1711 },
+  { name: 'expression/parsanol/medium', ns: 1817 },
+  { name: 'expression/parsanol/large', ns: 1909 },
+]
+const stamp = {
+  machine: 'Darwin 23.1.0 arm64',
+  rustc: 'rustc 1.98.0',
+  commit: '25a3ce9',
+  date: '2026-11-12',
+}
+---
+<Layout title="Benchmark receipts — Parsanol" description="Published, reproducible benchmark receipts: parsanol's native engine against the parslet-compatibility path, CI-tracked weekly with a regression gate.">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex gap-12">
+      <DocsNav showSections={['benchmarks']} />
+      <div class="flex-1 min-w-0 prose max-w-none">
+        <h1>Benchmark receipts</h1>
+        <p>
+          A 2027 parser publishes its numbers. Every week the
+          <a href="https://github.com/parsanol/parsanol-rs/blob/main/.github/workflows/bench-report.yml">bench-report workflow</a>
+          runs the receipt benches on a fixed runner class, gates any
+          &gt;10% regression against the committed receipt, and opens a PR
+          with the refreshed table — receipts land through review like any
+          other change.
+        </p>
+        <p>
+          The campaign bar — <strong>beat parslet on both paths</strong> — is
+          measured on the same wire: the native engine against the
+          parslet-compatibility path, over identical grammars and inputs.
+        </p>
+
+        <h2 id="native-vs-parslet-path">Native vs the parslet-compatibility path</h2>
+        <table>
+          <thead>
+            <tr><th>benchmark</th><th>ns/iter</th></tr>
+          </thead>
+          <tbody>
+            {libraries.map((row) => (
+              <tr><td><code>{row.name}</code></td><td style="text-align: right">{row.ns.toLocaleString()}</td></tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h2 id="reproducibility">Reproducibility</h2>
+        <p>
+          One command reproduces the receipt locally:
+        </p>
+        <pre><code>{`bash scripts/bench-report.sh   # -> benchmarks/latest.md`}</code></pre>
+        <p>
+          Snapshot stamp: {stamp.machine}, {stamp.rustc}, commit
+          <code>{stamp.commit}</code>, {stamp.date}. Compare trends on the
+          same runner class — never absolutes across machines.
+        </p>
+        <p>
+          The full living receipt (all groups: libraries, comparison
+          summaries): <a href="https://github.com/parsanol/parsanol-rs/blob/main/benchmarks/latest.md">benchmarks/latest.md</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</Layout>
