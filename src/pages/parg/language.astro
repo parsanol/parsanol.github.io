@@ -154,6 +154,18 @@ $ parg export demo.artifact.json --target llguidance
 start: identifier_entry
 identifier_entry: ( ( " " ) )* ( ( ( [Ii][Ss][Oo] | [Ii][Ee][Ee][Ee] ) ) ) ...`
 
+const renderExample = `render default {
+  field stage
+  literal "-"
+  field code
+}
+
+derive urn "urn:{stage}:{code}"
+
+# on the artifact, after parse_and_bind:
+artifact.render("identifier", bound)        # => "ISO-42"
+artifact.derive("urn", bound)               # => "urn:ISO:42"`
+
 const sections = [
   { id: 'skeleton', label: 'Grammar skeleton' },
   { id: 'brace-form', label: 'Brace form & core rules' },
@@ -170,6 +182,7 @@ const sections = [
   { id: 'use', label: 'Composition: use' },
   { id: 'bindings', label: 'Bindings & tables' },
   { id: 'export', label: 'Export: LLM structured output' },
+  { id: 'render', label: 'Render & derive: the string side' },
   { id: 'style', label: 'Style guide' },
   { id: 'lint', label: 'The lint' },
 ]
@@ -444,6 +457,21 @@ const sections = [
         don't map to constrained decoding are rejected loudly at export time, never
         silently dropped; the same artifact-first contract as the tree format, applied to
         a new consumer class.
+      </p>
+
+      <h2 id="render">Render &amp; derive: the string side</h2>
+      <pre class="text-sm"><code>{renderExample}</code></pre>
+      <p>
+        Parsing has a reverse: <code>render</code> sections compose the bound map back
+        into a string, and <code>derive</code> specs are named
+        <code>{'{field}'}</code>-interpolation templates. Both are top-level sections
+        (outside the grammar block), travel the artifact checksummed, and run through
+        generic per-tier renderers — byte-identical output by construction. Fields read
+        the <strong>bound</strong> map, so a <code>bindings</code> section supplies them;
+        missing fields render empty. The artifact exposes
+        <code>render(entry, bound)</code>, <code>render_string(entry, input)</code>,
+        <code>derive(name, bound)</code>, and <code>derive_string(entry, input, name)</code>.
+        (F6; verified end-to-end on parsanol 1.3.147.)
       </p>
 
       <h2 id="style">Style guide</h2>
