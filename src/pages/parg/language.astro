@@ -164,7 +164,11 @@ derive urn "urn:{stage}:{code}"
 
 # on the artifact, after parse_and_bind:
 artifact.render("identifier", bound)        # => "ISO-42"
-artifact.derive("urn", bound)               # => "urn:ISO:42"`
+artifact.derive("urn", bound)               # => "urn:ISO:42"
+
+# the CLI: bound attribute map in, default-variant string out
+$ parg generate demo.artifact.json --model model.json
+ISO-42`
 
 const sections = [
   { id: 'skeleton', label: 'Grammar skeleton' },
