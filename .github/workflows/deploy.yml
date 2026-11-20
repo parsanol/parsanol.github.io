@@ -70,9 +70,12 @@ jobs:
       - name: Setup Ruby (playground artifact bake)
         uses: ruby/setup-ruby@v1
         with:
-          # The unicode_tables stamp (and so the checksum) rides the
-          # ruby patch — the bake must match the re-bake, everywhere.
-          ruby-version: '3.4.8'
+          # Float the 3.4 series: ubuntu-26.04 runner images build only the
+          # latest patch of each series, so a hard patch pin (3.4.8) 404s the
+          # moment the image rotates. Producer drift from a patch bump is
+          # tolerated by the semantics-first gate (warnings in --check, the
+          # weekly cron re-bakes envelopes) — same policy as parsanol-ruby CI.
+          ruby-version: '3.4'
 
       - name: Install the parsanol gem (pinned by .parsanol-version)
         run: gem install parsanol -v "$(cat .parsanol-version)"
