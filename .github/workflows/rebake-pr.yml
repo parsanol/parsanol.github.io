@@ -48,9 +48,12 @@ jobs:
       - name: Setup Ruby (playground artifact bake)
         uses: ruby/setup-ruby@v1
         with:
-          # The unicode_tables stamp (and so the checksum) rides the
-          # ruby patch — the bake must match the re-bake, everywhere.
-          ruby-version: '3.4.8'
+          # Float the 3.4 series: ubuntu-26.04 runner images build only the
+          # latest patch of each series, so a hard patch pin (3.4.8) 404s the
+          # moment the image rotates. Producer drift from a patch bump is
+          # tolerated by the semantics-first gate (warnings in --check, the
+          # weekly cron re-bakes envelopes) — same policy as parsanol-ruby CI.
+          ruby-version: '3.4'
 
       - name: Install the parsanol gem (pinned by .parsanol-version)
         run: gem install parsanol -v "$(cat .parsanol-version)"
@@ -78,6 +81,7 @@ jobs:
           npm run build
 
           VER=$(node -p "JSON.parse(require('fs').readFileSync('src/assets/playground/calculator.artifact.json','utf8')).compiler_version")
+          RUBY_VER=$(ruby -e 'puts RUBY_VERSION')
           BRANCH=bot/rebake-playground-artifacts
 
           git config user.name "github-actions[bot]"
@@ -91,7 +95,7 @@ jobs:
           printf '%s\n' \
             "Automated re-bake: the deploy freshness gate failed because the committed playground artifacts were baked by an older parsanol than the latest release." \
             "" \
-            "This PR re-bakes them with parsanol ${VER} (Ruby 3.4.8, the version the bake stamps). Review, then merge to turn deploys green." \
+            "This PR re-bakes them with parsanol ${VER} (Ruby ${RUBY_VER}, the version the bake stamps). Review, then merge to turn deploys green." \
             > pr-body.md
 
           if gh pr list --head "$BRANCH" --state open --json number -q '.[0].number' | grep -q .; then
