@@ -161,7 +161,12 @@ const getShortTitle = (title: string): string =>
           </li>
           <li>
             <a href="/feature-comparison" class:list={['nav-link text-sm', { active: pathname === '/feature-comparison' }]} aria-current={pathname === '/feature-comparison' ? 'page' : undefined}>
-              Engine Comparison
+              Architecture Comparison
+            </a>
+          </li>
+          <li>
+            <a href="/performance" class:list={['nav-link text-sm', { active: pathname === '/performance' }]} aria-current={pathname === '/performance' ? 'page' : undefined}>
+              Performance, with receipts
             </a>
           </li>
           <li>
@@ -178,12 +183,26 @@ const getShortTitle = (title: string): string =>
       <div>
         <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Architecture</h3>
         <ul class="space-y-1">
-          <li><a href="/architecture#benchmarks" class="nav-link text-sm">Evidence-Based Benchmarks</a></li>
-          <li><a href="/architecture#slice-feature" class="nav-link text-sm">Slice Support</a></li>
-          <li><a href="/architecture#when-to-use" class="nav-link text-sm">When to Use Which</a></li>
-          <li><a href="/architecture#rust-core" class="nav-link text-sm">Rust Core Engine</a></li>
-          <li><a href="/architecture#parslet-compat" class="nav-link text-sm">Parslet Compatibility</a></li>
-          <li><a href="/architecture#running-benchmarks" class="nav-link text-sm">Running Benchmarks</a></li>
+          <li><a href="/architecture#pipeline" class="nav-link text-sm">The Compile Pipeline</a></li>
+          <li><a href="/architecture#envelope" class="nav-link text-sm">The Envelope Anatomy</a></li>
+          <li><a href="/architecture#load-path" class="nav-link text-sm">The Load Path</a></li>
+          <li><a href="/architecture#engines" class="nav-link text-sm">The Engines</a></li>
+          <li><a href="/architecture#contract" class="nav-link text-sm">The Contract Stack</a></li>
+          <li><a href="/architecture#proof" class="nav-link text-sm">The Proof Layer</a></li>
+          <li><a href="/architecture#tiers" class="nav-link text-sm">Choosing a Tier</a></li>
+        </ul>
+      </div>
+    )}
+
+    {show('performance') && (
+      <div>
+        <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Performance</h3>
+        <ul class="space-y-1">
+          <li><a href="/performance#throughput" class="nav-link text-sm">Raw Throughput</a></li>
+          <li><a href="/performance#recovery" class="nav-link text-sm">Error Recovery</a></li>
+          <li><a href="/performance#incremental" class="nav-link text-sm">Incremental (honest)</a></li>
+          <li><a href="/performance#artifact" class="nav-link text-sm">Artifact Economics</a></li>
+          <li><a href="/performance#methodology" class="nav-link text-sm">Methodology</a></li>
         </ul>
       </div>
     )}
