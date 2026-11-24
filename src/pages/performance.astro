@@ -1,0 +1,10 @@
+---
+import Layout from '../layouts/Layout.astro'
+import PrevNext from '../components/PrevNext.astro'
+import DocsShell from '../components/DocsShell.astro'
+import content from '../data/views/performance.html?raw'
+---
+<Layout title="Performance, with receipts — Parsanol" description="Dated, reproducible head-to-head benchmark receipts against tree-sitter, Lark, and ANTLR — losses published with the same prominence as wins.">
+  <DocsShell showSections={['performance', 'docs']} content={content} />
+  <PrevNext />
+</Layout>

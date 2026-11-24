@@ -63,6 +63,32 @@ const abilities = [
   <Hero />
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <section class="mb-16">
+      <h2 class="text-2xl font-semibold mb-6">SOTA, with receipts</h2>
+      <div class="card p-6 mb-4">
+        <p class="text-gray-600 dark:text-gray-300 mb-4">
+          One grammar compiles once into a checksummed artifact that five runtimes parse
+          byte-identically — enforced by a conformance corpus, nightly differentials, and a fuzzing
+          gate that found a real panic on its first run. Every performance claim ships as a dated,
+          reproducible receipt, and the losses publish with the same prominence as the wins.
+        </p>
+        <div class="grid sm:grid-cols-3 gap-4 text-sm not-prose">
+          <a href="/performance" class="card hover:border-primary-400 transition block">
+            <div class="font-semibold mb-1">Performance</div>
+            <p class="text-gray-600 dark:text-gray-300">1.7× over ANTLR on the shared JSON corpus; the tightest diagnostics in the recovery receipt; tree-sitter's 37× throughput win published right next to it.</p>
+          </a>
+          <a href="/architecture" class="card hover:border-primary-400 transition block">
+            <div class="font-semibold mb-1">Architecture</div>
+            <p class="text-gray-600 dark:text-gray-300">The compile pipeline, the envelope anatomy (two checksums, a bake receipt, a behavior fingerprint), and the proof layer that keeps claims checkable.</p>
+          </a>
+          <a href="/feature-comparison" class="card hover:border-primary-400 transition block">
+            <div class="font-semibold mb-1">Architecture comparison</div>
+            <p class="text-gray-600 dark:text-gray-300">The 2026 matrix against tree-sitter, ANTLR 4, pest, Lark, and Lezer — with the honest column and the decision rules.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-16">
       <h2 class="text-2xl font-semibold mb-6">What Parsanol does today</h2>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
         {abilities.map((ability) => (

@@ -1,402 +1,201 @@
 
         <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8">Architecture</h1>
         <p class="text-lg text-gray-600 dark:text-gray-400 mb-12">
-          Parsanol is built as a high-performance Rust core with bindings for Ruby and WebAssembly.
-          This architecture provides native performance while maintaining ease of use.
+          One grammar file compiles once into a checksummed artifact that five runtimes parse
+          byte-identically. This page is the anatomy: the compile pipeline, the artifact envelope,
+          the load path, the engines, the contract stack, and the proof layer that keeps every
+          claim checkable.
         </p>
 
-        <!-- The 5 Approaches -->
-        <section id="five-approaches" class="mb-16">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">The 5 Approaches for Ruby Parsing</h2>
-
+        <!-- The pipeline -->
+        <section id="pipeline" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">The compile pipeline</h2>
           <p class="text-gray-600 dark:text-gray-400 mb-6">
-            Parsanol offers 5 different approaches for parsing in Ruby, each moving more work from Ruby to Rust:
+            A <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">.parg</code> file goes through
+            one pass pipeline; what ships is the output, never the pipeline:
           </p>
-
-          <div class="card mb-8 overflow-x-auto">
-            <pre class="text-sm text-gray-800 dark:text-gray-200">
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                    5 APPROACHES FOR RUBY PARSING                             │
-│                                                                              │
-│   Each approach moves more work from Ruby to Rust, increasing performance.   │
-│   Measured with Expressir parsing EXPRESS schemas (22KB file).               │
-└──────────────────────────────────────────────────────────────────────────────┘
-
-
-APPROACH 1: parslet-ruby (BASELINE)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   INPUT     │     │  PARSLET    │     │   OUTPUT    │
-│   String    │────▶│  (Ruby)     │────▶│  Ruby Hash  │
-└─────────────┘     └─────────────┘     └─────────────┘
-                          │
-                    SLOW parsing
-                    Pure Ruby
-
-SPEED: 1x (baseline) - 425s (SRL benchmark: 179K lines)
-
-
-APPROACH 2: parsanol-ruby
-━━━━━━━━━━━━━━━━━━━━━━━━━
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   INPUT     │     │  PARSANOL   │     │   OUTPUT    │
-│   String    │────▶│  (Ruby)     │────▶│  Ruby Hash  │
-└─────────────┘     └─────────────┘     └─────────────┘
-
-SPEED: ~1x (equivalent to Parslet)
-
-
-APPROACH 3: parsanol-native (Batch)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   INPUT     │     │  PARSANOL   │     │   OUTPUT    │
-│   String    │────▶│  (Rust)     │────▶│  Ruby Hash  │
-└─────────────┘     └─────────────┘     └─────────────┘
-                          │
-                    FAST parsing
-                    AST via u64 array
-
-SPEED: ~17x faster - 54s (SRL benchmark)
-
-
-APPROACH 4: parsanol-native (ZeroCopy)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┌─────────────┐     ┌─────────────────────────┐
-│   INPUT     │     │        PARSANOL         │
-│   String    │────▶│        (Rust FFI)       │────▶ Ruby Objects
-└─────────────┘     │  Direct construction    │
-                    └─────────────────────────┘
-
-SPEED: ~17x faster
-
-
-APPROACH 5: parsanol-native (ZeroCopy + Slice) ← FASTEST
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┌─────────────┐     ┌────────────────────────────────────┐
-│   INPUT     │     │            PARSANOL                │
-│   String    │────▶│            (Rust)                  │────▶ Slice Objects
-└─────────────┘     │  Zero-copy + Source positions      │
-                    └────────────────────────────────────┘
-                          │
-                    FASTEST parsing
-                    Source position tracking
-
-SPEED: ~17x faster - 54s (17x vs baseline)
-FEATURES: Preserves source positions for linters, IDEs
-            </pre>
+          <div class="card mb-6 overflow-x-auto">
+            <pre class="text-sm text-gray-800 dark:text-gray-200">.parg source
+  │  one StringScanner pass (single tokenizer sweep)
+  ▼
+grammar tree (I-nodes)
+  │  compile passes, each a pure rewrite:
+  │    · skip injection        — declared trivia injects before terminals;
+  │    │                         char-scan spans keep token spellings contiguous
+  │    · left-recursion tiers  — expr = expr "*" expr / INT rewrites into
+  │    │                         left-folding precedence tiers (the ANTLR 4 model)
+  │    · Named wrapping        — edition 2 names every non-capturing reference;
+  │    │                         capture-reachable rules compile unwrapped
+  │    · resync baking         — declared recovery policies become deterministic
+  │    │                       skip spans in the artifact
+  │    · lint                  — shadowed alternatives and order dependence are
+  │    │                         build failures, not runtime surprises
+  │    · tests replay          — accept/reject/capture/example/shape run at bake;
+  │                              a failing test fails the build
+  ▼
+artifact envelope (checksummed JSON)</pre>
           </div>
-
-          <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
-            <p class="text-green-800 dark:text-green-200 text-sm">
-              <strong>New: Slice Support</strong> - ZeroCopy + Slice mode preserves source positions (offset, length)
-              for each parsed element. This is essential for tools like linters, IDEs, and Expressir that need
-              to track where in the source code each element came from.
-            </p>
-          </div>
-
-          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-            <p class="text-blue-800 dark:text-blue-200 text-sm">
-              <strong>Evidence-Based:</strong> These results are measured with Expressir parsing real EXPRESS schemas.
-              Run the benchmarks yourself: <code class="bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded ml-2">bundle exec ruby benchmark/run_all.rb --quick</code>
-            </p>
-          </div>
-        </section>
-
-        <!-- Evidence-Based Benchmarks -->
-        <section id="benchmarks" class="mb-16">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Evidence-Based Benchmarks</h2>
-
-          <p class="text-gray-600 dark:text-gray-400 mb-4">
-            These are <strong>actual benchmark results</strong> from Expressir parsing the SRL benchmark (135 schemas, 179K lines).
-            This represents a real-world production workload.
-          </p>
-
-          <div class="card mb-8 overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="border-b border-gray-200 dark:border-gray-700">
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Mode</th>
-                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">Time</th>
-                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">Speedup</th>
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Notes</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Ruby (Parslet)</td>
-                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">425,000 ms</td>
-                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">1x (baseline)</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Pure Ruby parsing (SRL benchmark)</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-green-600 dark:text-green-400">Native Batch (u64)</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">54,400 ms</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">17x faster</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">AST via u64 array transfer</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 font-medium text-green-600 dark:text-green-400">Native ZeroCopy (Slice)</td>
-                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">54,400 ms</td>
-                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">17x faster</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Zero-copy with source positions</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">JSON Parsing Benchmarks</h3>
-
-          <div class="card mb-8 overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="border-b border-gray-200 dark:border-gray-700">
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Input Size</th>
-                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">parslet-ruby</th>
-                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">parsanol-native</th>
-                  <th class="text-right py-3 px-4 font-semibold text-gray-900 dark:text-white">parsanol-zerocopy</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">tiny (76 bytes)</td>
-                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">1,156 iter/s</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">4,745 iter/s</td>
-                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">33,000+ iter/s</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">small (791 bytes)</td>
-                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">111 iter/s</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">469 iter/s</td>
-                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">3,200+ iter/s</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">medium (8KB)</td>
-                  <td class="py-3 px-4 text-right text-gray-600 dark:text-gray-400">9.3 iter/s</td>
-                  <td class="py-3 px-4 text-right text-green-600 dark:text-green-400">47.2 iter/s</td>
-                  <td class="py-3 px-4 text-right font-medium text-green-600 dark:text-green-400">270+ iter/s</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-            <p class="text-yellow-800 dark:text-yellow-200 text-sm">
-              <strong>Note:</strong> Results vary based on hardware, Ruby version, and input complexity.
-              Always run benchmarks on your own system for accurate comparisons.
-            </p>
-          </div>
-        </section>
-
-        <!-- Slice Feature -->
-        <section id="slice-feature" class="mb-16">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Slice Support for Source Positions</h2>
-
-          <p class="text-gray-600 dark:text-gray-400 mb-6">
-            The ZeroCopy + Slice mode preserves source position information, which is essential for
-            tools that need to track where in the source code each element came from.
-          </p>
-
-          <div class="card mb-6">
-            <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
-# Before (plain strings):
-[{"word"=>"hello"}, " ", {"name"=>"world"}]
-
-# After (Slice objects with position info):
-[{"word"=>"hello"@0}, " "@5, {"name"=>"world"@6}]
-
-# The @N notation shows the byte offset in the original input
-            </pre>
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-6 mb-8">
-            <div class="card">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Parslet::Slice Compatible</h3>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Parsanol::Slice objects are compatible with Parslet::Slice, making migration seamless
-                for existing code that depends on source position tracking.
-              </p>
-            </div>
-
-            <div class="card">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Offset + Length</h3>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Each slice contains the byte offset and length, allowing tools to precisely
-                locate and highlight source code elements.
-              </p>
-            </div>
-          </div>
-
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Use Cases</h3>
-
-          <div class="space-y-4">
-            <div class="card">
-              <h4 class="font-medium text-gray-900 dark:text-white mb-2">Linters</h4>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Show precise error locations with line/column information derived from byte offsets.
-              </p>
-            </div>
-
-            <div class="card">
-              <h4 class="font-medium text-gray-900 dark:text-white mb-2">IDE Integration</h4>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Enable go-to-definition, find-references, and syntax highlighting based on parsed structure.
-              </p>
-            </div>
-
-            <div class="card">
-              <h4 class="font-medium text-gray-900 dark:text-white mb-2">Code Generation</h4>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Generate output that preserves mappings back to original source locations.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <!-- When to Use Which Approach -->
-        <section id="when-to-use" class="mb-16">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">When to Use Which Approach</h2>
-
-          <div class="overflow-x-auto mb-6">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="border-b border-gray-200 dark:border-gray-700">
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Approach</th>
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Best For</th>
-                  <th class="text-left py-3 px-4 font-semibold text-gray-900 dark:text-white">Trade-offs</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                <tr>
-                  <td class="py-3 px-4 font-medium text-gray-900 dark:text-white">parslet-ruby</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Existing Parslet code, maximum compatibility</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Slowest, but most reliable</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 font-medium text-gray-900 dark:text-white">parsanol-native (Batch)</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Need Ruby objects, good performance</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">AST transfer overhead</td>
-                </tr>
-                <tr>
-                  <td class="py-3 px-4 font-medium text-green-600 dark:text-green-400">ZeroCopy + Slice</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Need source positions (linters, IDEs)</td>
-                  <td class="py-3 px-4 text-gray-600 dark:text-gray-400">Best overall - fastest + position tracking</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <!-- Rust Core -->
-        <section id="rust-core" class="mb-16">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Rust Core Engine</h2>
-
-          <p class="text-gray-600 dark:text-gray-400 mb-6">
-            The Rust core provides the parsing engine with maximum performance:
-          </p>
-
-          <div class="grid md:grid-cols-2 gap-6 mb-8">
-            <div class="card">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Packrat Parser</h3>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Memoization-based parsing guarantees O(n) time complexity for PEG grammars.
-                No exponential backtracking, predictable performance.
-              </p>
-            </div>
-
-            <div class="card">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Arena Allocation</h3>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                All AST nodes are allocated in a single arena. Zero individual allocations,
-                perfect cache locality, instant cleanup.
-              </p>
-            </div>
-
-            <div class="card">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">SIMD Acceleration</h3>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                Uses memchr for fast substring search, AHash for fast hashing,
-                SmallVec for stack-allocated small collections.
-              </p>
-            </div>
-
-            <div class="card">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Zero-Copy Slices</h3>
-              <p class="text-gray-600 dark:text-gray-400 text-sm">
-                InputRef nodes return slice references with offset/length instead of
-                copying strings, preserving source position information.
-              </p>
-            </div>
-          </div>
-
-          
-        </section>
-
-        <!-- Parslet Compatibility -->
-        <section id="parslet-compat" class="mb-16">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Parslet Compatibility Layer</h2>
-
-          <p class="text-gray-600 dark:text-gray-400 mb-6">
-            For existing Parslet users, we provide a drop-in compatibility layer:
-          </p>
-
-          <div class="card mb-8">
-            <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
-┌─────────────────────────────────────────────────────────────────────┐
-│                    PARSLET COMPATIBILITY LAYER                      │
-│                                                                     │
-│  require 'parslet'           →        require 'parsanol/parslet'    │
-│                                                                     │
-│  class MyParser < Parslet::Parser    class MyParser < Parsanol::    │
-│    rule(:expr) { ... }                 Parslet::Parser              │
-│  end                                     rule(:expr) { ... }        │
-│                                        end                          │
-│                                                                     │
-│  NO CODE CHANGES REQUIRED!                                          │
-│                                                                     │
-│  Benefits:                                                          │
-│  • Same API as Parslet                                              │
-│  • Same output format (including Slice objects)                     │
-│  • Rust backend by default - ~17x faster                             │
-└─────────────────────────────────────────────────────────────────────┘
-            </pre>
-          </div>
-
-          
-        </section>
-
-        <!-- Running Benchmarks -->
-        <section id="running-benchmarks" class="mb-16">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Running Benchmarks Yourself</h2>
-
-          <p class="text-gray-600 dark:text-gray-400 mb-6">
-            All performance claims on this page can be verified by running the benchmarks on your own machine:
-          </p>
-
-          <div class="card mb-6">
-            <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto">
-# Clone and setup
-git clone https://github.com/parsanol/parsanol-ruby
-cd parsanol-ruby
-bundle install
-
-# Build native extension (requires Rust)
-bundle exec rake compile
-
-# Run quick benchmarks (skips large inputs)
-bundle exec ruby benchmark/run_all.rb --quick
-
-# Run all benchmarks
-bundle exec ruby benchmark/run_all.rb
-
-# View the approaches diagram
-cat benchmark/APPROACHES.md
-            </pre>
-          </div>
-
           <p class="text-gray-600 dark:text-gray-400">
-            Benchmark results are saved to <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">benchmark/reports/</code>
-            as JSON files for comparison over time.
+            The artifact carries the original source inside, so any runtime can rebuild atoms
+            without the file — and the compiler stamps a <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">validated</code>
+            receipt (lint errors always 0, lint warnings, embedded test totals, self-test flag)
+            so "is this grammar validated" is an inspectable envelope field covered by both digests.
           </p>
         </section>
 
-      
+        <!-- Envelope anatomy -->
+        <section id="envelope" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">The envelope anatomy</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            The wire shape (<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">parsanol-tree/v2</code>)
+            is the portability contract. Every field, and what attests it:
+          </p>
+          <div class="card mb-6 overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-800 dark:text-gray-200">
+              <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                <tr><th class="px-3 py-2">field</th><th class="px-3 py-2">role</th><th class="px-3 py-2">attested by</th></tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr><td class="px-3 py-2 font-mono">shape</td><td class="px-3 py-2">the wire contract itself — a shape bump is a new engine family</td><td class="px-3 py-2">checked first, on load</td></tr>
+                <tr><td class="px-3 py-2 font-mono">grammar / entries</td><td class="px-3 py-2">portable atoms + named entry points</td><td class="px-3 py-2">canonical checksum</td></tr>
+                <tr><td class="px-3 py-2 font-mono">bindings / preprocess / tables</td><td class="px-3 py-2">typed model maps + declarative data ops</td><td class="px-3 py-2">canonical checksum</td></tr>
+                <tr><td class="px-3 py-2 font-mono">tests</td><td class="px-3 py-2">the embedded assertions every runtime replays</td><td class="px-3 py-2">canonical checksum</td></tr>
+                <tr><td class="px-3 py-2 font-mono">docs / source</td><td class="px-3 py-2">LSP hovers + the original .parg text</td><td class="px-3 py-2">canonical checksum</td></tr>
+                <tr><td class="px-3 py-2 font-mono">edition</td><td class="px-3 py-2">tree shape (2 = named trees + spans, the only edition)</td><td class="px-3 py-2">canonical checksum</td></tr>
+                <tr><td class="px-3 py-2 font-mono">render / derive</td><td class="px-3 py-2">the string side: field compositions + templates</td><td class="px-3 py-2">canonical checksum</td></tr>
+                <tr><td class="px-3 py-2 font-mono">model_bindings</td><td class="px-3 py-2">opt-in rule→model sidecar (version: 1 table)</td><td class="px-3 py-2">canonical checksum</td></tr>
+                <tr><td class="px-3 py-2 font-mono">binding_version</td><td class="px-3 py-2">model-side growth (1 = v1 ops, 2 = v1.1 vocabulary); engines refuse higher</td><td class="px-3 py-2">canonical checksum</td></tr>
+                <tr><td class="px-3 py-2 font-mono">checksum</td><td class="px-3 py-2">sha256 over the canonicalized envelope — the cross-engine content contract</td><td class="px-3 py-2">verified on load</td></tr>
+                <tr><td class="px-3 py-2 font-mono">byte_checksum</td><td class="px-3 py-2">sha256 over the exact file bytes — the one-pass fast tier</td><td class="px-3 py-2">verified first on load</td></tr>
+                <tr><td class="px-3 py-2 font-mono">validated</td><td class="px-3 py-2">the bake receipt (lint/test/self-test)</td><td class="px-3 py-2">both digests</td></tr>
+                <tr><td class="px-3 py-2 font-mono">semantics_hash</td><td class="px-3 py-2">behavior fingerprint — skips producer metadata and both digests</td><td class="px-3 py-2">gates compare behavior, not bytes</td></tr>
+                <tr><td class="px-3 py-2 font-mono">compiler_version / unicode_tables</td><td class="px-3 py-2">producer provenance</td><td class="px-3 py-2">excluded from semantics_hash</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">
+            The split is deliberate: the <strong>canonical checksum</strong> attests content (stable across
+            re-bakes by a newer compiler); the <strong>byte_checksum</strong> attests bytes (fast, tamper-proof);
+            the <strong>semantics_hash</strong> attests behavior — so a freshness gate can tell "re-baked by a
+            newer compiler" from "the grammar changed" without re-verifying anything by hand.
+          </p>
+        </section>
+
+        <!-- Load path -->
+        <section id="load-path" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">The load path</h2>
+          <div class="card mb-6 overflow-x-auto">
+            <pre class="text-sm text-gray-800 dark:text-gray-200">load(artifact)
+  │  1. byte tier      — one O(bytes) hash pass, no parse: byte_checksum must
+  │                       match the exact file bytes (~5 ms on a 1.24 MB artifact).
+  │                       A flipped bit, wrong file, or CRLF-mangled checkout is
+  │                       rejected before any parse work.
+  │  2. canonical tier  — canonicalized-envelope checksum (the cross-engine contract);
+  │                       loaders that only see a parsed envelope fall back here
+  │  3. edition + shape — removed spellings reject loudly with the recompile
+  │                       instruction, before the checksum is even verified
+  │  4. tests replay    — the embedded assertions run on the loading engine
+  ▼
+ready: parse / parse_and_bind / render / derive</pre>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">
+            Refusals name the producer: a canonical-checksum mismatch raises
+            <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">ChecksumCompilerMismatch</code>,
+            carrying which compiler produced the artifact and what the loading engine expected —
+            the same loud-boundary discipline everywhere.
+          </p>
+        </section>
+
+        <!-- The engines -->
+        <section id="engines" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">The engines</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            The same artifact runs on three parse engines, pinned byte-identical by the conformance
+            corpus and the differential suite:
+          </p>
+          <div class="grid md:grid-cols-3 gap-4 mb-6 not-prose">
+            <div class="card">
+              <div class="font-semibold mb-2">Packrat interpreter</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Memoized PEG interpretation over arena-allocated atoms. O(n) parsing, zero-copy node construction. The reference semantics path.</p>
+            </div>
+            <div class="card">
+              <div class="font-semibold mb-2">Bytecode VM</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">The compiled atoms lower to VM bytecode — the engine behind the wasm, TypeScript, and Python tiers. The short-parse class the repro gates caught is fixed here.</p>
+            </div>
+            <div class="card">
+              <div class="font-semibold mb-2">Native bindings</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Ruby's native tier (C-API extension and FFI cdylib) and the Rust crate share the same core. <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">PreparedGrammar</code> computes the analyses once for the parse-many pattern.</p>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">
+            A <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">ResourceGovernor</code> bounds recursion depth, time, and memory; and the tier boundary is a contract, not a leak — grammars using
+            runtime state (<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">state</code>/<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">set</code>/<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">switch</code> atoms, custom Ruby classes)
+            are rejected loudly by the Rust, wasm, and TS engines instead of mis-parsing. Portable exceptions exist where the semantics allow them (ASCII-insensitive state matching ships as a wire op).
+          </p>
+        </section>
+
+        <!-- Contract stack -->
+        <section id="contract" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">The contract stack</h2>
+          <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+            <li><strong>Engine-linked versioning</strong> — the engine is 1.5.x; runtimes follow as <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">{engine-semver}.{runtime-digit}</code> (the gem is 1.5.x.0, wasm/npm 1.5.x). Engine 1.x is the stability declaration: exhaustive-enum changes are major, new surface lands behind non-exhaustive variants.</li>
+            <li><strong>The semver gate</strong> — release automation refuses a non-major bump when an exhaustive variant grows; capture renames are major, new alternatives minor, literal fixes patch — classified by <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">parg diff</code>.</li>
+            <li><strong>Grow-with-minor</strong> — new preprocess ops and envelope members stamp a version field (<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">binding_version</code>); old engines refuse higher levels, so a step they don't know can never run silently wrong.</li>
+            <li><strong>Feature-status metadata</strong> — the guide marks each feature shipped / partial / specified with the version, so doc consumers can derive truth mechanically.</li>
+            <li><strong>The freshness gate</strong> — CI compares <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">semantics_hash</code>, not bytes: producer-only re-bakes warn and pass; a grammar change fails the build.</li>
+          </ul>
+        </section>
+
+        <!-- Proof layer -->
+        <section id="proof" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">The proof layer</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            SOTA is a claim until it publishes evidence. The layer that makes the claims checkable:
+          </p>
+          <div class="grid md:grid-cols-2 gap-4 not-prose mb-6">
+            <div class="card">
+              <div class="font-semibold mb-2">The conformance corpus</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Per-feature pinned cases (the semantics laws, the envelope-members matrix) replayed through every engine — byte-identical trees, captures, and bound maps.</p>
+            </div>
+            <div class="card">
+              <div class="font-semibold mb-2">The differential suite</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">One grammar, five runtimes, identical outputs — enforced by nightly differentials and the parity gates (the corpus matrix makes an unrecorded envelope member a CI failure).</p>
+            </div>
+            <div class="card">
+              <div class="font-semibold mb-2">The fuzzing gate</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">A scheduled hours-long fuzz run; it found a real panic on its first sweep, and the fix rode the next train.</p>
+            </div>
+            <div class="card">
+              <div class="font-semibold mb-2">Receipts + the manifest</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Dated benchmark receipts publish losses with the same prominence as wins (see <a href="/performance" class="text-primary-600 dark:text-primary-400 hover:underline">Performance</a>); ENGINE-COMPAT.json pairs engine commits to package versions, and a CI checker fails when a train rides without recording itself.</p>
+            </div>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">
+            Repro gates are first-class: when a real grammar hits an engine bug (the VM short-parse class,
+            the trivia-in-keyword mask), the failing case lands as a gated test before the fix — the bug
+            can't silently reopen.
+          </p>
+        </section>
+
+        <!-- Choosing a tier -->
+        <section id="tiers" class="mb-16">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Choosing a tier</h2>
+          <div class="card mb-6 overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-800 dark:text-gray-200">
+              <thead class="text-xs uppercase bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                <tr><th class="px-3 py-2">you need</th><th class="px-3 py-2">tier</th></tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr><td class="px-3 py-2">typed models, LSP hovers, the full binding/preprocess surface, custom transformers</td><td class="px-3 py-2">Ruby (the reference tier)</td></tr>
+                <tr><td class="px-3 py-2">maximum native throughput, embedded Rust, the parse-many pattern</td><td class="px-3 py-2">the Rust crate / the native Ruby bindings</td></tr>
+                <tr><td class="px-3 py-2">browser parsing — this site's playground</td><td class="px-3 py-2">wasm (<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">PargArtifactJs</code>)</td></tr>
+                <tr><td class="px-3 py-2">Node and bundlers, typed schema emission</td><td class="px-3 py-2">TypeScript (<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">PargRuntime</code>)</td></tr>
+                <tr><td class="px-3 py-2">data pipelines on the python tier</td><td class="px-3 py-2">Python (engine-linked wheels, full platform matrix)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">
+            Every tier loads the same artifact, verifies the same digests, replays the same tests, and
+            returns the same trees — the identity is enforced by the corpus, not promised.
+          </p>
+        </section>

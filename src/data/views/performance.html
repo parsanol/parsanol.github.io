@@ -1,0 +1,161 @@
+
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-6">Performance, with receipts</h1>
+
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+          Every number on this page is a dated, reproducible receipt — the harness, corpora, and
+          corrupted cases are committed, every runner asserts full consumption before a timing counts,
+          and <strong>losses publish with the same prominence as wins</strong>. That last rule is the
+          clause that makes the rest of the page worth reading.
+        </p>
+
+        <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-900/40 rounded-xl p-5 mb-12">
+          <p class="text-primary-900 dark:text-primary-200 font-medium">
+            The honesty clause: tree-sitter is 37× faster on raw JSON throughput, and its incremental
+            editing is a category parsanol has not won. Those rows sit at the top of this page on
+            purpose — a benchmark suite you can't lose in public can't be believed when it wins.
+          </p>
+        </div>
+
+        <!-- Throughput -->
+        <section id="throughput" class="mb-12">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Raw parse throughput — JSON corpus</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            447,801 bytes of JSON, receipt dated 2026-11-15. Every engine parses byte-identical
+            documents (hashes committed per receipt) through its canonical native binding.
+          </p>
+          <div class="card mb-4 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th class="px-4 py-3 text-left font-medium text-gray-900 dark:text-white">engine</th>
+                  <th class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">µs/byte</th>
+                  <th class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">relative</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">tree-sitter 0.25 (rust binding)</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">0.029</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">37×</td></tr>
+                <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Lark 1.x LALR (python)</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">0.344</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">3.1×</td></tr>
+                <tr class="bg-primary-50/50 dark:bg-primary-900/20"><td class="px-4 py-3 font-medium text-gray-900 dark:text-white">parsanol 1.5.1 interpreter</td><td class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">0.828</td><td class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">1.30×</td></tr>
+                <tr class="bg-primary-50/50 dark:bg-primary-900/20"><td class="px-4 py-3 font-medium text-gray-900 dark:text-white">parsanol 1.5.1 VM</td><td class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">1.073</td><td class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">1.0 (baseline)</td></tr>
+                <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">ANTLR 4.13.2 (python3 target)</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">1.860</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">0.58×</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">
+            Read it plainly: <strong>parsanol beats ANTLR by 1.7×; the LR-family engines lead on
+            deterministic grammars</strong>, because a fixed LR table always beats a PEG's
+            ordered-choice backtracking when the grammar lets one exist. The named lever, when a
+            choice set is first-set disjoint (derivable at compile time), ordered choice collapses
+            to indexed dispatch — the determinism fast path.
+          </p>
+        </section>
+
+        <!-- Recovery -->
+        <section id="recovery" class="mb-12">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Error recovery — corrupted JSON</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            60 seeded corruption cases against the same corpus. This is where the artifact model
+            shows: a declared <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">resync</code>
+            policy turns recovery from an engine heuristic into data the grammar author controls.
+          </p>
+          <div class="card mb-4 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th class="px-4 py-3 text-left font-medium text-gray-900 dark:text-white">metric</th>
+                  <th class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">parsanol 1.5.1</th>
+                  <th class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">tree-sitter 0.25</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">suffix recovery (mean, higher recovers more)</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">14.9%</td><td class="px-4 py-3 text-right text-green-600 dark:text-green-400 font-semibold">70.6%</td></tr>
+                <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">diagnostic distance (mean, lower is better)</td><td class="px-4 py-3 text-right text-green-600 dark:text-green-400 font-semibold">±24,743</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">±56,349</td></tr>
+                <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">diagnostic on truncation</td><td class="px-4 py-3 text-right text-green-600 dark:text-green-400 font-semibold">±1 byte</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">root-ERROR at 0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">
+            The trade is architectural: tree-sitter recovers more <em>suffix</em> (it keeps reparsing
+            after an error region), while parsanol's deepest-failure position tracks the corruption
+            cause — 2.3× tighter diagnostic distance, and a truncation is located at the truncation,
+            not reported as a root-ERROR at offset 0. Closing the suffix gap is the named
+            recovery-envelope round on the json flavor.
+          </p>
+        </section>
+
+        <!-- Incremental -->
+        <section id="incremental" class="mb-12">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Keystroke-scale incremental editing</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            200-keystroke edit traces over two document sizes. The row parsanol does not win, published
+            because the honesty clause says so:
+          </p>
+          <div class="card mb-4 overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+              <thead class="bg-gray-50 dark:bg-gray-800">
+                <tr>
+                  <th class="px-4 py-3 text-left font-medium text-gray-900 dark:text-white">engine</th>
+                  <th class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">13.4 KB doc p50</th>
+                  <th class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">151.9 KB doc p50</th>
+                  <th class="px-4 py-3 text-right font-medium text-gray-900 dark:text-white">speedup vs own fresh</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">tree-sitter incremental</td><td class="px-4 py-3 text-right text-green-600 dark:text-green-400 font-semibold">12.5 µs</td><td class="px-4 py-3 text-right text-green-600 dark:text-green-400 font-semibold">84.4 µs</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">34× / 57×</td></tr>
+                <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">parsanol incremental</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">10.17 ms</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">108.3 ms</td><td class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">0.93× / 1.16×</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="text-gray-600 dark:text-gray-400">
+            Parsanol's incremental path is <strong>correct</strong> — tree identity held at 400/400
+            keystrokes — but currently delivers no win: the memo retention rule drops the root entry
+            on any length change, invalidating everything on value grammars. The innermost-container
+            splice retention is the named fix. We publish the gap because a receipt you can't lose in
+            can't be trusted when it wins.
+          </p>
+        </section>
+
+        <!-- Artifact economics -->
+        <section id="artifact" class="mb-12">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">The artifact economics</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
+            Performance is also the load path and the per-parse fixed cost — the numbers that decide
+            whether shipping a grammar as data is practical:
+          </p>
+          <div class="grid md:grid-cols-2 gap-4 not-prose mb-4">
+            <div class="card">
+              <div class="font-semibold mb-2">The byte-checksum fast tier</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">One O(bytes) hash pass over the exact file bytes: <strong>~5 ms on a 1.24 MB artifact</strong>, versus the 400–640 ms canonicalization the canonical checksum alone would cost on every load. Byte-level tamper detection before any parse work; older loaders fall back to the canonical tier unchanged.</p>
+            </div>
+            <div class="card">
+              <div class="font-semibold mb-2">The per-parse caches</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Decoded entries and grammar analyses computed once for the parse-many pattern (<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">PreparedGrammar</code>): <strong>7.5× on tiny-input parses</strong> — the setup/eval overhead that dominates small inputs, amortized.</p>
+            </div>
+            <div class="card">
+              <div class="font-semibold mb-2">The regression gate</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">Benchmark receipts ride CI with a regression gate: a train that loses numbers without a named cause doesn't merge. The receipts are evidence and a fence at the same time.</p>
+            </div>
+            <div class="card">
+              <div class="font-semibold mb-2">Measured, then honestly discarded</div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">The arena-locality optimization was implemented, measured with Cachegrind counters, and <strong>falsified</strong> — recorded as a negative result. Perf claims here are survivorship-free.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Methodology -->
+        <section id="methodology" class="mb-12">
+          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Methodology</h2>
+          <ul class="list-disc list-inside text-gray-600 dark:text-gray-400 space-y-2">
+            <li><strong>Shared corpus</strong> — every engine parses byte-identical documents; document hashes are committed per receipt.</li>
+            <li><strong>Native runners</strong> — each engine runs its canonical binding; no cross-language handicaps for anyone.</li>
+            <li><strong>Full-consumption proof before timing</strong> — a parse that stops early or errors is not a benchmark row.</li>
+            <li><strong>min-of-N per document</strong> (N=15) — variance is reported, not averaged away.</li>
+            <li><strong>The honesty clause</strong> — losses publish with the same prominence as wins, with the profile of where the bytes go.</li>
+          </ul>
+          <p class="text-gray-600 dark:text-gray-400 mt-4">
+            The harness, corpora, traces, corrupted cases, and dated receipts live in
+            <a class="text-primary-600 dark:text-primary-400 hover:underline" href="https://github.com/parsanol/parsanol-rs/tree/main/benchmarks/sota">benchmarks/sota/</a>
+            in the parsanol-rs repository — one command per suite to reproduce, per the
+            <a class="text-primary-600 dark:text-primary-400 hover:underline" href="https://github.com/parsanol/parsanol-rs/blob/main/docs/BENCHMARKS.md">receipts page</a>.
+          </p>
+        </section>
