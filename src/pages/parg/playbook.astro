@@ -1,0 +1,193 @@
+---
+import Layout from '../../layouts/Layout.astro'
+import ProseWithToc from '../../components/ProseWithToc.astro'
+
+const recipesA = `grammar Settings version "1.0.0" edition "v2" {
+  pq = *( " " )
+  stage = ( 1*( %x41-5A ) ) as stage
+  code = ( 1*( %x30-39 ) ) as code
+  pair = pq stage pq ":" pq code pq
+
+  bindings pair {
+    stage -> stage (string) preprocess: stage_code
+    code -> code (integer)
+  }
+
+  preprocess stage_code {
+    const_map "ISO" -> "iso", "IEEE" -> "ieee"
+    default_when_absent "unknown"
+  }
+
+  test {
+    accept "ISO:42"
+    example "IEEE:7" { stage: "ieee", code: 7 }
+  }
+
+  entry identifier: pair
+}`
+
+const recipesB = `resync document = 1*( %x00-3A / %x3C-FF ) ";"
+
+# the recovering path returns the envelope, not an exception:
+{ ok: false,
+  error:   { offset: 13, line: 1, column: 14, expected: [...] },
+  captures: { k: [{k: "a"@0}], v: [{v: "1"@2}] },
+  partial:  ...,
+  resyncs:  [{ offset: 4, skipped: "###;", resumed_at: 8 }] }`
+
+const recipesC = `render default {
+  field stage
+  literal "-"
+  field code
+}
+
+derive urn "urn:{stage}:{code}"
+
+artifact.render("identifier", bound)   # => "ISO-42"
+artifact.derive("urn", bound)          # => "urn:ISO:42"
+$ parg generate demo.artifact.json --model model.json
+ISO-42`
+
+const recipesD = `$ parg export demo.artifact.json --target xgrammar
+$ parg export demo.artifact.json --target llguidance`
+
+const recipesE = `# helper.parg — an import helper (no compiled artifact of its own)
+grammar Tokens version "1.0.0" {
+  digit = %x30-39
+}
+
+# main.parg
+use tokens
+
+grammar Main version "1.0.0" {
+  number = 1*tokens.digit as num
+  entry main: number
+}`
+
+const shippingRules = `$ parg fmt grammar.parg -i              # canonical style before commit
+$ parg lint grammar.parg --captures    # dead captures, on demand
+$ parg compile grammar.parg -o a.json  # bake (a failing test fails the bake)
+$ parg diff a.old.json a.json          # classify the change: capture renames
+                                       # are major, new alternatives minor,
+                                       # literal fixes patch
+# the artifact's "validated" receipt is inspectable — check
+# lint_errors (always 0), tests_failures (always 0), self_test on
+# any artifact you receive`
+
+const sections = [
+  { id: 'rules', label: 'Authoring rules' },
+  { id: 'patterns', label: 'Decision patterns' },
+  { id: 'recipes', label: 'Recipes' },
+  { id: 'shipping', label: 'Shipping rules' },
+]
+---
+<Layout
+  title="The PARG playbook — rules, patterns, guardrails — Parsanol"
+  description="How to use PARG well: the rules the compiler enforces and why, the decision patterns (trivia, atomic, tiers, preprocess, recovery), verified end-to-end recipes, and the shipping discipline."
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="flex gap-12">
+    <aside class="w-64 flex-shrink-0 hidden lg:block">
+      <div class="sticky top-20 text-sm space-y-1">
+        <a href="/parg" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">What is PARG?</a>
+        <a href="/parg/language" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Language tour</a>
+        <a href="/parg/playbook" class="block px-3 py-1.5 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium">Playbook</a>
+        <a href="/playground" class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">Playground</a>
+        {sections.map((section) => (
+          <a href={`#` + section.id} data-toc-link class="block px-3 py-1.5 rounded text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800">{section.label}</a>
+        ))}
+      </div>
+    </aside>
+
+    <ProseWithToc rail={false}>
+      <h1>The PARG playbook</h1>
+      <p class="text-lg">
+        The <a href="/parg/language">language tour</a> is the syntax reference. This page is how to
+        use it well: the rules the compiler enforces (and why), the decision patterns that come up
+        in real grammars, recipes verified end-to-end on the shipped engine, and the discipline for
+        shipping a grammar as a dependency.
+      </p>
+
+      <h2 id="rules">Authoring rules</h2>
+      <p class="mb-4">The compiler enforces these at bake time — they are failures, not warnings:</p>
+      <ul>
+        <li><strong>Order dependence is a build failure.</strong> Alternatives that share leading bytes make ordered choice decisive; the lint names the rule and branches (<code>rule primary: branches 1 and 2 are order-dependent (shared first bytes; ordered choice is decisive)</code> — a real baked warning from the boolean-algebra grammar). Factor the shared prefix or accept and document the order.</li>
+        <li><strong>A failing test fails the bake</strong>, and the compiler refuses to emit with lint errors — the artifact's <code>validated.lint_errors</code> is always 0 by construction.</li>
+        <li><strong>Keywords cannot name rules</strong> (<code>grammar as alt from_table column bindings preprocess entry table_lookup render derive</code>).</li>
+        <li><strong>One rule style per file</strong> — line-terminated or brace bodies; the lints flag heavy mixing.</li>
+        <li><strong>Case-insensitive literals capture the raw input</strong>: <code>%i"iso"</code> against <code>IEEE</code> captures <code>"IEEE"</code> — pin expectations with the input's spelling.</li>
+        <li><strong>An absent optional capture's key is omitted, not nil</strong> — and <code>default_when_absent</code> fills nil, not omission. Pin expectations against the actual tree (the tour's tests section shows how).</li>
+        <li><strong>Binding cardinality must agree with the grammar's shape</strong> — a repetition bound <code>1..*</code> must be a repetition; the compile fails naming the mismatch.</li>
+        <li><strong>Capture every structural rule</strong> so each repetition iteration yields one hash — the parslet-compatible flattening idiom.</li>
+        <li><strong><code>##</code> doc comments ride the artifact</strong> as LSP hovers — document every entry-reachable rule.</li>
+      </ul>
+
+      <h2 id="patterns">Decision patterns</h2>
+      <div class="card overflow-x-auto mb-4">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+          <thead class="bg-gray-50 dark:bg-gray-800">
+            <tr><th class="px-4 py-3 text-left font-medium text-gray-900 dark:text-white whitespace-nowrap">when you're tempted to…</th><th class="px-4 py-3 text-left font-medium text-gray-900 dark:text-white">do this instead</th></tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">hand-roll whitespace handling between tokens</td><td class="px-4 py-3 text-gray-800 dark:text-gray-200">Declare <code>skip = trivia</code> once — or explicit <code>pq</code> rules when positions matter. Token spellings stay contiguous either way; multi-character operators never match across whitespace.</td></tr>
+            <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Mark everything atomic "for speed"</td><td class="px-4 py-3 text-gray-800 dark:text-gray-200"><code>atomic</code> is for token-shaped bodies (identifiers, numbers) where trivia injection would be wrong — it trades skip injection for shape control, not performance.</td></tr>
+            <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Reach for runtime state or custom Ruby transformers</td><td class="px-4 py-3 text-gray-800 dark:text-gray-200">First check the declarative vocabulary: <code>table_lookup</code>, <code>const_map</code>, <code>default_when_absent</code>, <code>rename</code> cover data normalization. State atoms make the grammar <strong>Ruby-tier by contract</strong> — the Rust, wasm, TS, and Python engines reject the artifact loudly.</td></tr>
+            <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Normalize data in the model layer by hand</td><td class="px-4 py-3 text-gray-800 dark:text-gray-200">If it's a pure data transform (map, fill, rename), it belongs in <code>preprocess</code> — the engines execute one implementation, byte-identically. Anything not expressible there is genuinely application logic.</td></tr>
+            <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Trial-scan for resynchronization</td><td class="px-4 py-3 text-gray-800 dark:text-gray-200">Declare a <code>resync</code> policy: deterministic junk runs ending at a terminator, authored and baked as spans.</td></tr>
+            <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Copy-paste token rules between grammars</td><td class="px-4 py-3 text-gray-800 dark:text-gray-200"><code>use</code> a helper grammar — rules arrive namespaced (<code>tokens.digit</code>), capture names preserved, the expansion baked.</td></tr>
+            <tr><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Reparse to render output strings</td><td class="px-4 py-3 text-gray-800 dark:text-gray-200"><code>render</code>/<code>derive</code> sections in the artifact — the string side ships with the grammar, byte-identical on every tier.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="recipes">Recipes — verified end-to-end</h2>
+
+      <h3>The full pipeline</h3>
+      <pre class="text-sm"><code>{recipesA}</code></pre>
+      <p>
+        Grammar, bindings with a v1.1 preprocess, in-file tests pinning <code>example</code> bounds —
+        one file, one bake. The compiler runs the tests; a failing expectation fails the build.
+      </p>
+
+      <h3>Corrupt input, owned recovery</h3>
+      <pre class="text-sm"><code>{recipesB}</code></pre>
+      <p>
+        The strict path throws <code>ParseFailed</code> at the deepest position. The recovering path
+        returns the envelope: what failed and where, everything that bound before the failure, the
+        partial tree, and each span the declared <code>resync</code> policy consumed — offsets
+        included. The author owns the recovery; the engine owns determinism.
+      </p>
+
+      <h3>The round trip</h3>
+      <pre class="text-sm"><code>{recipesC}</code></pre>
+      <p>
+        Parse → bind → render back: fields read the bound map, templates interpolate it, and the
+        CLI does it from the artifact alone — a bound attribute map in, the default-variant string out.
+      </p>
+
+      <h3>Ship to the decoders</h3>
+      <pre class="text-sm"><code>{recipesD}</code></pre>
+      <p>
+        The same artifact lowers to XGrammar or llguidance for LLM structured output — unmappable
+        constructs rejected loudly at export, never silently dropped.
+      </p>
+
+      <h3>Compose, don't copy</h3>
+      <pre class="text-sm"><code>{recipesE}</code></pre>
+      <p>
+        Helper grammars share tokens across files; imports are recursive, cycles are compile errors,
+        and the artifact bakes the expansion so consumers never resolve imports.
+      </p>
+
+      <h2 id="shipping">Shipping rules</h2>
+      <pre class="text-sm"><code>{shippingRules}</code></pre>
+      <ul>
+        <li><strong>Grammar CI compares behavior, not bytes</strong>: the envelope's <code>semantics_hash</code> is stable across re-bakes by a newer compiler — a consumer gate can warn on producer drift and fail only on a real grammar change.</li>
+        <li><strong>Versioning is classified</strong>: capture renames are major, new alternatives minor, literal fixes patch — <code>parg diff</code> names the class against the documented rules.</li>
+        <li><strong>Trust, but inspect</strong>: the <code>validated</code> receipt travels the artifact — lint errors, test totals, and the self-test flag are covered by both digests, so "was this baked green" is a field read, not a promise.</li>
+        <li><strong>Distribute through the artifact, not the source</strong>: the .parg text rides inside; consumers rebuild from the envelope without the file.</li>
+      </ul>
+    </ProseWithToc>
+  </div>
+  </div>
+</Layout>
