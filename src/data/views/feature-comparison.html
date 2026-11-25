@@ -49,7 +49,7 @@
                   <td class="px-4 py-3 text-center text-gray-400">— (JS only)</td>
                 </tr>
                 <tr>
-                  <td class="px-4 py-3 text-gray-800 dark:text-gray-200">Recovery declared as data (spans in the artifact)</td>
+                  <td class="px-4 py-3 text-gray-800 dark:text-gray-200">Recovery declared as data (resync spans; 0/60 null recoveries; structure recall 67.5%)</td>
                   <td class="px-4 py-3 text-center text-green-600 dark:text-green-400 font-semibold">✓ (resync policies)</td>
                   <td class="px-4 py-3 text-center text-yellow-500">~ (implicit ERROR regions)</td>
                   <td class="px-4 py-3 text-center text-yellow-500">~ (rule-based, in-grammar)</td>
@@ -67,7 +67,7 @@
                   <td class="px-4 py-3 text-center text-gray-400">—</td>
                 </tr>
                 <tr>
-                  <td class="px-4 py-3 text-gray-800 dark:text-gray-200">LLM structured-output export from the artifact (XGrammar / llguidance)</td>
+                  <td class="px-4 py-3 text-gray-800 dark:text-gray-200">LLM constrained decoding from the artifact: export + per-token mask oracle (100% validity, free backtracking)</td>
                   <td class="px-4 py-3 text-center text-green-600 dark:text-green-400 font-semibold">✓</td>
                   <td class="px-4 py-3 text-center text-gray-400">—</td>
                   <td class="px-4 py-3 text-center text-gray-400">—</td>
@@ -112,8 +112,8 @@
                   <td class="px-4 py-3 text-center text-yellow-500">~</td>
                 </tr>
                 <tr>
-                  <td class="px-4 py-3 text-gray-800 dark:text-gray-200">Incremental editing (the reparse win)</td>
-                  <td class="px-4 py-3 text-center text-yellow-500 font-semibold">~ (correct; no win yet — published)</td>
+                  <td class="px-4 py-3 text-gray-800 dark:text-gray-200">Incremental editing (spliced keystrokes, 800/800 tree identity)</td>
+                  <td class="px-4 py-3 text-center text-yellow-500 font-semibold">✓ spliced (2.1–16.6× vs own fresh; ts faster in absolute terms)</td>
                   <td class="px-4 py-3 text-center text-green-600 dark:text-green-400 font-semibold">✓ (the category leader)</td>
                   <td class="px-4 py-3 text-center text-gray-400">—</td>
                   <td class="px-4 py-3 text-center text-gray-400">—</td>
@@ -149,17 +149,18 @@
             <div class="card">
               <div class="font-semibold mb-2 text-green-700 dark:text-green-400">tree-sitter wins</div>
               <ul class="text-sm text-gray-600 dark:text-gray-300 list-disc list-inside space-y-1">
-                <li>Raw throughput on deterministic grammars: 37× in the JSON receipt (0.029 µs/byte vs 1.073)</li>
-                <li>Incremental editing: 34–57× vs fresh, where parsanol is correct but delivers no win yet</li>
-                <li>Suffix recovery on corrupted JSON: 70.6% vs 14.9%</li>
+                <li>Raw throughput on deterministic grammars: still 1.35× ahead (C automaton 0.031 µs/byte vs the VM's 0.0418) — the gap closed from 37× at the 1.5.1 baseline, published with every step</li>
+                <li>Incremental editing: faster in absolute terms (µs-scale), where parsanol's splice wins 2.1–16.6× against its own fresh parse</li>
+                <li>Windowed nTED on the corruption site: 0.023 vs 0.059 (the ERROR-node-hole-punch shape)</li>
                 <li>The editor-integration ecosystem (the category it defined)</li>
               </ul>
             </div>
             <div class="card">
               <div class="font-semibold mb-2 text-green-700 dark:text-green-400">parsanol wins</div>
               <ul class="text-sm text-gray-600 dark:text-gray-300 list-disc list-inside space-y-1">
-                <li>Diagnostic precision: ±24,743 vs ±56,349 mean diagnostic distance; truncation located at ±1 byte where tree-sitter drops a root-ERROR at 0</li>
-                <li>1.7× over ANTLR 4.13 (python3 target) on the same corpus</li>
+                <li>Diagnostic precision held outright: ±24,744 vs ±56,349 mean diagnostic distance; truncation at ±1 byte where tree-sitter drops a root-ERROR at 0; 0/60 null recoveries</li>
+                <li>47× over ANTLR 4.13 (python3 target) on the same corpus, 8.8× over Lark LALR</li>
+                <li>Grammar-valid LLM masks at 100% validity with free backtracking — the FSM compilers' blind spot</li>
                 <li>Everything in the matrix's top rows — the artifact contract no competitor has</li>
                 <li>Write once, parse identically everywhere: the corpus enforces it, the receipts prove it</li>
               </ul>
@@ -169,7 +170,9 @@
             The through-line: tree-sitter optimizes <em>reparsing edited text fast</em> (its wins are the
             editor's wins). PARG optimizes <em>a grammar as verified data</em> — compiled once, distributed
             with integrity receipts, parsed identically wherever it lands, consumed by models, decoders,
-            and the string side alike. Those are different products; the receipts say where each stands.
+            and the string side alike. The throughput race is now a 1.35× question instead of a 37× one,
+            and every step that closed it merged with byte-identical trees — the speed never changed the
+            parse. Those are different products; the receipts say where each stands.
           </p>
         </section>
 
