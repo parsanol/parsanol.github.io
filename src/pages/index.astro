@@ -68,13 +68,15 @@ const abilities = [
         <p class="text-gray-600 dark:text-gray-300 mb-4">
           One grammar compiles once into a checksummed artifact that five runtimes parse
           byte-identically — enforced by a conformance corpus, nightly differentials, and a fuzzing
-          gate that found a real panic on its first run. Every performance claim ships as a dated,
-          reproducible receipt, and the losses publish with the same prominence as the wins.
+          gate that found a real panic on its first run. The engine self-hosts its own language
+          server and compiles itself into grammar-valid LLM token masks at 100% validity. Every
+          performance claim ships as a dated, reproducible receipt, and the losses publish with the
+          same prominence as the wins.
         </p>
         <div class="grid sm:grid-cols-3 gap-4 text-sm not-prose">
           <a href="/performance" class="card hover:border-primary-400 transition block">
             <div class="font-semibold mb-1">Performance</div>
-            <p class="text-gray-600 dark:text-gray-300">1.7× over ANTLR on the shared JSON corpus; the tightest diagnostics in the recovery receipt; tree-sitter's 37× throughput win published right next to it.</p>
+            <p class="text-gray-600 dark:text-gray-300">The VM sits 1.35× behind tree-sitter's C automaton — closed from 37× with byte-identical trees at every step — 47× ahead of ANTLR, 100% grammar-valid LLM masks, and the tightest diagnostics in the recovery receipt.</p>
           </a>
           <a href="/architecture" class="card hover:border-primary-400 transition block">
             <div class="font-semibold mb-1">Architecture</div>

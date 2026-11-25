@@ -175,6 +175,16 @@ ready: parse / parse_and_bind / render / derive</pre>
             the trivia-in-keyword mask), the failing case lands as a gated test before the fix — the bug
             can't silently reopen.
           </p>
+          <p class="text-gray-600 dark:text-gray-400 mt-4">
+            And the strongest receipt of all: <strong>parsanol parses PARG with parsanol</strong> — the
+            language server (<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">parsanol-lsp</code>:
+            live diagnostics from the structured failure wire, hovers from doc comments, go-to-definition,
+            find-references, completion, and the parse-tree preview) runs over the engine's own grammar
+            source at ~147 ms with zero diagnostics. The constrained-decoding oracle
+            (<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">parsanol::constrain</code>) rides
+            the same recovering envelope — grammar-valid LLM token masks at 100% validity, with
+            backtracking that re-masks through fresh oracle parses.
+          </p>
         </section>
 
         <!-- Choosing a tier -->
